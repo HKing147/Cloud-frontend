@@ -7,7 +7,6 @@
 			</div>
 
 			<el-menu-item v-for="(item, index) in menuList.value" :index="index" :key="index">
-				<!-- <el-icon :size="20"><Picture /></el-icon> -->
 				<el-icon :size="20">
 					<component :is="item.icon"></component>
 				</el-icon>
