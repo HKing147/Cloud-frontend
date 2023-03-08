@@ -17,7 +17,7 @@
 				</div>
 				<div class="foot">
 					<img src="../assets/img/tou.jpg" />
-					<span class="uname">{{ userName }}</span>
+					<span class="uname">用户名</span>
 					<span class="menu">
 						<el-dropdown>
 							<el-icon><More /></el-icon>
@@ -72,8 +72,6 @@ function getActiveIndex() {
 	// }
 }
 getActiveIndex();
-
-const userName = ref("HKing147");
 </script>
 
 <style lang="scss">
