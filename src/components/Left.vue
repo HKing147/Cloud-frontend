@@ -62,7 +62,7 @@
 const userName = ref("HKing147");
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main {
 	height: 1000px;
 	width: 100%;

@@ -164,7 +164,7 @@ function register() {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main {
 	position: fixed;
 	height: 100%;
