@@ -143,6 +143,7 @@ getActiveIndex();
 		}
 	}
 	.right {
+		flex: 1;
 		height: 100%;
 	}
 }

@@ -36,6 +36,10 @@
 
 <script setup>
 import { reactive } from "vue";
+const props = defineProps({
+	tableData: Object,
+});
+console.log("tableData: ", props.tableData);
 const defaultProps = {
 	children: "children",
 	label: "filename",

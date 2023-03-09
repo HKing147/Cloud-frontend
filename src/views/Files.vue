@@ -8,14 +8,23 @@
 			</div>
 		</div>
 		<div class="content">
-			<CommonTable :tableData="tableData"></CommonTable>
+			<DraggableTree :tableData="tableData" />
 		</div>
 	</div>
+	<el-page-header :icon="ArrowLeft">
+		<template #content>
+			<el-breadcrumb separator="/">
+				<el-breadcrumb-item :to="{ path: './page-header.html' }"> 文件 </el-breadcrumb-item>
+				<el-breadcrumb-item><a href="./page-header.html">我的备份</a></el-breadcrumb-item>
+				<el-breadcrumb-item>相册</el-breadcrumb-item>
+			</el-breadcrumb>
+		</template>
+	</el-page-header>
 </template>
 
 <script setup>
 import { reactive } from "vue";
-import CommonTable from "../components/CommonTable.vue";
+import DraggableTree from "../components/DraggableTree.vue";
 const tableData = reactive([
 	{
 		filename: "1.jpg",
@@ -53,10 +62,11 @@ const tableData = reactive([
 	flex-direction: column;
 	.head {
 		display: flex;
-		flex-direction: column;
+		// flex-direction: column;
+		flex-direction: row;
 		margin-top: 35px;
 		// align-items: center;
-		justify-content: center;
+		// justify-content: center;
 		// text-align: center;
 		// vertical-align: middle;
 		// height: 40px;
@@ -66,9 +76,10 @@ const tableData = reactive([
 			padding-left: 40px;
 			font-size: 18px;
 			font-weight: 700;
+			width: 100%;
 		}
 		.el-icon {
-			position: fixed;
+			// position: fixed;
 		}
 		.search {
 			right: 100px;
@@ -92,6 +103,8 @@ const tableData = reactive([
 	}
 	.content {
 		padding-top: 30px;
+		padding-left: 25px;
+		width: 100%;
 	}
 }
 </style>

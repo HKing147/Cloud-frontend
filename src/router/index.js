@@ -52,7 +52,7 @@ const routes = [
 	{
 		name: "Draggable",
 		path: "/draggable",
-		component: () => import("../views/DraggableTree.vue"),
+		component: () => import("../components/DraggableTree.vue"),
 	},
 ];
 

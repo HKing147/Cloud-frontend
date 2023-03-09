@@ -7,13 +7,15 @@
 </template>
 
 <style lang="scss" scoped>
-// * {
-// 	margin: 0;
-// 	padding: 0;
-// 	list-style: node;
-// 	text-decoration: node;
-// 	outline: none;
-// }
+* {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: node;
+	text-decoration: node;
+	outline: none;
+}
 /* .loginandregister {
 	position: fixed;
 	height: 100%;
