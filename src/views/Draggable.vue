@@ -3,13 +3,16 @@
 		<div class="title">鼠标放到ID列和行上试试 可以拖拽行和列</div>
 		<table class="tb">
 			<thead>
-				<draggable v-model="state.headers" animation="200" tag="tr" :item-key="(key) => key">
+				<th>名称</th>
+				<th>修改时间</th>
+				<th>大小</th>
+				<!-- <draggable v-model="state.headers" animation="200" tag="tr" :item-key="(key) => key">
 					<template #item="{ element: header }">
 						<th class="move">
 							{{ header }}
 						</th>
 					</template>
-				</draggable>
+				</draggable> -->
 			</thead>
 			<draggable
 				:list="state.list"
@@ -28,9 +31,15 @@
 			>
 				<template #item="{ element }">
 					<tr>
-						<td class="move" v-for="(header, index) in state.headers" :key="header">
-							{{ element[header] }}
+						<td class="move" style="display: flex; flex-direction: row">
+							<img src="../assets/img/minfolder.png" style="width: 20px; height: 20px; padding-right: 10px" />
+							{{ element.id }}
 						</td>
+						<td class="move">{{ element.name }}</td>
+						<td class="move">{{ element.intro }}</td>
+						<!-- <td class="move" v-for="(header, index) in state.headers" :key="header">
+							{{ element[header] }}
+						</td> -->
 					</tr>
 				</template>
 			</draggable>
@@ -144,45 +153,11 @@ const onChoose = (e) => {
 };
 </script>
 <style scoped>
-.title {
-	padding: 3px;
-	font-size: 13px;
+thead {
+	font-size: 12px;
+	cursor: pointer;
 }
-.itxst {
-	width: 600px;
-}
-
 .move {
 	cursor: move;
-}
-
-table.tb {
-	color: #333;
-	border: solid 1px #999;
-	font-size: 13px;
-	border-collapse: collapse;
-	min-width: 500px;
-	user-select: none;
-}
-table.tb th {
-	background: rgb(168 173 217);
-	border-width: 1px;
-	padding: 8px;
-	border-style: solid;
-	border-color: #999;
-	text-align: left;
-}
-table.tb th:nth-of-type(1) {
-	text-align: center;
-}
-table.tb td {
-	background: #d6c8c8;
-	border-width: 1px;
-	padding: 8px;
-	border-style: solid;
-	border-color: #999;
-}
-table.tb td:nth-of-type(1) {
-	text-align: center;
 }
 </style>
