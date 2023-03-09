@@ -116,6 +116,8 @@ getActiveIndex();
 				line-height: 40px;
 				display: flex;
 				flex-direction: row;
+				// flex-direction: column;
+				// justify-content: center;
 				position: fixed;
 				bottom: 20px;
 				img {

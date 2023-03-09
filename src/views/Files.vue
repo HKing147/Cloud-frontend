@@ -7,20 +7,61 @@
 				<el-icon class="add" :size="20"><Plus /></el-icon>
 			</div>
 		</div>
+		<div class="content">
+			<CommonTable :tableData="tableData"></CommonTable>
+		</div>
 	</div>
 </template>
 
-<script setup></script>
+<script setup>
+import { reactive } from "vue";
+import CommonTable from "../components/CommonTable.vue";
+const tableData = reactive([
+	{
+		filename: "1.jpg",
+		size: 1024,
+		path: "/1.jpg",
+	},
+	{
+		filename: "1.jpg",
+		size: 1024,
+		path: "/1.jpg",
+	},
+	{
+		filename: "1.jpg",
+		size: 1024,
+		path: "/1.jpg",
+	},
+	{
+		filename: "1.jpg",
+		size: 1024,
+		path: "/1.jpg",
+	},
+	{
+		filename: "1.jpg",
+		size: 1024,
+		path: "/1.jpg",
+	},
+]);
+</script>
 
 <style lang="scss" scoped>
 .main {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
 	.head {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		margin-top: 35px;
-		text-align: center;
-		height: 40px;
-		line-height: 40px;
+		// align-items: center;
+		justify-content: center;
+		// text-align: center;
+		// vertical-align: middle;
+		// height: 40px;
+		width: 100%;
+		// line-height: 40px;
 		span {
 			padding-left: 40px;
 			font-size: 18px;
@@ -48,6 +89,9 @@
 				color: white;
 			}
 		}
+	}
+	.content {
+		padding-top: 30px;
 	}
 }
 </style>

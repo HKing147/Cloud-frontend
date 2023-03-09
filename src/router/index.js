@@ -9,6 +9,7 @@ const routes = [
 		name: "主页",
 		path: "/home",
 		component: () => import("../views/Home.vue"),
+		redirect: "/home/files",
 		children: [
 			{
 				name: "文件",
@@ -47,6 +48,11 @@ const routes = [
 				component: () => import("../views/Recycle.vue"),
 			},
 		],
+	},
+	{
+		name: "Draggable",
+		path: "/draggable",
+		component: () => import("../views/Draggable.vue"),
 	},
 ];
 
