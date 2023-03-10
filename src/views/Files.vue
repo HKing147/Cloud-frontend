@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="content">
-			<DraggableTree :tableData="tableData" />
+			<DraggableTree :data="data" />
 		</div>
 	</div>
 	<el-page-header :icon="ArrowLeft">
@@ -25,31 +25,78 @@
 <script setup>
 import { reactive } from "vue";
 import DraggableTree from "../components/DraggableTree.vue";
-const tableData = reactive([
+const data = reactive([
 	{
-		filename: "1.jpg",
+		id: 1,
+		filename: "文件夹一",
+		time: "2021/09/26 21:17",
 		size: 1024,
-		path: "/1.jpg",
+		isLeaf: true,
+		children: [
+			{
+				filename: "Level two 1-1",
+				time: "2021/09/26 21:17",
+				size: 100,
+				isLeaf: true,
+				children: [],
+			},
+		],
 	},
 	{
-		filename: "1.jpg",
+		id: 2,
+		filename: "文件夹二",
+		time: "2021/09/26 21:17",
 		size: 1024,
-		path: "/1.jpg",
+		isLeaf: true,
+		children: [
+			{
+				filename: "Level two 1-1",
+				time: "2021/09/26 21:17",
+				size: 100,
+				isLeaf: true,
+				children: [],
+			},
+		],
 	},
 	{
-		filename: "1.jpg",
+		id: 3,
+		filename: "文件夹三",
+		time: "2021/09/26 21:17",
 		size: 1024,
-		path: "/1.jpg",
+		isLeaf: true,
+		children: [
+			{
+				filename: "Level two 1-1",
+				time: "2021/09/26 21:17",
+				size: 100,
+				isLeaf: true,
+				children: [],
+			},
+		],
 	},
 	{
-		filename: "1.jpg",
+		id: 4,
+		filename: "文件夹四",
+		time: "2021/09/26 21:17",
 		size: 1024,
-		path: "/1.jpg",
+		isLeaf: true,
+		children: [
+			{
+				isLeaf: true,
+				filename: "Level two 1-1",
+				time: "2021/09/26 21:17",
+				size: 100,
+				children: [],
+			},
+		],
 	},
 	{
-		filename: "1.jpg",
+		id: 5,
+		filename: "文件",
+		time: "2021/09/26 21:17",
 		size: 1024,
-		path: "/1.jpg",
+		isLeaf: true,
+		// children: [],
 	},
 ]);
 </script>

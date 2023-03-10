@@ -9,8 +9,8 @@
 					</el-col>
 					<el-col :span="0.2"> <img src="../assets/img/minfolder.png" /></el-col>
 					<el-col :span="10"> {{ node.label }}</el-col>
-					<el-col :span="2">
-						<el-icon style="visibility: hidden"><MoreFilled /></el-icon
+					<el-col class="icon" :span="2">
+						<el-icon><MoreFilled /></el-icon
 					></el-col>
 					<el-col :span="6">
 						<span style="font-size: 8px; color: #9d9d9d">{{ data.time }} </span></el-col
@@ -37,9 +37,10 @@
 <script setup>
 import { reactive } from "vue";
 const props = defineProps({
-	tableData: Object,
+	data: Object,
 });
-console.log("tableData: ", props.tableData);
+const data = props.data;
+console.log("tableData: ", props.data);
 const defaultProps = {
 	children: "children",
 	label: "filename",
@@ -51,7 +52,7 @@ const checkedList = ref([]);
 // 	checkedList.value = newCheckedList;
 // 	console.log("checkedList ", checkedList.value);
 // }
-
+/*
 const data = reactive([
 	{
 		id: 1,
@@ -126,6 +127,7 @@ const data = reactive([
 		// children: [],
 	},
 ]);
+*/
 console.log(data);
 const loadNode = (node, resolve) => {
 	console.log("node", node.data);
@@ -151,14 +153,23 @@ function handleNodeClick() {}
 	flex-direction: column;
 	font-size: 14px;
 	.tree-node {
-		// display: flex;
-		// flex-direction: row;
-		// align-items: center;
+		&:hover {
+			background-color: #f5f5f6;
+		}
+		&:hover .el-col .el-icon {
+			visibility: visible;
+			color: #aaaaad;
+		}
 		.el-col {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
+
+			.el-icon {
+				visibility: hidden;
+			}
 		}
+
 		.el-checkbox {
 			padding-right: 20px;
 		}
@@ -169,6 +180,7 @@ function handleNodeClick() {}
 			// padding-right: 20px;
 		}
 	}
+	// }
 }
 :deep(.el-tree-node__content) {
 	display: flex;
