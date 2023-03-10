@@ -1,29 +1,33 @@
 <template>
-	<el-checkbox-group v-model="checkedList" fill="#637dff">
-		<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
-			<template #default="{ node, data }">
-				<!-- <div class="tree-node"> -->
-				<el-row :gutter="25" class="tree-node" style="width: 100%">
-					<el-col :span="0">
-						<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
-					</el-col>
-					<el-col :span="0.2"> <img src="../assets/img/minfolder.png" /></el-col>
-					<el-col :span="12"> {{ node.label }}</el-col>
-					<el-col class="icon" :span="1">
-						<el-icon :size="17"><MoreFilled /></el-icon
-					></el-col>
-					<el-col :span="7">
-						<span style="font-size: 8px; color: #9d9d9d">{{ data.time }} </span></el-col
-					>
-					<el-col :span="1">
-						<span style="font-size: 8px; color: #9d9d9d">{{ data.size }} </span></el-col
-					>
-				</el-row>
-				<!-- </div> -->
-			</template>
-		</el-tree>
-	</el-checkbox-group>
-	<!-- <el-tree-v2 :data="data" :props="defaultProps" item-size="50" icon="" show-checkbox draggable>
+	<div class="main">
+		<div class="head">
+			<el-checkbox v-model="isCheckAll" @change="checkAll">{{ isCheckAll ? "取消全选" : "全选" }}</el-checkbox>
+		</div>
+		<el-checkbox-group v-model="checkedList" fill="#637dff">
+			<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
+				<template #default="{ node, data }">
+					<!-- <div class="tree-node"> -->
+					<el-row :gutter="25" class="tree-node" style="width: 100%">
+						<el-col :span="0">
+							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id" @change="check"><br /></el-checkbox>
+						</el-col>
+						<el-col :span="0.2"> <img src="../assets/img/minfolder.png" /></el-col>
+						<el-col :span="12"> {{ node.label }}</el-col>
+						<el-col class="icon" :span="1">
+							<el-icon :size="17"><MoreFilled /></el-icon
+						></el-col>
+						<el-col :span="7">
+							<span style="font-size: 8px; color: #9d9d9d">{{ data.time }} </span></el-col
+						>
+						<el-col :span="1">
+							<span style="font-size: 8px; color: #9d9d9d">{{ data.size }} </span></el-col
+						>
+					</el-row>
+					<!-- </div> -->
+				</template>
+			</el-tree>
+		</el-checkbox-group>
+		<!-- <el-tree-v2 :data="data" :props="defaultProps" item-size="50" icon="" show-checkbox draggable>
 		<template #default="{ node, data }">
 			<img src="../assets/img/minfolder.png" style="width: 25px; height: 25px; padding-right: 20px" />
 			<span style="width: 500px">{{ node.label }}</span>
@@ -32,6 +36,7 @@
 			<span>{{ data.size }} </span>
 		</template>
 	</el-tree-v2> -->
+	</div>
 </template>
 
 <script setup>
@@ -46,7 +51,27 @@ const defaultProps = {
 	label: "filename",
 	isLeaf: "isLeaf",
 };
+const isCheckAll = ref(false);
 const checkedList = ref([]);
+function check() {
+	// checkedList 没满就将 isCheckAll 置为 false
+	isCheckAll.value = checkedList.value.length == data.length;
+}
+function checkAll() {
+	console.log(isCheckAll.value);
+	console.log(checkedList.value);
+	if (isCheckAll.value) {
+		checkedList.value = [];
+		for (var i = 0; i < data.length; ++i) {
+			console.log(data[i].id);
+			checkedList.value.push(data[i].id);
+		}
+	} else {
+		checkedList.value = [];
+	}
+	console.log(checkedList.value);
+}
+
 // function handleCheckedChange(newCheckedList) {
 // 	console.log("checkedList ", checkedList.value);
 // 	checkedList.value = newCheckedList;
@@ -148,59 +173,64 @@ const loadNode = (node, resolve) => {
 function handleNodeClick() {}
 </script>
 <style lang="scss" scoped>
-:deep(.el-tree) {
-	display: flex;
-	flex-direction: column;
-	font-size: 14px;
-	.tree-node {
-		&:hover {
-			background-color: #f5f5f6;
-		}
-		&:hover .el-col .el-icon {
-			visibility: visible;
-			color: #aaaaad;
-		}
-		.el-col {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
+.main {
+	.head {
+	}
 
-			.el-icon {
-				visibility: hidden;
-				:hover {
-					background: white;
-					color: #717171;
+	:deep(.el-tree) {
+		display: flex;
+		flex-direction: column;
+		font-size: 14px;
+		.tree-node {
+			&:hover {
+				background-color: #f5f5f6;
+			}
+			&:hover .el-col .el-icon {
+				visibility: visible;
+				color: #aaaaad;
+			}
+			.el-col {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+
+				.el-icon {
+					visibility: hidden;
+					:hover {
+						background: white;
+						color: #717171;
+					}
 				}
 			}
-		}
 
-		.el-checkbox {
-			padding-right: 20px;
+			.el-checkbox {
+				padding-right: 20px;
+			}
+			img {
+				width: 25px;
+				height: 25px;
+				vertical-align: center;
+				// padding-right: 20px;
+			}
 		}
-		img {
-			width: 25px;
-			height: 25px;
-			vertical-align: center;
-			// padding-right: 20px;
-		}
+		// }
 	}
-	// }
-}
 
-:deep(.el-tree-node__content) {
-	display: flex;
-	height: 40px;
-	line-height: 40px;
-	vertical-align: middle;
-	// border-width: 0px;
-	// border: solid;
-	border-top: solid;
-	border-width: thin;
-	border-color: #f5f5f6;
+	:deep(.el-tree-node__content) {
+		display: flex;
+		height: 40px;
+		line-height: 40px;
+		vertical-align: middle;
+		// border-width: 0px;
+		// border: solid;
+		border-top: solid;
+		border-width: thin;
+		border-color: #f5f5f6;
 
-	cursor: pointer;
-}
-:deep(.el-checkbox__inner) {
-	border-radius: 50%;
+		cursor: pointer;
+	}
+	:deep(.el-checkbox__inner) {
+		border-radius: 50%;
+	}
 }
 </style>

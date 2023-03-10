@@ -11,6 +11,7 @@
 				<el-icon class="add" :size="20"><Plus /></el-icon>
 			</div>
 		</div>
+
 		<div class="content">
 			<DraggableTree :data="data" />
 		</div>
