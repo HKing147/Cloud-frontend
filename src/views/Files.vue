@@ -1,5 +1,5 @@
 <template>
-	<div class="main">
+	<div class="main" @dragover.prevent @drop="drop">
 		<div class="head">
 			<el-breadcrumb separator-icon="ArrowRight">
 				<el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
@@ -18,8 +18,10 @@
 </template>
 
 <script setup>
+import { reject } from "lodash";
 import { reactive } from "vue";
 import DraggableTree from "../components/DraggableTree.vue";
+import upload from "../utils/utils";
 const data = reactive([
 	{
 		id: 1,
@@ -97,6 +99,22 @@ const data = reactive([
 
 // 当前请求的文件夹路径：/前端/Vue/
 const path = ref([{}, {}]);
+
+// 全局添加drop事件
+document.addEventListener("drop", preventDe);
+document.addEventListener("dragleave", preventDe);
+document.addEventListener("dragover", preventDe);
+document.addEventListener("dragenter", preventDe);
+function preventDe(e) {
+	e.preventDefault();
+}
+document.addEventListener("drop", drop);
+
+// 拖拽上传文件
+function drop(e) {
+	e.preventDefault();
+	upload(e);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -146,5 +164,9 @@ const path = ref([{}, {}]);
 		padding-left: 25px;
 		width: 100%;
 	}
+}
+:deep(.el-upload-dragger) {
+	border: 0;
+	cursor: default;
 }
 </style>

@@ -36,6 +36,7 @@ declare module '@vue/runtime-core' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTree: typeof import('element-plus/es')['ElTree']
     ElTreeV2: typeof import('element-plus/es')['ElTreeV2']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./components/icons/IconDocumentation.vue')['default']
@@ -46,5 +47,6 @@ declare module '@vue/runtime-core' {
     Left: typeof import('./components/Left.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TestUpload: typeof import('./components/TestUpload.vue')['default']
   }
 }

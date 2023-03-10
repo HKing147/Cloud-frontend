@@ -8,11 +8,11 @@
 						<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 					</el-col>
 					<el-col :span="0.2"> <img src="../assets/img/minfolder.png" /></el-col>
-					<el-col :span="10"> {{ node.label }}</el-col>
-					<el-col class="icon" :span="2">
-						<el-icon><MoreFilled /></el-icon
+					<el-col :span="12"> {{ node.label }}</el-col>
+					<el-col class="icon" :span="1">
+						<el-icon :size="17"><MoreFilled /></el-icon
 					></el-col>
-					<el-col :span="6">
+					<el-col :span="7">
 						<span style="font-size: 8px; color: #9d9d9d">{{ data.time }} </span></el-col
 					>
 					<el-col :span="1">
@@ -167,6 +167,10 @@ function handleNodeClick() {}
 
 			.el-icon {
 				visibility: hidden;
+				:hover {
+					background: white;
+					color: #717171;
+				}
 			}
 		}
 
@@ -182,6 +186,7 @@ function handleNodeClick() {}
 	}
 	// }
 }
+
 :deep(.el-tree-node__content) {
 	display: flex;
 	height: 40px;
