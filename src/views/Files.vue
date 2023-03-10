@@ -1,7 +1,11 @@
 <template>
 	<div class="main">
 		<div class="head">
-			<span>文件</span>
+			<el-breadcrumb separator-icon="ArrowRight">
+				<el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
+				<el-breadcrumb-item><a href="./backup">我的备份</a></el-breadcrumb-item>
+				<el-breadcrumb-item>相册</el-breadcrumb-item>
+			</el-breadcrumb>
 			<el-icon class="search" :size="20"><Search /></el-icon>
 			<div class="addContainer">
 				<el-icon class="add" :size="20"><Plus /></el-icon>
@@ -11,15 +15,6 @@
 			<DraggableTree :data="data" />
 		</div>
 	</div>
-	<el-page-header :icon="ArrowLeft">
-		<template #content>
-			<el-breadcrumb separator="/">
-				<el-breadcrumb-item :to="{ path: './page-header.html' }"> 文件 </el-breadcrumb-item>
-				<el-breadcrumb-item><a href="./page-header.html">我的备份</a></el-breadcrumb-item>
-				<el-breadcrumb-item>相册</el-breadcrumb-item>
-			</el-breadcrumb>
-		</template>
-	</el-page-header>
 </template>
 
 <script setup>
@@ -99,6 +94,9 @@ const data = reactive([
 		// children: [],
 	},
 ]);
+
+// 当前请求的文件夹路径：/前端/Vue/
+const path = ref([{}, {}]);
 </script>
 
 <style lang="scss" scoped>
@@ -107,19 +105,14 @@ const data = reactive([
 	width: 100%;
 	display: flex;
 	flex-direction: column;
+
 	.head {
 		display: flex;
-		// flex-direction: column;
 		flex-direction: row;
 		margin-top: 35px;
-		// align-items: center;
-		// justify-content: center;
-		// text-align: center;
-		// vertical-align: middle;
-		// height: 40px;
+		align-items: center;
 		width: 100%;
-		// line-height: 40px;
-		span {
+		.el-breadcrumb {
 			padding-left: 40px;
 			font-size: 18px;
 			font-weight: 700;

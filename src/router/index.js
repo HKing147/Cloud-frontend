@@ -1,4 +1,5 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+// import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 const routes = [
 	{
 		name: "登录注册页",
@@ -58,7 +59,8 @@ const routes = [
 
 const router = createRouter({
 	routes,
-	history: createWebHashHistory(),
+	// history: createWebHashHistory(), // 地址栏会有#号
+	history: createWebHistory(),
 });
 
 export default router;
