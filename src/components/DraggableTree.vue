@@ -1,8 +1,20 @@
 <template>
 	<div class="main">
 		<div class="head">
-			<el-checkbox v-model="isCheckAll" @change="checkAll">{{ isCheckAll ? "取消全选" : "全选" }}</el-checkbox>
-			<el-row :gutter="0" style="padding-left: 5px">
+			<el-row :gutter="0" style="padding-left: 25px; line-height: 18px; color: #6a6a6a; font-size: 12px; display: flex; flex-direction: row; align-items: center">
+				<el-col :span="2">
+					<el-checkbox v-model="isCheckAll" @change="checkAll">{{ isCheckAll ? "取消全选" : "全选" }}</el-checkbox>
+				</el-col>
+				<el-col :span="18"></el-col>
+				<el-col :span="3" style="display: flex; flex-direction: row; align-items: center">
+					<el-icon :size="16"><Sort /></el-icon>
+					按修改时间排序
+				</el-col>
+				<el-col :span="1">
+					<el-icon :size="16"><Menu /></el-icon>
+				</el-col>
+			</el-row>
+			<el-row :gutter="0" style="padding-left: 5px; line-height: 40px; font-size: 10px; color: #aaaaaa">
 				<el-col :span="2">名称</el-col>
 				<el-col :span="11"></el-col>
 				<el-col :span="5">修改时间</el-col>
@@ -230,7 +242,8 @@ defineExpose({
 			}
 			&:hover .el-col .el-icon {
 				visibility: visible;
-				color: #aaaaad;
+				// color: #aaaaaa;
+				color: #9d9d9d;
 			}
 			// &:hover .el-checkbox {
 			// 	visibility: visible;

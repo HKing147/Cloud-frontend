@@ -169,14 +169,6 @@ const data = reactive([
 		isLeaf: true,
 		// children: [],
 	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
 ]);
 
 // 当前请求的文件夹路径：/前端/Vue/
