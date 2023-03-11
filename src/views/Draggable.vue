@@ -44,6 +44,16 @@
 				</template>
 			</draggable>
 		</table>
+		<el-affix position="bottom" :offset="60">
+			<div class="ops">
+				<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
+				<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
+				<el-icon :size="18" color="#c6c6c7"><Star /></el-icon>
+				<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
+				<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
+				<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
+			</div>
+		</el-affix>
 	</div>
 </template>
 <script setup>

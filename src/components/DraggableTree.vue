@@ -2,20 +2,43 @@
 	<div class="main">
 		<div class="head">
 			<el-checkbox v-model="isCheckAll" @change="checkAll">{{ isCheckAll ? "取消全选" : "全选" }}</el-checkbox>
+			<el-row :gutter="0" style="padding-left: 5px">
+				<el-col :span="2">名称</el-col>
+				<el-col :span="11"></el-col>
+				<el-col :span="5">修改时间</el-col>
+				<el-col :span="3"></el-col>
+				<el-col :span="2">大小</el-col>
+			</el-row>
 		</div>
-		<el-checkbox-group v-model="checkedList" fill="#637dff">
+		<el-checkbox-group v-model="checkedList" fill="#637dff" @change="check">
 			<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
 				<template #default="{ node, data }">
 					<!-- <div class="tree-node"> -->
 					<el-row :gutter="25" class="tree-node" style="width: 100%">
 						<el-col :span="0">
-							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id" @change="check"><br /></el-checkbox>
+							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 						</el-col>
 						<el-col :span="0.2"> <img src="../assets/img/minfolder.png" /></el-col>
 						<el-col :span="12"> {{ node.label }}</el-col>
 						<el-col class="icon" :span="1">
-							<el-icon :size="17"><MoreFilled /></el-icon
-						></el-col>
+							<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
+							<el-dropdown>
+								<!-- <el-button type="primary">
+									<el-icon class="el-icon--right"><arrow-down /></el-icon>
+								</el-button> -->
+								<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
+								<template #dropdown>
+									<el-dropdown-menu>
+										<el-dropdown-item>下载</el-dropdown-item>
+										<el-dropdown-item>分享</el-dropdown-item>
+										<el-dropdown-item>收藏</el-dropdown-item>
+										<el-dropdown-item divided>重命名</el-dropdown-item>
+										<el-dropdown-item>移动</el-dropdown-item>
+										<el-dropdown-item divided>删除</el-dropdown-item>
+									</el-dropdown-menu>
+								</template>
+							</el-dropdown>
+						</el-col>
 						<el-col :span="7">
 							<span style="font-size: 8px; color: #9d9d9d">{{ data.time }} </span></el-col
 						>
@@ -53,7 +76,9 @@ const defaultProps = {
 };
 const isCheckAll = ref(false);
 const checkedList = ref([]);
-function check() {
+function check(e) {
+	console.log("e: ", e);
+	console.log(checkedList.value);
 	// checkedList 没满就将 isCheckAll 置为 false
 	isCheckAll.value = checkedList.value.length == data.length;
 }
@@ -65,6 +90,7 @@ function checkAll() {
 		for (var i = 0; i < data.length; ++i) {
 			console.log(data[i].id);
 			checkedList.value.push(data[i].id);
+			// checkedList.value.push(data[i]);
 		}
 	} else {
 		checkedList.value = [];
@@ -171,10 +197,27 @@ const loadNode = (node, resolve) => {
 // };
 
 function handleNodeClick() {}
+
+//这里需要暴露出去不然父组件获取不到
+defineExpose({
+	checkedList,
+});
 </script>
 <style lang="scss" scoped>
 .main {
 	.head {
+		.el-row {
+			border-top: solid;
+			border-width: thin;
+			border-color: #f5f5f6;
+			.el-col {
+				display: flex;
+				flex-direction: column;
+				// flex-direction: row;
+				// align-items: center;
+				text-align: center;
+			}
+		}
 	}
 
 	:deep(.el-tree) {
@@ -189,6 +232,10 @@ function handleNodeClick() {}
 				visibility: visible;
 				color: #aaaaad;
 			}
+			// &:hover .el-checkbox {
+			// 	visibility: visible;
+			// 	color: #aaaaad;
+			// }
 			.el-col {
 				display: flex;
 				flex-direction: row;
@@ -204,6 +251,7 @@ function handleNodeClick() {}
 			}
 
 			.el-checkbox {
+				// visibility: hidden;
 				padding-right: 20px;
 			}
 			img {

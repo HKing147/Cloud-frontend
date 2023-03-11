@@ -2,20 +2,24 @@
 
 <template>
 	<Suspense>
-		<router-view />
+		<div>
+			<router-view />
+		</div>
 	</Suspense>
 </template>
 
 <style lang="scss" scoped>
-* {
+div {
 	height: 100%;
 	width: 100%;
+	min-height: 100%;
 	margin: 0;
 	padding: 0;
-	list-style: node;
-	text-decoration: node;
-	outline: none;
+	// list-style: node;
+	// text-decoration: node;
+	// outline: none;
 }
+
 /* .loginandregister {
 	position: fixed;
 	height: 100%;

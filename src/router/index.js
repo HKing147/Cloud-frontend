@@ -60,6 +60,11 @@ const routes = [
 		path: "/testUpload",
 		component: () => import("../components/TestUpload.vue"),
 	},
+	{
+		name: "Draggable",
+		path: "/test",
+		component: () => import("../components/Test.vue"),
+	},
 ];
 
 const router = createRouter({
