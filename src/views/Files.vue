@@ -253,11 +253,12 @@ const draggableTreeRef = ref();
 	}
 }
 .el-affix {
+	width: 200px;
+	margin: 0 auto;
 	.ops {
-		margin: 0 auto;
 		background: #313136;
 		padding: 15px;
-		width: 200px;
+		width: 100%;
 		border-radius: 15px;
 		.el-icon {
 			margin-left: 7px;

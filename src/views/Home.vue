@@ -38,7 +38,7 @@
 					</el-menu>
 				</div>
 			</el-aside>
-			<el-main style="height: 100%">
+			<el-main style="height: 100%; padding: 0px">
 				<div class="right">
 					<router-view> </router-view>
 				</div>
@@ -179,18 +179,18 @@ getActiveIndex();
 		height: 100%;
 		bottom: 0;
 	}
-	.el-affix {
-		.ops {
-			margin: 0 auto;
-			background: #313136;
-			padding: 15px;
-			width: 200px;
-			border-radius: 15px;
-			.el-icon {
-				margin-left: 7px;
-				margin-right: 7px;
-			}
-		}
-	}
+	// .el-affix {
+	// 	.ops {
+	// 		margin: 0 auto;
+	// 		background: #313136;
+	// 		padding: 15px;
+	// 		width: 200px;
+	// 		border-radius: 15px;
+	// 		.el-icon {
+	// 			margin-left: 7px;
+	// 			margin-right: 7px;
+	// 		}
+	// 	}
+	// }
 }
 </style>
