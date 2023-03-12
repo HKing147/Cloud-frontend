@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     CommonTable: typeof import('./components/CommonTable.vue')['default']
     DraggableTree: typeof import('./components/DraggableTree.vue')['default']
+    DragUpload: typeof import('./components/DragUpload.vue')['default']
     ElAffix: typeof import('element-plus/es')['ElAffix']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']

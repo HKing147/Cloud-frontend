@@ -1,5 +1,5 @@
 <template>
-	<div class="main" @dragover.prevent @drop="drop">
+	<div class="main" id="filePage">
 		<div class="head">
 			<el-breadcrumb separator-icon="ArrowRight">
 				<el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
@@ -8,7 +8,7 @@
 			</el-breadcrumb>
 			<el-icon class="search" :size="24"><Search /></el-icon>
 			<div class="addContainer">
-				<el-icon class="add" :size="20" @click="print"><Plus /></el-icon>
+				<el-icon class="add" :size="20" @click="send"><Plus /></el-icon>
 			</div>
 		</div>
 
@@ -26,12 +26,18 @@
 			<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
 		</div>
 	</el-affix>
+	<drag-upload :onDrop="drop"></drag-upload>
 </template>
 
 <script setup>
-import { reactive, watch } from "vue";
+import axios from "axios";
+import { onMounted, reactive, watch } from "vue";
 import DraggableTree from "../components/DraggableTree.vue";
 import upload from "../utils/utils";
+function send() {
+	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
+}
+
 const data = reactive([
 	{
 		id: 1,
@@ -174,21 +180,27 @@ const data = reactive([
 // 当前请求的文件夹路径：/前端/Vue/
 const path = ref([{}, {}]);
 
-// 全局添加drop事件
-document.addEventListener("drop", preventDe);
-document.addEventListener("dragleave", preventDe);
-document.addEventListener("dragover", preventDe);
-document.addEventListener("dragenter", preventDe);
-function preventDe(e) {
-	e.preventDefault();
-}
-document.addEventListener("drop", drop);
-
-// 拖拽上传文件
+// 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
 function drop(e) {
+	console.log(e);
 	e.preventDefault();
 	upload(e);
 }
+
+onMounted(() => {
+	// document.addEventListener("dragleave", preventDe);
+	// document.addEventListener("dragover", preventDe);
+	// document.addEventListener("dragenter", preventDe);
+	// document.addEventListener("drop", drop);
+	// window.addEventListener("dragover", preventDe);
+	// window.addEventListener("dragenter", preventDe);
+	// window.addEventListener("drop", drop);
+	// document.querySelector("#filePage").addEventListener("dragover", preventDe);
+	// document.querySelector("#filePage").addEventListener("dragenter", preventDe);
+	// disableDefaultEvents();
+	// document.querySelector("#filePage").addEventListener("drop", drop);
+});
+
 const draggableTreeRef = ref();
 </script>
 

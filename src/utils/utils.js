@@ -1,3 +1,5 @@
+import axios from "axios";
+import { uploadFile } from "../apis";
 const upload = (e) => {
 	let files = e.dataTransfer.items;
 	for (var i = 0; i < files.length; ++i) {
@@ -10,6 +12,7 @@ const scan = (file) => {
 		file.file((f) => {
 			console.log("文件：", f.name, file.fullPath, file);
 			// TODO: 上传文件  f 就是file类型
+			uploadFile(f, "/upload");
 		});
 	} else {
 		// 文件夹

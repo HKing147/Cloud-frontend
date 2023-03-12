@@ -62,8 +62,8 @@ const routes = [
 	},
 	{
 		name: "Draggable",
-		path: "/test",
-		component: () => import("../components/Test.vue"),
+		path: "/dragUpload",
+		component: () => import("../components/DragUpload.vue"),
 	},
 ];
 
