@@ -13,6 +13,7 @@
 		"element-plus": "^2.2.34",
 		"sass": "^1.58.3",
 		"scss": "^0.2.4",
+		"spark-md5": "^3.0.2",
 		"unplugin-auto-import": "^0.15.1",
 		"unplugin-icons": "^0.15.3",
 		"unplugin-vue-components": "^0.24.1",
