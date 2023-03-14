@@ -6,7 +6,7 @@ const service = axios.create({
 	// withCredentials: true, // 异步请求携带cookie,(开启会跨域)
 	headers: {
 		// 设置后端需要的传参类型
-		"Content-Type": "application/json",
+		// "Content-Type": "application/json",
 		// "Content-Type": "application/x-www-form-urlencoded",
 		// token: "your token",
 		// "X-Requested-With": "XMLHttpRequest",

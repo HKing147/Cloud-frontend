@@ -12,8 +12,8 @@ const scan = (file) => {
 		file.file((f) => {
 			console.log("文件：", f.name, f.size, file.fullPath, file);
 			// TODO: 上传文件  f 就是file类型
-			uploadFile(f, "/upload");
-			// uploadLargeFile(f, "/uploadLargeFile");
+			// uploadFile(f, "/upload");
+			uploadLargeFile(f);
 		});
 	} else {
 		// 文件夹

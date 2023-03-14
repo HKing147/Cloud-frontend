@@ -44,11 +44,13 @@ export function uploadFile(file, url) {
 // 	// 	});
 // }
 
-export function uploadLargeFile(file, url, chunkSize) {
+export async function uploadLargeFile(file) {
+	// 初始化分片上传事件
+	// var res = await service.get("InitiateMultipartUpload", { params: { filename: file.name } }, { headers: { "Content-Type": "application/json, text/plain, */*" } });
+	var UploadID = await service.get("/InitiateMultipartUpload", { params: { filename: file.name } });
+	console.log("UploadID: ", UploadID);
 	// 默认分片大小 2MB
-	let defaultChunkSize = 1024 * 1024 * 100;
-
-	chunkSize = chunkSize || defaultChunkSize;
+	let chunkSize = 1024 * 1024 * 10;
 
 	let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
 		// 总分片数
@@ -57,7 +59,7 @@ export function uploadLargeFile(file, url, chunkSize) {
 		allMD5 = new SparkMD5.ArrayBuffer(),
 		fileReader = new FileReader();
 
-	fileReader.onload = function (e) {
+	fileReader.onload = async function (e) {
 		console.log("read chunk nr", currentChunk + 1, "of", chunks);
 		console.log("e:", e);
 		allMD5.append(e.target.result); // Append array buffer
@@ -65,13 +67,19 @@ export function uploadLargeFile(file, url, chunkSize) {
 		var MD5 = new SparkMD5.ArrayBuffer();
 		MD5.append(e.target.result); // Append array buffer
 		console.log(chunkSize, "===>", MD5.end());
-
-		service.post(url, { file: new File([e.target.result], file.name), idx: currentChunk }, { headers: { "Content-Type": "multipart/form-data" } });
+		// var formdata = new FormData();
+		// formdata.append("file", new File([e.target.result], file.name));
+		// formdata.append("idx", currentChunk);
+		// formdata.append("imur", imur);
+		await service.post("/UploadPart", { file: new File([e.target.result], file.name), idx: currentChunk, UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } });
+		// service.post("UploadPart", { idx: currentChunk, imur: imur }, { headers: { "Content-Type": "multipart/form-data" } });
+		// service.post("UploadPart", formdata, { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
 		if (currentChunk < chunks) {
 			loadNext();
 		} else {
 			// resolve(spark.end());
 			console.log("allMD5: ", allMD5.end());
+			await service.post("/CompleteMultipartUpload", { UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } });
 			return;
 		}
 	};
