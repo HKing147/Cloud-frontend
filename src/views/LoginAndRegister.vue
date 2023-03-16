@@ -16,8 +16,8 @@
 							</span>
 						</template>
 						<el-form :model="loginForm" :rules="loginRules" size="large" style="margin: 30px 10px" class="login-form">
-							<el-form-item prop="account">
-								<el-input v-model="loginForm.account" placeholder="请输入邮箱" style="height: 46px" />
+							<el-form-item prop="email">
+								<el-input v-model="loginForm.email" placeholder="请输入邮箱" style="height: 46px" />
 							</el-form-item>
 							<el-form-item prop="password">
 								<el-input v-model="loginForm.password" placeholder="请输入密码" style="height: 46px" />
@@ -41,8 +41,8 @@
 							</span>
 						</template>
 						<el-form :model="registerForm" :rules="registerRules" size="large" style="margin: 30px 10px" class="login-form">
-							<el-form-item prop="account">
-								<el-input v-model="registerForm.account" placeholder="请输入邮箱" style="height: 46px" />
+							<el-form-item prop="email">
+								<el-input v-model="registerForm.email" placeholder="请输入邮箱" style="height: 46px" />
 							</el-form-item>
 							<el-form-item prop="password">
 								<el-input v-model="registerForm.password" placeholder="请输入密码" style="height: 46px" />
@@ -71,15 +71,19 @@
 import { reactive, ref } from "vue";
 import type { FormRules } from "element-plus";
 import { useRouter } from "vue-router";
+import service from "../request";
+
 const router = useRouter();
 
-const loginForm = reactive({ account: "", password: "", rememberMe: false });
-function login() {
+const loginForm = reactive({ email: "", password: "", rememberMe: false });
+async function login() {
 	console.log(loginForm);
 	// 登录逻辑
-
+	// service.defaults.withCredentials = true;
+	var res = await service.post("/login", loginForm);
+	console.log(res);
 	//登录成功
-	router.push("/home");
+	// router.push("/home");
 }
 const loginRules = reactive<FormRules>({
 	account: [
@@ -104,7 +108,7 @@ const loginRules = reactive<FormRules>({
 });
 
 const registerForm = reactive({
-	account: "",
+	email: "",
 	password: "",
 	checkCode: "",
 });
@@ -134,33 +138,35 @@ const show = ref(false);
 const count = ref(0);
 let timer;
 
-function pressCheckCodeBtn() {
-	const TIME_COUNT = 10;
+async function pressCheckCodeBtn() {
+	const TIME_COUNT = 60;
 	console.log(TIME_COUNT);
 	if (!timer) {
-		count.value = TIME_COUNT;
-		show.value = false;
-		timer = setInterval(() => {
-			if (count.value > 0 && count.value <= TIME_COUNT) {
-				count.value--;
-			} else {
-				show.value = true;
-				clearInterval(timer);
-				timer = null;
-			}
-			console.log(count.value);
-		}, 1000);
 		// 发送验证码
-		getCheckCode();
+		console.log("发送验证码...");
+		var res = await service.get("/getCheckCode", { params: { email: registerForm.email, T: TIME_COUNT } });
+		console.log("res:", res);
+		if (res.meta.code == 0) {
+			// 发送成功
+			count.value = TIME_COUNT;
+			show.value = false;
+			timer = setInterval(() => {
+				if (count.value > 0 && count.value <= TIME_COUNT) {
+					count.value--;
+				} else {
+					show.value = true;
+					clearInterval(timer);
+					timer = null;
+				}
+				console.log(count.value);
+			}, 1000);
+		}
 	}
 }
 
-function getCheckCode() {
-	console.log("发送验证码...");
-}
-
-function register() {
-	console.log(registerForm);
+async function register() {
+	var res = await service.post("/register", registerForm);
+	console.log(res);
 }
 </script>
 

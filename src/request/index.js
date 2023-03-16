@@ -1,9 +1,11 @@
 import axios from "axios";
+
 // 创建一个 axios 实例
-const service = axios.create({
-	baseURL: "http://127.0.0.1:8080/api", // 所有的请求地址前缀部分
+// axios.defaults.withCredentials = true;
+var service = axios.create({
+	baseURL: "http://localhost:8080/api", // 所有的请求地址前缀部分
 	timeout: 60000, // 请求超时时间毫秒
-	// withCredentials: true, // 异步请求携带cookie,(开启会跨域)
+	withCredentials: true, // 异步请求携带cookie,(开启会跨域)
 	headers: {
 		// 设置后端需要的传参类型
 		// "Content-Type": "application/json",
@@ -12,6 +14,15 @@ const service = axios.create({
 		// "X-Requested-With": "XMLHttpRequest",
 	},
 });
+// const config = {
+// 	baseURL: "http://127.0.0.1:8080/api", // 所有的请求地址前缀部分
+// };
+// const request = {};
+
+// request.get = (url, params, cb) => {
+// 	url = config.baseURL + url;
+// 	axios.get(url, { params: params }).then(next(cb)).catch(error());
+// };
 
 // 添加请求拦截器
 service.interceptors.request.use(

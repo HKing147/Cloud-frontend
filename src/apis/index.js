@@ -47,8 +47,14 @@ export function uploadFile(file, url) {
 export async function uploadLargeFile(file) {
 	// 初始化分片上传事件
 	// var res = await service.get("InitiateMultipartUpload", { params: { filename: file.name } }, { headers: { "Content-Type": "application/json, text/plain, */*" } });
-	var UploadID = await service.get("/InitiateMultipartUpload", { params: { filename: file.name } });
-	console.log("UploadID: ", UploadID);
+	var res = await service.get("/InitiateMultipartUpload", { params: { filename: file.name } });
+	console.log(res);
+	if (res.meta.code == 1) {
+		console.log(res.meta.msg);
+		return;
+	}
+	var UploadID = res.UploadID;
+	// console.log("UploadID: ", UploadID);
 	// 默认分片大小 2MB
 	let chunkSize = 1024 * 1024 * 10;
 
@@ -71,7 +77,15 @@ export async function uploadLargeFile(file) {
 		// formdata.append("file", new File([e.target.result], file.name));
 		// formdata.append("idx", currentChunk);
 		// formdata.append("imur", imur);
-		await service.post("/UploadPart", { file: new File([e.target.result], file.name), idx: currentChunk, UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } });
+		var res = await service.post(
+			"/UploadPart",
+			{ file: new File([e.target.result], file.name), idx: currentChunk, UploadID: UploadID },
+			{ headers: { "Content-Type": "multipart/form-data" } }
+		);
+		if (res.meta.code == 1) {
+			console.log(res.meta.msg);
+			return;
+		}
 		// service.post("UploadPart", { idx: currentChunk, imur: imur }, { headers: { "Content-Type": "multipart/form-data" } });
 		// service.post("UploadPart", formdata, { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
 		if (currentChunk < chunks) {
@@ -79,7 +93,10 @@ export async function uploadLargeFile(file) {
 		} else {
 			// resolve(spark.end());
 			console.log("allMD5: ", allMD5.end());
-			await service.post("/CompleteMultipartUpload", { UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } });
+			var res = await service.post("/CompleteMultipartUpload", { UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } });
+			if (res.meta.code == 1) {
+				console.log(res.meta.msg);
+			}
 			return;
 		}
 	};
