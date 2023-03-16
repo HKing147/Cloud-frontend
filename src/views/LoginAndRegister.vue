@@ -50,7 +50,7 @@
 							<el-form-item prop="checkCode">
 								<el-input v-model="registerForm.checkCode" placeholder="请输入验证码" style="height: 46px">
 									<template #append>
-										<el-button class="checkCodeBtn" type="text" @click="pressCheckCodeBtn">{{
+										<el-button class="checkCodeBtn" @click="pressCheckCodeBtn">{{
 											count > 0 ? count + "秒后重发" : "获取验证码"
 										}}</el-button>
 									</template></el-input
@@ -67,9 +67,9 @@
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { reactive, ref } from "vue";
-import type { FormRules } from "element-plus";
+// import type { FormRules } from "element-plus";
 import { useRouter } from "vue-router";
 import service from "../request";
 
@@ -83,10 +83,22 @@ async function login() {
 	var res = await service.post("/login", loginForm);
 	console.log(res);
 	//登录成功
+	if (res.meta.code == 0) {
+		ElMessage({
+			message: res.meta.msg,
+			type: "success",
+		});
+		router.push("/home/files");
+	} else {
+		ElMessage({
+			message: res.meta.msg,
+			type: "error",
+		});
+	}
 	// router.push("/home");
 }
-const loginRules = reactive<FormRules>({
-	account: [
+const loginRules = reactive({
+	email: [
 		{
 			required: true,
 			message: "请输入邮箱",
@@ -112,8 +124,8 @@ const registerForm = reactive({
 	password: "",
 	checkCode: "",
 });
-const registerRules = reactive<FormRules>({
-	account: [
+const registerRules = reactive({
+	email: [
 		{
 			required: true,
 			message: "请输入邮箱",
@@ -167,6 +179,17 @@ async function pressCheckCodeBtn() {
 async function register() {
 	var res = await service.post("/register", registerForm);
 	console.log(res);
+	if (res.meta.code == 0) {
+		ElMessage({
+			message: res.meta.msg,
+			type: "success",
+		});
+	} else {
+		ElMessage({
+			message: res.meta.msg,
+			type: "error",
+		});
+	}
 }
 </script>
 

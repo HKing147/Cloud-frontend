@@ -58,12 +58,20 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { inject, onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 const menuList = reactive({});
 const activeIndex = ref("0");
+
+// 从Cookie获取登录信息：token
+const vueCookies = inject("vueCookies");
+const token = vueCookies.get("token");
+
+onMounted(() => {
+	console.log("Cookies token:", token);
+});
 
 function getMenuList() {
 	menuList.value = router.options.routes[1].children;
