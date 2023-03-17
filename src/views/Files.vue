@@ -31,160 +31,176 @@
 
 <script setup>
 import axios from "axios";
-import { onMounted, reactive, watch } from "vue";
+import { onBeforeMount, onMounted, reactive, watch } from "vue";
 import DraggableTree from "../components/DraggableTree.vue";
+import service from "../request";
 import upload from "../utils/utils";
 function send() {
 	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
 }
-
-const data = reactive([
-	{
-		id: 1,
-		filename: "文件夹一",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		children: [
-			{
-				filename: "Level two 1-1",
-				time: "2021/09/26 21:17",
-				size: 100,
-				isLeaf: true,
-				children: [],
-			},
-		],
-	},
-	{
-		id: 2,
-		filename: "文件夹二",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		children: [
-			{
-				filename: "Level two 1-1",
-				time: "2021/09/26 21:17",
-				size: 100,
-				isLeaf: true,
-				children: [],
-			},
-		],
-	},
-	{
-		id: 3,
-		filename: "文件夹三",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		children: [
-			{
-				filename: "Level two 1-1",
-				time: "2021/09/26 21:17",
-				size: 100,
-				isLeaf: true,
-				children: [],
-			},
-		],
-	},
-	{
-		id: 4,
-		filename: "文件夹四",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		children: [
-			{
-				isLeaf: true,
-				filename: "Level two 1-1",
-				time: "2021/09/26 21:17",
-				size: 100,
-				children: [],
-			},
-		],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-	{
-		id: 5,
-		filename: "文件",
-		time: "2021/09/26 21:17",
-		size: 1024,
-		isLeaf: true,
-		// children: [],
-	},
-]);
+const currentDir = ref("/"); // 当前文件夹（默认为'/'）
+// const data = reactive([
+// 	{
+// 		id: 1,
+// 		filename: "文件夹一",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		children: [
+// 			{
+// 				filename: "Level two 1-1",
+// 				time: "2021/09/26 21:17",
+// 				size: 100,
+// 				isLeaf: true,
+// 				children: [],
+// 			},
+// 		],
+// 	},
+// 	{
+// 		id: 2,
+// 		filename: "文件夹二",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		children: [
+// 			{
+// 				filename: "Level two 1-1",
+// 				time: "2021/09/26 21:17",
+// 				size: 100,
+// 				isLeaf: true,
+// 				children: [],
+// 			},
+// 		],
+// 	},
+// 	{
+// 		id: 3,
+// 		filename: "文件夹三",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		children: [
+// 			{
+// 				filename: "Level two 1-1",
+// 				time: "2021/09/26 21:17",
+// 				size: 100,
+// 				isLeaf: true,
+// 				children: [],
+// 			},
+// 		],
+// 	},
+// 	{
+// 		id: 4,
+// 		filename: "文件夹四",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		children: [
+// 			{
+// 				isLeaf: true,
+// 				filename: "Level two 1-1",
+// 				time: "2021/09/26 21:17",
+// 				size: 100,
+// 				children: [],
+// 			},
+// 		],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// 	{
+// 		id: 5,
+// 		filename: "文件",
+// 		time: "2021/09/26 21:17",
+// 		size: 1024,
+// 		isLeaf: true,
+// 		// children: [],
+// 	},
+// ]);
 
 // 当前请求的文件夹路径：/前端/Vue/
+var data = reactive([]);
 const path = ref([{}, {}]);
+
+async function getFileList() {
+	var res = await service.get("/getFileList", { params: { path: currentDir.value } });
+	console.log("fileList: ", res.fileList);
+	data.value = reactive(res.fileList);
+}
+
+await getFileList();
+console.log("data:", data);
+// onBeforeMount(() => {
+// 	getFileList();
+// 	console.log("data:", data);
+// });
 
 // 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
 function drop(e) {
 	console.log(e);
 	e.preventDefault();
-	upload(e);
+	console.log("currentDir:", currentDir);
+	upload(e, currentDir.value);
 }
 
 onMounted(() => {

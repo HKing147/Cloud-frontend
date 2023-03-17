@@ -75,7 +75,7 @@ import service from "../request";
 
 const router = useRouter();
 
-const loginForm = reactive({ email: "", password: "", rememberMe: false });
+const loginForm = reactive({ email: "1470042308@qq.com", password: "123456", rememberMe: false });
 async function login() {
 	console.log(loginForm);
 	// 登录逻辑
@@ -120,8 +120,8 @@ const loginRules = reactive({
 });
 
 const registerForm = reactive({
-	email: "",
-	password: "",
+	email: "1470042308@qq.com",
+	password: "123456",
 	checkCode: "",
 });
 const registerRules = reactive({
@@ -184,6 +184,7 @@ async function register() {
 			message: res.meta.msg,
 			type: "success",
 		});
+		router.push("/home/files");
 	} else {
 		ElMessage({
 			message: res.meta.msg,

@@ -1,19 +1,19 @@
 import axios from "axios";
 import { uploadFile, uploadLargeFile } from "../apis";
-const upload = (e) => {
+const upload = (e, path) => {
 	let files = e.dataTransfer.items;
 	for (var i = 0; i < files.length; ++i) {
-		scan(files[i].webkitGetAsEntry());
+		scan(files[i].webkitGetAsEntry(), path);
 	}
 };
-const scan = (file) => {
+const scan = (file, path) => {
 	if (file.isFile) {
 		// 文件
 		file.file((f) => {
 			console.log("文件：", f.name, f.size, file.fullPath, file);
 			// TODO: 上传文件  f 就是file类型
 			// uploadFile(f, "/upload");
-			uploadLargeFile(f);
+			uploadLargeFile(f, path);
 		});
 	} else {
 		// 文件夹
@@ -22,7 +22,7 @@ const scan = (file) => {
 		file.createReader().readEntries(
 			(entries) => {
 				for (var i = 0; i < entries.length; ++i) {
-					scan(entries[i]);
+					scan(entries[i], path + file.name + "/");
 				}
 			},
 			(e) => reject(e)

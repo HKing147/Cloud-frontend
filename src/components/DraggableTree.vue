@@ -30,7 +30,7 @@
 						<el-col :span="0">
 							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 						</el-col>
-						<el-col :span="0.2"> <img src="../assets/img/minfolder.png" /></el-col>
+						<el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col>
 						<el-col :span="12"> {{ node.label }}</el-col>
 						<el-col class="icon" :span="1">
 							<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
@@ -52,7 +52,7 @@
 							</el-dropdown>
 						</el-col>
 						<el-col :span="7">
-							<span style="font-size: 8px; color: #9d9d9d">{{ data.time }} </span></el-col
+							<span style="font-size: 8px; color: #9d9d9d">{{ new Date(data.updatedTime).toLocaleString() }} </span></el-col
 						>
 						<el-col :span="1">
 							<span style="font-size: 8px; color: #9d9d9d">{{ data.size }} </span></el-col
@@ -75,16 +75,24 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { onBeforeMount, onMounted, reactive } from "vue";
 const props = defineProps({
 	data: Object,
 });
-const data = props.data;
-console.log("tableData: ", props.data);
+// var data = reactive([]);
+// onMounted(() => {
+// 	data = props.data.value;
+// 	console.log("tableData: ", props.data.value);
+// });
+const data = props.data.value;
+console.log("tableData: ", props.data.value);
 const defaultProps = {
-	children: "children",
-	label: "filename",
-	isLeaf: "isLeaf",
+	// children: "children",
+	label: "fileName",
+	// isLeaf: "notFolder",
+	isLeaf: () => {
+		return true;
+	},
 };
 const isCheckAll = ref(false);
 const checkedList = ref([]);

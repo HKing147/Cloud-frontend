@@ -44,7 +44,9 @@ export function uploadFile(file, url) {
 // 	// 	});
 // }
 
-export async function uploadLargeFile(file) {
+export async function uploadLargeFile(file, path) {
+	console.log(file.name, " ==> ", path);
+	// return;
 	// 初始化分片上传事件
 	// var res = await service.get("InitiateMultipartUpload", { params: { filename: file.name } }, { headers: { "Content-Type": "application/json, text/plain, */*" } });
 	var res = await service.get("/InitiateMultipartUpload", { params: { filename: file.name } });
@@ -92,8 +94,9 @@ export async function uploadLargeFile(file) {
 			loadNext();
 		} else {
 			// resolve(spark.end());
-			console.log("allMD5: ", allMD5.end());
-			var res = await service.post("/CompleteMultipartUpload", { UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } });
+			var MD5 = allMD5.end();
+			console.log("allMD5: ", MD5);
+			var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5 }, { headers: { "Content-Type": "multipart/form-data" } });
 			if (res.meta.code == 1) {
 				console.log(res.meta.msg);
 			}
