@@ -46,7 +46,7 @@
 									<el-dropdown-menu>
 										<el-dropdown-item>下载</el-dropdown-item>
 										<el-dropdown-item>分享</el-dropdown-item>
-										<el-dropdown-item>收藏</el-dropdown-item>
+										<el-dropdown-item @click="collected(data.id)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 										<el-dropdown-item divided>重命名</el-dropdown-item>
 										<el-dropdown-item>移动</el-dropdown-item>
 										<el-dropdown-item divided>删除</el-dropdown-item>
@@ -81,6 +81,7 @@
 
 <script setup>
 import { onBeforeMount, onMounted, reactive, toRefs } from "vue";
+import service from "../request";
 import router from "../router";
 const props = defineProps({
 	data: Object,
@@ -237,6 +238,12 @@ function openFolder(e) {
 		// 点击的是文件夹
 		router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
 	}
+}
+
+function collected(id) {
+	console.log(id);
+	fileIDList.push(id);
+	service.post("/collectedFiles", { fileIDList });
 }
 
 //这里需要暴露出去不然父组件获取不到
