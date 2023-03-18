@@ -23,14 +23,15 @@
 			</el-row>
 		</div>
 		<el-checkbox-group v-model="checkedList" fill="#637dff" @change="check">
-			<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
+			<el-tree :data="props.data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
 				<template #default="{ node, data }">
 					<!-- <div class="tree-node"> -->
 					<el-row :gutter="25" class="tree-node" style="width: 100%">
 						<el-col :span="0">
 							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 						</el-col>
-						<el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col>
+						<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
+						<el-col :span="0.2"> <img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" /></el-col>
 						<el-col :span="12"> {{ node.label }}</el-col>
 						<el-col class="icon" :span="1">
 							<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
@@ -55,7 +56,9 @@
 							<span style="font-size: 8px; color: #9d9d9d">{{ new Date(data.updatedTime).toLocaleString() }} </span></el-col
 						>
 						<el-col :span="1">
-							<span style="font-size: 8px; color: #9d9d9d">{{ data.size }} </span></el-col
+							<span style="font-size: 8px; color: #9d9d9d"
+								>{{ data.size / 1024 < 1024 ? (data.size / 1024).toFixed(2) + "KB" : (data.size / 1024 / 1024).toFixed(2) + "MB" }}
+							</span></el-col
 						>
 					</el-row>
 					<!-- </div> -->
@@ -75,7 +78,8 @@
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, reactive } from "vue";
+import { onBeforeMount, onMounted, reactive, toRefs } from "vue";
+import router from "../router";
 const props = defineProps({
 	data: Object,
 });
@@ -84,8 +88,9 @@ const props = defineProps({
 // 	data = props.data.value;
 // 	console.log("tableData: ", props.data.value);
 // });
-const data = props.data.value;
-console.log("tableData: ", props.data.value);
+const { data } = toRefs(props); // 还是响应式的，与父组件保持一致，而 data = props.data不是响应式的
+
+console.log("tableData: ", data);
 const defaultProps = {
 	// children: "children",
 	label: "fileName",
@@ -216,7 +221,15 @@ const loadNode = (node, resolve) => {
 // 	return resolve([]);
 // };
 
-function handleNodeClick() {}
+function handleNodeClick(e) {
+	console.log(e);
+	if (e.id == 1) {
+		// 点击的是文件夹
+		// router.go("/");
+		// console.log(router.currentRoute.value.fullPath + "/" + e.fileName);
+		router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
+	}
+}
 
 //这里需要暴露出去不然父组件获取不到
 defineExpose({

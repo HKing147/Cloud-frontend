@@ -2,9 +2,10 @@
 	<div class="main" id="filePage">
 		<div class="head">
 			<el-breadcrumb separator-icon="ArrowRight">
-				<el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
+				<el-breadcrumb-item v-for="(item, index) in path" :to="{ path: '/home/files' + item.path }" :key="index">{{ item.name }}</el-breadcrumb-item>
+				<!-- <el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
 				<el-breadcrumb-item><a href="./backup">我的备份</a></el-breadcrumb-item>
-				<el-breadcrumb-item>相册</el-breadcrumb-item>
+				<el-breadcrumb-item>相册</el-breadcrumb-item> -->
 			</el-breadcrumb>
 			<el-icon class="search" :size="24"><Search /></el-icon>
 			<div class="addContainer">
@@ -31,10 +32,11 @@
 
 <script setup>
 import axios from "axios";
-import { onBeforeMount, onMounted, reactive, watch } from "vue";
+import { onBeforeMount, onMounted, reactive, watch, watchEffect } from "vue";
+import { useRoute } from "vue-router";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
-import upload from "../utils/utils";
+import upload from "../utils/index.js";
 function send() {
 	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
 }
@@ -179,28 +181,62 @@ const currentDir = ref("/"); // 当前文件夹（默认为'/'）
 // ]);
 
 // 当前请求的文件夹路径：/前端/Vue/
-var data = reactive([]);
-const path = ref([{}, {}]);
+var data = ref([]);
+// var data = reactive([]);
+const path = ref([{ name: "文件", path: "" }]);
+const route = new useRoute();
 
-async function getFileList() {
-	var res = await service.get("/getFileList", { params: { path: currentDir.value } });
-	console.log("fileList: ", res.fileList);
-	data.value = reactive(res.fileList);
+// 用currentDir更新path
+function updatePath(list) {
+	var fa = "";
+	console.log("path ->", path.value, currentDir);
+	path.value = [{ name: "文件", path: "" }];
+	if (list == null) return;
+	for (var i = 0; i < list.length; ++i) {
+		fa += "/" + list[i];
+		path.value.push({ name: list[i], path: fa });
+		console.log("path ->", path.value);
+	}
+	currentDir.value = path.value[path.value.length - 1].path;
+	console.log("path:", path.value);
+	console.log("currentDir:", currentDir.value);
 }
 
-await getFileList();
-console.log("data:", data);
-// onBeforeMount(() => {
-// 	getFileList();
-// 	console.log("data:", data);
-// });
+async function getFileList(currentDir) {
+	const res = await service.get("/getFileList", { params: { path: currentDir.value + "/" } });
+	console.log("fileList: ", res.fileList);
+	return res.fileList;
+}
+
+// watch(
+// 	() => route.params.currentDir,
+// 	async (newval, oldval) => {
+// 		console.log("old:", oldval, "new:", newval);
+// 		updatePath(newval);
+// 		// await getFileList(currentDir);
+// 		data.value = [{ id: 1, fileName: "1.txt" }];
+// 	}
+// );
+
+watchEffect(async () => {
+	var list = route.params.currentDir;
+	path.value = [{ name: "文件", path: "/" }];
+	updatePath(list);
+	currentDir.value = path.value[path.value.length - 1].path;
+	data.value = await getFileList(currentDir);
+	// getFileList(currentDir);
+	// var res = await service.get("/getFileList", { params: { path: currentDir.value } });
+	// console.log("fileList: ", res.fileList);
+	// data.value = reactive(res.fileList);
+	// console.log("data: ", data.value);
+});
 
 // 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
 function drop(e) {
 	console.log(e);
 	e.preventDefault();
 	console.log("currentDir:", currentDir);
-	upload(e, currentDir.value);
+	upload(e, currentDir.value + "/");
 }
 
 onMounted(() => {

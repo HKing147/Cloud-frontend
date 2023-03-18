@@ -2,6 +2,7 @@
 import axios from "axios";
 import SparkMD5 from "spark-md5";
 import service from "../request/index.js";
+import { calMD5 } from "../utils/index.js";
 
 // 上传小文件
 export function uploadFile(file, url) {
@@ -46,7 +47,6 @@ export function uploadFile(file, url) {
 
 export async function uploadLargeFile(file, path) {
 	console.log(file.name, " ==> ", path);
-	// return;
 	// 初始化分片上传事件
 	// var res = await service.get("InitiateMultipartUpload", { params: { filename: file.name } }, { headers: { "Content-Type": "application/json, text/plain, */*" } });
 	var res = await service.get("/InitiateMultipartUpload", { params: { filename: file.name } });
@@ -96,7 +96,7 @@ export async function uploadLargeFile(file, path) {
 			// resolve(spark.end());
 			var MD5 = allMD5.end();
 			console.log("allMD5: ", MD5);
-			var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5 }, { headers: { "Content-Type": "multipart/form-data" } });
+			var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5, size: file.size }, { headers: { "Content-Type": "multipart/form-data" } });
 			if (res.meta.code == 1) {
 				console.log(res.meta.msg);
 			}
@@ -121,4 +121,13 @@ export async function uploadLargeFile(file, path) {
 	}
 
 	loadNext();
+}
+
+/**
+ * 查看文件是否上传过
+ */
+export async function checkUploaded(file, path) {
+	console.log("file => ", file);
+	const MD5 = await calMD5(file);
+	return service.get("/checkUploaded", { params: { MD5, fileName: file.name, path } });
 }

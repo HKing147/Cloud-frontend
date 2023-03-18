@@ -6,7 +6,7 @@
 					<el-menu :default-active="activeIndex" router>
 						<!-- <el-menu-item index="0" style="margin-bottom: 20px"> -->
 						<div class="logo">
-							<img src="../assets/img/logo.png" style="width: 104px; height: auto" />
+							<img src="/public/assets/img/logo.png" style="width: 104px; height: auto" />
 						</div>
 						<el-menu-item v-for="(item, index) in menuList.value" :index="item.path" :key="index">
 							<el-icon :size="20">
@@ -18,7 +18,7 @@
 							<el-progress :percentage="50" />
 						</div>
 						<div class="foot">
-							<img src="../assets/img/tou.jpg" />
+							<img src="/public/assets/img/tou.jpg" />
 							<span class="uname">用户名</span>
 							<span class="menu">
 								<el-dropdown>
@@ -74,7 +74,8 @@ onMounted(() => {
 });
 
 function getMenuList() {
-	menuList.value = router.options.routes[1].children;
+	menuList.value = router.options.routes[1].children.slice(0, 6); // 第6个不要，它是用来正则匹配files的
+	console.log("menuList:", menuList.value);
 	// for (var i = 0; i < router.options.routes.length; i++) {
 	// 	if (router.options.routes[i].path == route.path) {
 	// 		menuList.value = router.options.routes[i].children;

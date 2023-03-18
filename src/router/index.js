@@ -48,8 +48,15 @@ const routes = [
 				icon: "Delete",
 				component: () => import("../views/Recycle.vue"),
 			},
+			{
+				name: "文件",
+				path: "/home/files/:currentDir*",
+				icon: "Document",
+				component: () => import("../views/Files.vue"),
+			},
 		],
 	},
+
 	{
 		name: "Draggable",
 		path: "/draggable",

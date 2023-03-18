@@ -1,11 +1,11 @@
 <template>
 	<div class="main">
 		<div class="face">
-			<img src="../assets/img/face.png" alt="" />
+			<img src="/public/assets/img/face.png" alt="" />
 		</div>
 		<div class="right">
 			<div class="logo">
-				<img src="../assets/img/logo.png" alt="" />
+				<img src="/public/assets/img/logo.png" alt="" />
 			</div>
 			<div class="login-container">
 				<el-tabs type="border-card">
@@ -32,7 +32,7 @@
 								<span style="font-size: 18px">扫码登录</span>
 							</span>
 						</template>
-						<img src="../assets/img/qrcode.png" style="width: 150px; height: 150px; margin-top: 30px" />
+						<img src="/public/assets/img/qrcode.png" style="width: 150px; height: 150px; margin-top: 30px" />
 					</el-tab-pane>
 					<el-tab-pane>
 						<template #label>
