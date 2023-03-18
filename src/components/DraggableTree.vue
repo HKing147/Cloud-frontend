@@ -31,8 +31,10 @@
 							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 						</el-col>
 						<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
-						<el-col :span="0.2"> <img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" /></el-col>
-						<el-col :span="12"> {{ node.label }}</el-col>
+						<el-col :span="0.2" @click="openFolder(data)">
+							<img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'"
+						/></el-col>
+						<el-col :span="12" @click="openFolder(data)"> {{ node.label }}</el-col>
 						<el-col class="icon" :span="1">
 							<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
 							<el-dropdown>
@@ -223,10 +225,16 @@ const loadNode = (node, resolve) => {
 
 function handleNodeClick(e) {
 	console.log(e);
-	if (e.id == 1) {
+	// if (e.type == "folder") {
+	// 	// 点击的是文件夹
+	// 	router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
+	// }
+}
+
+function openFolder(e) {
+	console.log(e);
+	if (e.type == "folder") {
 		// 点击的是文件夹
-		// router.go("/");
-		// console.log(router.currentRoute.value.fullPath + "/" + e.fileName);
 		router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
 	}
 }
