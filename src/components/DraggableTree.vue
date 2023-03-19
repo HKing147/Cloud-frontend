@@ -46,7 +46,7 @@
 									<el-dropdown-menu>
 										<el-dropdown-item>下载</el-dropdown-item>
 										<el-dropdown-item>分享</el-dropdown-item>
-										<el-dropdown-item @click="collected(data.id)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
+										<el-dropdown-item @click="collected(data)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 										<el-dropdown-item divided>重命名</el-dropdown-item>
 										<el-dropdown-item>移动</el-dropdown-item>
 										<el-dropdown-item divided>删除</el-dropdown-item>
@@ -85,6 +85,11 @@ import service from "../request";
 import router from "../router";
 const props = defineProps({
 	data: Object,
+	parentDir: {
+		type: String,
+		default: "",
+		required: false,
+	},
 });
 // var data = reactive([]);
 // onMounted(() => {
@@ -236,14 +241,18 @@ function openFolder(e) {
 	console.log(e);
 	if (e.type == "folder") {
 		// 点击的是文件夹
-		router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
+		router.push("/home/files" + e.filePath + e.fileName);
+		// router.push(router.currentRoute.value.fullPath + "/" + props.parentDir + e.fileName);
+		// router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
 	}
 }
 
-function collected(id) {
-	console.log(id);
-	fileIDList.push(id);
+function collected(item) {
+	var fileIDList = [];
+	console.log(item);
+	fileIDList.push(item.id);
 	service.post("/collectedFiles", { fileIDList });
+	item.isCollect = !item.isCollect;
 }
 
 //这里需要暴露出去不然父组件获取不到

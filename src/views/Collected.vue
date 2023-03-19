@@ -1,34 +1,20 @@
 <template>
 	<div class="main" id="filePage">
 		<div class="head">
-			<div class="txt">相册</div>
+			<div class="txt">收藏夹</div>
 			<!-- <el-breadcrumb separator-icon="ArrowRight">
 				<el-breadcrumb-item v-for="(item, index) in path" :to="{ path: '/home/files' + item.path }" :key="index">{{ item.name }}</el-breadcrumb-item>
 			</el-breadcrumb> -->
-			<!-- <el-icon class="search" :size="24"><Search /></el-icon> -->
-			<div class="addContainer" style="display: flex; flex-direction: column">
+			<el-icon class="search" :size="24"><Search /></el-icon>
+			<!-- <div class="addContainer">
 				<el-icon class="add" :size="20" @click="send"><Plus /></el-icon>
-			</div>
+			</div> -->
 		</div>
 
 		<div class="content">
-			<!-- <DraggableTree :data="data" :parentDir="'../files/'" ref="draggableTreeRef" /> -->
-			<div class="row" :gutter="0" v-for="(row, rowIndex) in data" :key="rowIndex">
-				<div id="col" class="col" :span="4" v-for="(item, colIndex) in row" :key="colIndex" @click="previewImage(rowIndex * 7 + colIndex)">
-					<div
-						class="imgContainer"
-						:style="{
-							'background-image': `url(${item.fileUrl})`,
-							'background-size': 'cover',
-						}"
-					>
-						<el-checkbox label="" size="large" @click.stop><br /></el-checkbox>
-					</div>
-				</div>
-			</div>
+			<DraggableTree :data="data" :parentDir="'../files/'" ref="draggableTreeRef" />
 		</div>
 	</div>
-	<el-image-viewer v-if="visiable" :url-list="imgUrlList" :initial-index="iniIndex" :z-index="100" :teleported="true" @close="close(e)"></el-image-viewer>
 	<el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 		<div class="ops">
 			<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
@@ -193,43 +179,54 @@ function send() {
 
 // 当前请求的文件夹路径：/前端/Vue/
 var data = ref([]);
-var visiable = ref(false);
-const imgUrlList = ref([]);
-const iniIndex = ref(0);
 // var data = reactive([]);
 const path = ref([{ name: "文件", path: "" }]);
 const route = new useRoute();
 
-async function getAlbum() {
-	const res = await service.get("/getAlbum");
-	console.log("imgList: ", res.imgList);
-	data.value = [];
-	for (var i = 0; i < res.imgList.length; i += 7) {
-		data.value.push(res.imgList.slice(i, Math.min(i + 7, res.imgList.length)));
-	}
-	// 一维数组变二维, 每行7张图片
-	// data.value = res.imgList;
-	console.log(data.value);
-	// 获取imgUrl列表用于el-image-viewer组件
-	imgUrlList.value = [];
-	for (var i = 0; i < res.imgList.length; ++i) {
-		imgUrlList.value.push(res.imgList[i].fileUrl);
-	}
+async function getCollectedList() {
+	const res = await service.get("/getCollectedList");
+	console.log("collectedList: ", res.collectedList);
+	data.value = res.collectedList;
 }
 
-getAlbum();
+getCollectedList();
+
+// watchEffect(async () => {
+// 	var list = route.params.currentDir;
+// 	path.value = [{ name: "文件", path: "/" }];
+// 	updatePath(list);
+// 	currentDir.value = path.value[path.value.length - 1].path;
+// 	data.value = await getFileList(currentDir);
+// 	// getFileList(currentDir);
+// 	// var res = await service.get("/getFileList", { params: { path: currentDir.value } });
+// 	// console.log("fileList: ", res.fileList);
+// 	// data.value = reactive(res.fileList);
+// 	// console.log("data: ", data.value);
+// });
+
+// // 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
+// function drop(e) {
+// 	console.log(e);
+// 	e.preventDefault();
+// 	console.log("currentDir:", currentDir);
+// 	upload(e, currentDir.value + "/");
+// }
+
+onMounted(() => {
+	// document.addEventListener("dragleave", preventDe);
+	// document.addEventListener("dragover", preventDe);
+	// document.addEventListener("dragenter", preventDe);
+	// document.addEventListener("drop", drop);
+	// window.addEventListener("dragover", preventDe);
+	// window.addEventListener("dragenter", preventDe);
+	// window.addEventListener("drop", drop);
+	// document.querySelector("#filePage").addEventListener("dragover", preventDe);
+	// document.querySelector("#filePage").addEventListener("dragenter", preventDe);
+	// disableDefaultEvents();
+	// document.querySelector("#filePage").addEventListener("drop", drop);
+});
 
 const draggableTreeRef = ref();
-
-function previewImage(idx) {
-	iniIndex.value = idx;
-	visiable.value = true;
-	console.log("image: ", image);
-}
-function close(e) {
-	console.log(e);
-	visiable.value = false;
-}
 </script>
 
 <style lang="scss" scoped>
@@ -245,66 +242,25 @@ function close(e) {
 	.head {
 		display: flex;
 		flex-direction: row;
+		// align-items: center;
 		justify-content: space-between;
+		// justify-content: space-around;
 		margin-top: 35px;
+		// margin-left: 40px;
 		width: 100%;
 		font-size: 18px;
 		font-weight: 1000;
 		.txt {
-			padding-left: 40px;
+			margin-left: 40px;
 		}
-		.addContainer {
-			margin-right: 50px;
-			width: 32px;
-			height: 32px;
-			border-radius: 50%;
-			background: linear-gradient(129.12deg, #446dff 0%, rgba(99, 125, 255, 0.75) 100%);
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			.add {
-				// margin: auto;
-				border-radius: 50%;
-				color: white;
-			}
+		.el-icon {
+			margin-right: 40px;
 		}
 	}
 	.content {
 		padding-top: 30px;
-		padding-left: 30px;
+		padding-left: 20px;
 		width: 100%;
-		.row {
-			margin-top: 10px;
-			margin-bottom: 10px;
-			padding-right: 250px;
-			display: flex;
-			flex-direction: row;
-			.col {
-				margin-left: 10px;
-				border: solid #f2f2f2 2px;
-				border-radius: 3px;
-				.imgContainer {
-					border-radius: 3px;
-					width: 160px;
-					height: 160px;
-					// border: #313136 1px;
-
-					.el-checkbox {
-						// visibility: hidden;
-						padding-left: 10px;
-						border-radius: 50%;
-					}
-				}
-				.imgContainer:hover {
-					cursor: pointer;
-					transform: scale(1.1);
-					:deep(.el-checkbox__inner) {
-						border-radius: 50%;
-						// visibility: visible;
-					}
-				}
-			}
-		}
 	}
 }
 .el-affix {

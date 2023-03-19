@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { inject, onMounted, reactive } from "vue";
+import { inject, onMounted, reactive, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -86,6 +86,7 @@ function getMenuList() {
 getMenuList();
 
 function getActiveIndex() {
+	// console.log("route.path: ", route.path);
 	activeIndex.value = route.path == "/home" ? menuList.value[0].path : route.path;
 	console.log(activeIndex);
 	// for (var i = 0; i < menuList.value.length; i++) {
@@ -96,6 +97,18 @@ function getActiveIndex() {
 	// 	}
 	// }
 }
+watchEffect(() => {
+	console.log("route.path: ", route.path);
+	var list = route.path.split("/");
+	console.log("list: ", list);
+	if (list.length == 2) {
+		activeIndex.value = "/home/files";
+	} else {
+		activeIndex.value = "/home/" + list[2];
+	}
+	// activeIndex.value = route.path;
+});
+
 getActiveIndex();
 </script>
 

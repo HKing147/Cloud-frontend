@@ -1,5 +1,7 @@
 // import { createRouter, createWebHashHistory } from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
+import VueCookies from "vue-cookies";
+
 const routes = [
 	{
 		name: "登录注册页",
@@ -26,9 +28,9 @@ const routes = [
 			},
 			{
 				name: "收藏夹",
-				path: "/home/favorites",
+				path: "/home/collected",
 				icon: "Star",
-				component: () => import("../views/Favorites.vue"),
+				component: () => import("../views/Collected.vue"),
 			},
 			{
 				name: "共享文件",
@@ -78,6 +80,29 @@ const router = createRouter({
 	routes,
 	// history: createWebHashHistory(), // 地址栏会有#号
 	history: createWebHistory(),
+});
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+	console.log("to: ", to);
+	console.log("from: ", from);
+	console.log("next: ", next);
+	if (to.fullPath == "/") {
+		// 登录注册页
+		next();
+	} else {
+		// 检查是否有token
+		var token = VueCookies.get("token");
+		console.log("token: ", token);
+		if (token == null) {
+			router.push("/");
+			ElMessage({
+				message: "请先登录！！！",
+				type: "error",
+			});
+		}
+	}
+	next();
 });
 
 export default router;
