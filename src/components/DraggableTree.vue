@@ -49,7 +49,7 @@
 										<el-dropdown-item @click="collected(data)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 										<el-dropdown-item divided>重命名</el-dropdown-item>
 										<el-dropdown-item>移动</el-dropdown-item>
-										<el-dropdown-item divided>删除</el-dropdown-item>
+										<el-dropdown-item divided @click="deleteFiles(data)">删除</el-dropdown-item>
 									</el-dropdown-menu>
 								</template>
 							</el-dropdown>
@@ -253,6 +253,13 @@ function collected(item) {
 	fileIDList.push(item.id);
 	service.post("/collectedFiles", { fileIDList });
 	item.isCollect = !item.isCollect;
+}
+
+function deleteFiles(item) {
+	var fileIDList = [];
+	console.log(item);
+	fileIDList.push(item.id);
+	service.post("/deleteFiles", { fileIDList });
 }
 
 //这里需要暴露出去不然父组件获取不到
