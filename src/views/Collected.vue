@@ -34,7 +34,6 @@ import { onBeforeMount, onMounted, reactive, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
-import upload from "../utils/index.js";
 function send() {
 	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
 }

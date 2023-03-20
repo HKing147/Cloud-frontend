@@ -8,9 +8,36 @@
 				<el-breadcrumb-item>相册</el-breadcrumb-item> -->
 			</el-breadcrumb>
 			<el-icon class="search" :size="24"><Search /></el-icon>
-			<div class="addContainer">
+			<!-- <div class="addContainer">
 				<el-icon class="add" :size="20" @click="send"><Plus /></el-icon>
-			</div>
+			</div> -->
+			<el-dropdown trigger="click">
+				<span class="addContainer">
+					<el-icon class="add" :size="20"><Plus /></el-icon>
+				</span>
+				<template #dropdown>
+					<el-dropdown-menu>
+						<el-dropdown-item>
+							<el-upload
+								style="width: 100%; height: 26px"
+								:file-list="fileList"
+								:show-file-list="false"
+								:auto-upload="false"
+								:on-change="uploadOneFile"
+								multiple
+							>
+								<el-icon :size="18"><Document /></el-icon>上传文件
+							</el-upload>
+						</el-dropdown-item>
+						<el-dropdown-item>
+							<el-icon :size="18"><Folder /></el-icon>上传文件夹
+						</el-dropdown-item>
+						<el-dropdown-item>
+							<el-icon :size="18"><FolderAdd /></el-icon>新建文件夹
+						</el-dropdown-item>
+					</el-dropdown-menu>
+				</template>
+			</el-dropdown>
 		</div>
 
 		<div class="content">
@@ -22,7 +49,7 @@
 			<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
 			<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
 			<el-icon :size="18" color="#c6c6c7"><Star /></el-icon>
-			<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
+			<el-icon :size="18" color="#c6c6c7" @click="draggableTreeRef.deleteFiles(currentDir + '/', ...draggableTreeRef.checkedList)"><Delete /></el-icon>
 			<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
 			<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
 		</div>
@@ -34,9 +61,10 @@
 import axios from "axios";
 import { onBeforeMount, onMounted, reactive, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
+import checkUploaded from "../apis";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
-import upload from "../utils/index.js";
+import { upload, uploadFile, scan } from "../utils/index.js";
 function send() {
 	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
 }
@@ -238,6 +266,33 @@ function drop(e) {
 	console.log("currentDir:", currentDir);
 	upload(e, currentDir.value + "/");
 }
+const fileList = ref([]);
+function uploadOneFile(file) {
+	// 每次上传一个
+	console.log("file:", file, "path: ", currentDir.value + "/");
+	uploadFile(file.raw, currentDir.value + "/");
+}
+// async function uploadFile(file) {
+// 	console.log("upload: ", file.name, file.raw);
+// 	const f = file.raw;
+// 	const path = currentDir.value + "/";
+// 	// scan(file.raw, currentDir.value);
+// 	// file.raw.File(async (f) => {
+// 	console.log("文件：", f.name, f.size, file.fullPath, file);
+// 	// TODO: 上传文件  f 就是file类型
+// 	// uploadFile(f, "/upload");
+// 	// 先检查文件是否已经上传过
+// 	console.log("文件f：", f);
+// 	const res = await checkUploaded(f, path);
+// 	console.log("res+++", res);
+// 	if (res.meta.code == 0) {
+// 		// 上传过
+// 	} else {
+// 		// 没上传过
+// 		uploadLargeFile(f, path);
+// 	}
+// 	// });
+// }
 
 onMounted(() => {
 	// document.addEventListener("dragleave", preventDe);
@@ -295,10 +350,15 @@ const draggableTreeRef = ref();
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			outline: none; // 点击时去黑边
 			.add {
 				// margin: auto;
 				border-radius: 50%;
 				color: white;
+			}
+			&:hover {
+				background: #4465ec;
+				cursor: pointer;
 			}
 		}
 	}

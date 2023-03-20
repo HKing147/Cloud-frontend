@@ -4,17 +4,17 @@ import SparkMD5 from "spark-md5";
 import service from "../request/index.js";
 import { calMD5 } from "../utils/index.js";
 
-// 上传小文件
-export function uploadFile(file, url) {
-	service.post(url, { file: file }, { headers: { "Content-Type": "multipart/form-data" } });
-	// service.post(url, { file: file }, options)
-	// 	.then((response) => {
-	// 		console.log(response);
-	// 	})
-	// 	.catch((err) => {
-	// 		console.log(err);
-	// 	});
-}
+// // 上传小文件
+// export function uploadFile(file, url) {
+// 	service.post(url, { file: file }, { headers: { "Content-Type": "multipart/form-data" } });
+// 	// service.post(url, { file: file }, options)
+// 	// 	.then((response) => {
+// 	// 		console.log(response);
+// 	// 	})
+// 	// 	.catch((err) => {
+// 	// 		console.log(err);
+// 	// 	});
+// }
 
 // 上传大文件(分片上传)
 // export async function uploadLargeFile(file, url) {
@@ -131,3 +131,5 @@ export async function checkUploaded(file, path) {
 	const MD5 = await calMD5(file);
 	return service.get("/checkUploaded", { params: { MD5, fileName: file.name, path } });
 }
+
+export default checkUploaded;

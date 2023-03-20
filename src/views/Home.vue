@@ -185,7 +185,7 @@ getActiveIndex();
 							border-radius: 3px;
 						}
 						.el-icon {
-							outline: none;
+							outline: none; // 去黑边
 						}
 					}
 				}

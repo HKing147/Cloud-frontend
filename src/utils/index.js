@@ -1,8 +1,8 @@
 import axios from "axios";
 import SparkMD5 from "spark-md5";
-import { checkUploaded, uploadFile, uploadLargeFile } from "../apis";
+import { checkUploaded, uploadLargeFile } from "../apis";
 import service from "../request";
-export default function upload(e, path) {
+export function upload(e, path) {
 	let files = e.dataTransfer.items;
 	console.log("files:", files);
 	for (var i = 0; i < files.length; ++i) {
@@ -10,10 +10,29 @@ export default function upload(e, path) {
 		scan(files[i].webkitGetAsEntry(), path); // 不要加await,加了只会遍历到第一个元素
 	}
 }
+
+export async function uploadFile(file, path) {
+	// file是file类型, path: 为文件夹路径，末尾带'/'
+	console.log("文件：", file);
+	// TODO: 上传文件  f 就是file类型
+	// uploadFile(f, "/upload");
+	// 先检查文件是否已经上传过
+	const res = await checkUploaded(file, path);
+	console.log("res+++", res);
+	if (res.meta.code == 0) {
+		// 上传过
+	} else {
+		// 没上传过
+		uploadLargeFile(file, path);
+	}
+}
+
 export async function scan(file, path) {
+	// file可能是文件夹
 	if (file.isFile) {
 		// 文件
 		file.file(async (f) => {
+			// uploadFile(f, path);
 			console.log("文件：", f.name, f.size, file.fullPath, file);
 			// TODO: 上传文件  f 就是file类型
 			// uploadFile(f, "/upload");

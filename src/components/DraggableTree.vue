@@ -22,7 +22,7 @@
 				<el-col :span="2">大小</el-col>
 			</el-row>
 		</div>
-		<el-checkbox-group v-model="checkedList" fill="#637dff" @change="check">
+		<el-checkbox-group v-model="checkedList" fill="#637dff" @change="checked">
 			<el-tree :data="props.data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
 				<template #default="{ node, data }">
 					<!-- <div class="tree-node"> -->
@@ -49,7 +49,7 @@
 										<el-dropdown-item @click="collected(data)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 										<el-dropdown-item divided>重命名</el-dropdown-item>
 										<el-dropdown-item>移动</el-dropdown-item>
-										<el-dropdown-item divided @click="deleteFiles(data)">删除</el-dropdown-item>
+										<el-dropdown-item divided @click="deleteFiles(data.filePath, data.id)">删除</el-dropdown-item>
 									</el-dropdown-menu>
 								</template>
 							</el-dropdown>
@@ -59,7 +59,15 @@
 						>
 						<el-col :span="1">
 							<span style="font-size: 8px; color: #9d9d9d"
-								>{{ data.size / 1024 < 1024 ? (data.size / 1024).toFixed(2) + "KB" : (data.size / 1024 / 1024).toFixed(2) + "MB" }}
+								>{{
+									data.type == "folder"
+										? "" // 文件夹不显示大小
+										: data.size / 1024 < 1024
+										? (data.size / 1024).toFixed(2) + "KB" // 小于1MB
+										: data.size / 1024 / 1024 < 1024
+										? (data.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
+										: (data.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
+								}}
 							</span></el-col
 						>
 					</el-row>
@@ -109,20 +117,21 @@ const defaultProps = {
 };
 const isCheckAll = ref(false);
 const checkedList = ref([]);
-function check(e) {
-	console.log("e: ", e);
+function checked(e) {
+	console.log("check e: ", e);
 	console.log(checkedList.value);
 	// checkedList 没满就将 isCheckAll 置为 false
 	isCheckAll.value = checkedList.value.length == data.length;
 }
 function checkAll() {
+	console.log("checkAll");
 	console.log(isCheckAll.value);
 	console.log(checkedList.value);
 	if (isCheckAll.value) {
 		checkedList.value = [];
-		for (var i = 0; i < data.length; ++i) {
-			console.log(data[i].id);
-			checkedList.value.push(data[i].id);
+		for (var i = 0; i < data.value.length; ++i) {
+			console.log(data.value[i].id);
+			checkedList.value.push(data.value[i].id);
 			// checkedList.value.push(data[i]);
 		}
 	} else {
@@ -230,7 +239,7 @@ const loadNode = (node, resolve) => {
 // };
 
 function handleNodeClick(e) {
-	console.log(e);
+	console.log("handleNodeClick ", e);
 	// if (e.type == "folder") {
 	// 	// 点击的是文件夹
 	// 	router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
@@ -238,7 +247,7 @@ function handleNodeClick(e) {
 }
 
 function openFolder(e) {
-	console.log(e);
+	console.log("openFolder: ", e);
 	if (e.type == "folder") {
 		// 点击的是文件夹
 		router.push("/home/files" + e.filePath + e.fileName);
@@ -248,6 +257,7 @@ function openFolder(e) {
 }
 
 function collected(item) {
+	console.log("collected: ");
 	var fileIDList = [];
 	console.log(item);
 	fileIDList.push(item.id);
@@ -255,16 +265,16 @@ function collected(item) {
 	item.isCollect = !item.isCollect;
 }
 
-function deleteFiles(item) {
-	var fileIDList = [];
-	console.log(item);
-	fileIDList.push(item.id);
-	service.post("/deleteFiles", { fileIDList });
+function deleteFiles(path, ...userFileIDList) {
+	console.log("deleteFiles: ", path, userFileIDList);
+	service.post("/deleteFiles", { userFileIDList, path });
 }
 
 //这里需要暴露出去不然父组件获取不到
 defineExpose({
+	isCheckAll,
 	checkedList,
+	deleteFiles,
 });
 </script>
 <style lang="scss" scoped>
