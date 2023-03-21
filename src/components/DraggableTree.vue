@@ -37,11 +37,8 @@
 							/></el-col>
 							<el-col :span="12" @click="openFolder(data)"> {{ node.label }}</el-col>
 							<el-col class="icon" :span="1">
-								<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
-								<el-dropdown>
-									<!-- <el-button type="primary">
-									<el-icon class="el-icon--right"><arrow-down /></el-icon>
-								</el-button> -->
+								<slot :data="data"></slot>
+								<!-- <el-dropdown>
 									<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 									<template #dropdown>
 										<el-dropdown-menu>
@@ -53,7 +50,7 @@
 											<el-dropdown-item divided @click="deleteFiles(data.filePath, data.id)">删除</el-dropdown-item>
 										</el-dropdown-menu>
 									</template>
-								</el-dropdown>
+								</el-dropdown> -->
 							</el-col>
 							<el-col :span="7">
 								<span style="font-size: 8px; color: #9d9d9d">{{ new Date(data.updatedTime).toLocaleString() }} </span></el-col
@@ -258,19 +255,19 @@ function openFolder(e) {
 	}
 }
 
-function collected(item) {
-	console.log("collected: ");
-	var fileIDList = [];
-	console.log(item);
-	fileIDList.push(item.id);
-	service.post("/collectedFiles", { fileIDList });
-	item.isCollect = !item.isCollect;
-}
+// function collected(item) {
+// 	console.log("collected: ");
+// 	var fileIDList = [];
+// 	console.log(item);
+// 	fileIDList.push(item.id);
+// 	service.post("/collectedFiles", { fileIDList });
+// 	item.isCollect = !item.isCollect;
+// }
 
-function deleteFiles(path, ...userFileIDList) {
-	console.log("deleteFiles: ", path, userFileIDList);
-	service.post("/deleteFiles", { userFileIDList, path });
-}
+// function deleteFiles(path, ...userFileIDList) {
+// 	console.log("deleteFiles: ", path, userFileIDList);
+// 	service.post("/deleteFiles", { userFileIDList, path });
+// }
 
 // 取消多选
 function cancel() {
@@ -282,7 +279,7 @@ function cancel() {
 defineExpose({
 	isCheckAll,
 	checkedList,
-	deleteFiles,
+	// deleteFiles,
 	cancel,
 });
 </script>

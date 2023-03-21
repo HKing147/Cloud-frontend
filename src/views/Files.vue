@@ -7,7 +7,10 @@
 				<el-breadcrumb-item><a href="./backup">我的备份</a></el-breadcrumb-item>
 				<el-breadcrumb-item>相册</el-breadcrumb-item> -->
 			</el-breadcrumb>
-			<el-icon class="search" :size="24" @click="searchFileDialogVisible = true"><Search /></el-icon>
+			<div class="search">
+				<el-icon :size="20" @click="searchFileDialogVisible = true"><Search /></el-icon>
+			</div>
+			<!-- <el-icon class="search" :size="24" @click="searchFileDialogVisible = true"><Search /></el-icon> -->
 			<!-- <div class="addContainer">
 				<el-icon class="add" :size="20" @click="send"><Plus /></el-icon>
 			</div> -->
@@ -46,7 +49,24 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" ref="draggableTreeRef" />
+			<DraggableTree :data="data" ref="draggableTreeRef">
+				<template v-slot="prop">
+					<!-- {{ prop.prop }} -->
+					<el-dropdown>
+						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item>下载</el-dropdown-item>
+								<el-dropdown-item>分享</el-dropdown-item>
+								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
+								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
+								<el-dropdown-item>移动</el-dropdown-item>
+								<el-dropdown-item divided @click="deleteFiles(prop.data.filePath, prop.data.id)">删除</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
+				</template>
+			</DraggableTree>
 		</div>
 
 		<!-- <div class="affix">
@@ -140,6 +160,16 @@
 				<span>
 					<el-input size="large" style="margin-bottom: 20px" v-model="folderName" placeholder="请输入文件夹名" />
 					<el-button color="#637dff" style="color: white" type="primary" @click="createFolder"> 确定 </el-button>
+				</span>
+			</template>
+		</el-dialog>
+		<!-- 重命名文件(夹)对话框 -->
+		<el-dialog v-model="renameDialogVisible" title="重命名" width="25%" style="border-radius: 10px" draggable>
+			<img style="width: 120px; display: block; margin: 0 auto" :src="'/public/assets/icon/' + renameFile.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+			<template #footer>
+				<span>
+					<el-input size="large" style="margin-bottom: 20px" v-model="renameFile.fileName" />
+					<el-button color="#637dff" style="color: white" type="primary" @click="rename"> 确定 </el-button>
 				</span>
 			</template>
 		</el-dialog>
@@ -423,6 +453,15 @@ async function createFolder() {
 	}
 }
 
+const renameDialogVisible = ref(false);
+// const renemeFile = reactive({});
+const renameFile = ref({});
+function showRenameDialog(item) {
+	renameFile.value = item;
+	renameDialogVisible.value = true;
+	console.log(renameFile.value);
+}
+
 const searchFileDialogVisible = ref(false);
 const fileName = ref("");
 const searchFileList = ref([]);
@@ -456,6 +495,29 @@ async function searchFile() {
 // 	}
 // 	// });
 // }
+
+// 收藏
+function collected(item) {
+	console.log("collected: ");
+	var fileIDList = [];
+	console.log(item);
+	fileIDList.push(item.id);
+	service.post("/collectedFiles", { fileIDList });
+	item.isCollect = !item.isCollect;
+}
+
+// 重命名
+async function rename() {
+	console.log("重命名文件: ", renameFile.value);
+	const res = await service.post("/renameFile", { userFileID: renameFile.value.id, newFileName: renameFile.value.fileName });
+	console.log(res);
+	if (res.meta.code == 0) renameDialogVisible.value = false;
+}
+// 删除
+function deleteFiles(path, ...userFileIDList) {
+	console.log("deleteFiles: ", path, userFileIDList);
+	service.post("/deleteFiles", { userFileIDList, path });
+}
 
 onMounted(() => {
 	// document.addEventListener("dragleave", preventDe);
@@ -500,7 +562,14 @@ const draggableTreeRef = ref();
 			// position: fixed;
 		}
 		.search {
-			right: 60px;
+			margin-right: 60px;
+			padding: 6px;
+			padding-bottom: 2px;
+			&:hover {
+				background: #f5f5f6;
+				border-radius: 50%;
+				cursor: pointer;
+			}
 		}
 		.addContainer {
 			position: relative;

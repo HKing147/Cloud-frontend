@@ -21,12 +21,12 @@
 							<img src="/public/assets/img/tou.jpg" />
 							<span class="uname">用户名</span>
 							<span class="menu">
-								<el-dropdown>
+								<el-dropdown trigger="click">
 									<el-icon><More /></el-icon>
 									<template #dropdown>
 										<el-dropdown-menu>
-											<el-dropdown-item>Action 1</el-dropdown-item>
-											<el-dropdown-item>Action 2</el-dropdown-item>
+											<el-dropdown-item>个人中心</el-dropdown-item>
+											<el-dropdown-item @click="logout">退出登录</el-dropdown-item>
 											<el-dropdown-item>Action 3</el-dropdown-item>
 											<el-dropdown-item disabled>Action 4</el-dropdown-item>
 											<el-dropdown-item divided>Action 5</el-dropdown-item>
@@ -68,6 +68,11 @@ const activeIndex = ref("0");
 // 从Cookie获取登录信息：token
 const vueCookies = inject("vueCookies");
 const token = vueCookies.get("token");
+
+function logout() {
+	vueCookies.remove("token"); // 删除token
+	router.push("/"); // 返回登陆页面
+}
 
 onMounted(() => {
 	console.log("Cookies token:", token);
@@ -176,7 +181,7 @@ getActiveIndex();
 					height: 40px;
 				}
 				.menu {
-					padding-left: 10px;
+					margin-left: 50px;
 					padding-top: 12px;
 					.el-dropdown {
 						cursor: pointer;
