@@ -22,59 +22,61 @@
 				<el-col :span="2">大小</el-col>
 			</el-row>
 		</div>
-		<el-checkbox-group v-model="checkedList" fill="#637dff" @change="checked">
-			<el-tree :data="props.data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
-				<template #default="{ node, data }">
-					<!-- <div class="tree-node"> -->
-					<el-row :gutter="25" class="tree-node" style="width: 100%">
-						<el-col :span="0">
-							<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
-						</el-col>
-						<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
-						<el-col :span="0.2" @click="openFolder(data)">
-							<img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'"
-						/></el-col>
-						<el-col :span="12" @click="openFolder(data)"> {{ node.label }}</el-col>
-						<el-col class="icon" :span="1">
-							<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
-							<el-dropdown>
-								<!-- <el-button type="primary">
+		<el-scrollbar height="100%">
+			<el-checkbox-group v-model="checkedList" fill="#637dff" @change="checked">
+				<el-tree :data="props.data" :props="defaultProps" @node-click="handleNodeClick" :load="loadNode" lazy draggable>
+					<template #default="{ node, data }">
+						<!-- <div class="tree-node"> -->
+						<el-row :gutter="25" class="tree-node" style="width: 98%">
+							<el-col :span="0">
+								<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
+							</el-col>
+							<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
+							<el-col :span="0.2" @click="openFolder(data)">
+								<img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'"
+							/></el-col>
+							<el-col :span="12" @click="openFolder(data)"> {{ node.label }}</el-col>
+							<el-col class="icon" :span="1">
+								<!-- <el-icon :size="17"><MoreFilled /></el-icon> -->
+								<el-dropdown>
+									<!-- <el-button type="primary">
 									<el-icon class="el-icon--right"><arrow-down /></el-icon>
 								</el-button> -->
-								<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
-								<template #dropdown>
-									<el-dropdown-menu>
-										<el-dropdown-item>下载</el-dropdown-item>
-										<el-dropdown-item>分享</el-dropdown-item>
-										<el-dropdown-item @click="collected(data)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
-										<el-dropdown-item divided>重命名</el-dropdown-item>
-										<el-dropdown-item>移动</el-dropdown-item>
-										<el-dropdown-item divided @click="deleteFiles(data.filePath, data.id)">删除</el-dropdown-item>
-									</el-dropdown-menu>
-								</template>
-							</el-dropdown>
-						</el-col>
-						<el-col :span="7">
-							<span style="font-size: 8px; color: #9d9d9d">{{ new Date(data.updatedTime).toLocaleString() }} </span></el-col
-						>
-						<el-col :span="1">
-							<span style="font-size: 8px; color: #9d9d9d"
-								>{{
-									data.type == "folder"
-										? "" // 文件夹不显示大小
-										: data.size / 1024 < 1024
-										? (data.size / 1024).toFixed(2) + "KB" // 小于1MB
-										: data.size / 1024 / 1024 < 1024
-										? (data.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
-										: (data.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
-								}}
-							</span></el-col
-						>
-					</el-row>
-					<!-- </div> -->
-				</template>
-			</el-tree>
-		</el-checkbox-group>
+									<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
+									<template #dropdown>
+										<el-dropdown-menu>
+											<el-dropdown-item>下载</el-dropdown-item>
+											<el-dropdown-item>分享</el-dropdown-item>
+											<el-dropdown-item @click="collected(data)">{{ data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
+											<el-dropdown-item divided>重命名</el-dropdown-item>
+											<el-dropdown-item>移动</el-dropdown-item>
+											<el-dropdown-item divided @click="deleteFiles(data.filePath, data.id)">删除</el-dropdown-item>
+										</el-dropdown-menu>
+									</template>
+								</el-dropdown>
+							</el-col>
+							<el-col :span="7">
+								<span style="font-size: 8px; color: #9d9d9d">{{ new Date(data.updatedTime).toLocaleString() }} </span></el-col
+							>
+							<el-col :span="1">
+								<span style="font-size: 8px; color: #9d9d9d"
+									>{{
+										data.type == "folder"
+											? "" // 文件夹不显示大小
+											: data.size / 1024 < 1024
+											? (data.size / 1024).toFixed(2) + "KB" // 小于1MB
+											: data.size / 1024 / 1024 < 1024
+											? (data.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
+											: (data.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
+									}}
+								</span></el-col
+							>
+						</el-row>
+						<!-- </div> -->
+					</template>
+				</el-tree>
+			</el-checkbox-group>
+		</el-scrollbar>
 		<!-- <el-tree-v2 :data="data" :props="defaultProps" item-size="50" icon="" show-checkbox draggable>
 		<template #default="{ node, data }">
 			<img src="../assets/img/minfolder.png" style="width: 25px; height: 25px; padding-right: 20px" />
@@ -305,6 +307,7 @@ defineExpose({
 		display: flex;
 		flex-direction: column;
 		font-size: 14px;
+		width: 100%;
 		.tree-node {
 			&:hover {
 				background-color: #f5f5f6;
