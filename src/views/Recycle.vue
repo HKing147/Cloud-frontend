@@ -35,7 +35,7 @@
 				<!-- <span class="op">
 					<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
 				</span> -->
-				<span class="op" @click="cancel">
+				<span class="op" @click="draggableTreeRef.cancel">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>取消多选</template>
 						<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
@@ -244,13 +244,13 @@ onMounted(() => {
 });
 
 const draggableTreeRef = ref();
-// 取消多选
-function cancel() {
-	console.log(draggableTreeRef.value.checkedList);
-	draggableTreeRef.value.isCheckAll = false;
-	draggableTreeRef.value.checkedList = [];
-	console.log(draggableTreeRef.value.checkedList);
-}
+// // 取消多选
+// function cancel() {
+// 	console.log(draggableTreeRef.value.checkedList);
+// 	draggableTreeRef.value.isCheckAll = false;
+// 	draggableTreeRef.value.checkedList = [];
+// 	console.log(draggableTreeRef.value.checkedList);
+// }
 // 恢复文件
 function resumeFiles(...userFileIDList) {
 	console.log(userFileIDList);

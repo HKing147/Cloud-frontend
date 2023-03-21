@@ -15,7 +15,7 @@
 			<DraggableTree :data="data" :parentDir="'../files/'" ref="draggableTreeRef" />
 		</div>
 	</div>
-	<el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
+	<!-- <el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 		<div class="ops">
 			<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
 			<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
@@ -24,7 +24,51 @@
 			<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
 			<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
 		</div>
-	</el-affix>
+	</el-affix> -->
+
+	<div class="affix">
+		<el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
+			<div class="ops">
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>下载</template>
+						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>分享</template>
+						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>取消收藏</template>
+						<el-icon :size="18" color="#f35b51"><Star /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>放入回收站</template>
+						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>更多</template>
+						<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>取消多选</template>
+						<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
+					</el-tooltip>
+				</span>
+			</div>
+		</el-affix>
+	</div>
+
 	<!-- <drag-upload :onDrop="drop"></drag-upload> -->
 </template>
 
@@ -262,17 +306,37 @@ const draggableTreeRef = ref();
 		width: 100%;
 	}
 }
-.el-affix {
-	width: 200px;
-	margin: 0 auto;
-	.ops {
-		background: #313136;
-		padding: 15px;
-		width: 100%;
-		border-radius: 15px;
-		.el-icon {
-			margin-left: 7px;
-			margin-right: 7px;
+.affix {
+	text-align: center;
+	.el-affix {
+		// width: 200px;
+		margin: 0 auto;
+		// width: 0px;
+		// overflow: hidden;
+		white-space: nowrap;
+		display: inline-block;
+		// text-align: center;
+		// position: absolute;
+		// padding: 20px;
+		.ops {
+			background: #313136;
+			padding: 15px;
+			// width: 100%;
+			border-radius: 15px;
+			.op {
+				padding: 5px;
+				padding-bottom: 0px;
+				margin: 5px;
+				// .el-icon {
+				// 	margin-left: 7px;
+				// 	margin-right: 7px;
+				// }
+				&:hover {
+					cursor: pointer;
+					background: #555559;
+					border-radius: 5px;
+				}
+			}
 		}
 	}
 }

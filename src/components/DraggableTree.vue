@@ -270,11 +270,18 @@ function deleteFiles(path, ...userFileIDList) {
 	service.post("/deleteFiles", { userFileIDList, path });
 }
 
+// 取消多选
+function cancel() {
+	console.log(checkedList.value);
+	isCheckAll.value = false;
+	checkedList.value = [];
+}
 //这里需要暴露出去不然父组件获取不到
 defineExpose({
 	isCheckAll,
 	checkedList,
 	deleteFiles,
+	cancel,
 });
 </script>
 <style lang="scss" scoped>
