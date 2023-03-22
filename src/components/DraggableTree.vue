@@ -32,10 +32,10 @@
 								<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 							</el-col>
 							<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
-							<el-col :span="0.2" @click="openFolder(data)">
+							<el-col :span="0.2" @click="props.canOpenFolder && openFolder(data)">
 								<img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'"
 							/></el-col>
-							<el-col :span="12" @click="openFolder(data)"> {{ node.label }}</el-col>
+							<el-col :span="12" @click="props.canOpenFolder && openFolder(data)"> {{ node.label }}</el-col>
 							<el-col class="icon" :span="1">
 								<slot :data="data"></slot>
 								<!-- <el-dropdown>
@@ -96,6 +96,14 @@ const props = defineProps({
 		type: String,
 		default: "",
 		required: false,
+	},
+	menuItem: {
+		type: String,
+		default: "files",
+	},
+	canOpenFolder: {
+		type: Boolean,
+		default: true,
 	},
 });
 // var data = reactive([]);
@@ -247,9 +255,11 @@ function handleNodeClick(e) {
 
 function openFolder(e) {
 	console.log("openFolder: ", e);
-	if (e.type == "folder") {
+	// if (e.type == "folder") {
+	if (e.isFolder) {
 		// 点击的是文件夹
-		router.push("/home/files" + e.filePath + e.fileName);
+		// router.push("/home/files" + e.filePath + e.fileName);
+		router.push("/home/" + props.menuItem + e.filePath + e.fileName);
 		// router.push(router.currentRoute.value.fullPath + "/" + props.parentDir + e.fileName);
 		// router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
 	}

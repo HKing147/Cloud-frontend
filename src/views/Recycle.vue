@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" :parentDir="'../files/'" ref="draggableTreeRef" />
+			<DraggableTree :data="data" :canOpenFolder="false" :parentDir="'../files/'" ref="draggableTreeRef" />
 		</div>
 	</div>
 	<div class="affix">

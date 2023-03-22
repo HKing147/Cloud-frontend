@@ -57,7 +57,7 @@
 						<template #dropdown>
 							<el-dropdown-menu>
 								<el-dropdown-item>下载</el-dropdown-item>
-								<el-dropdown-item>分享</el-dropdown-item>
+								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
 								<el-dropdown-item>移动</el-dropdown-item>
@@ -120,7 +120,7 @@
 						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op">
+				<span class="op" @click="shareFiles(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>分享</template>
 						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
@@ -132,7 +132,7 @@
 						<el-icon :size="18" color="#c6c6c7"><Star /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op" @click="draggableTreeRef.deleteFiles(currentDir + '/', ...draggableTreeRef.checkedList)">
+				<span class="op" @click="deleteFiles(currentDir + '/', ...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>放入回收站</template>
 						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
@@ -495,6 +495,12 @@ async function searchFile() {
 // 	}
 // 	// });
 // }
+
+// 分享
+async function shareFiles(...userFileIDList) {
+	const res = await service.post("/shareFiles", { userFileIDList });
+	console.log(res);
+}
 
 // 收藏
 function collected(item) {
