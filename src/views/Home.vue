@@ -18,8 +18,8 @@
 							<el-progress :percentage="50" />
 						</div>
 						<div class="foot">
-							<img src="/public/assets/img/tou.jpg" />
-							<span class="uname">用户名</span>
+							<img :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
+							<span class="uname">{{ userInfo.userName }}</span>
 							<span class="menu">
 								<el-dropdown trigger="click">
 									<el-icon><More /></el-icon>
@@ -60,14 +60,25 @@
 <script setup>
 import { inject, onMounted, reactive, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import service from "../request";
 const router = useRouter();
 const route = useRoute();
 const menuList = reactive({});
 const activeIndex = ref("0");
+const userInfo = ref({});
 
 // 从Cookie获取登录信息：token
 const vueCookies = inject("vueCookies");
 const token = vueCookies.get("token");
+
+async function getUserInfo() {
+	const res = await service.get("/getUserInfo");
+	console.log("getUserInfo: ", res);
+	if (res.meta.code == 0) {
+		userInfo.value = res.user;
+	}
+}
+getUserInfo();
 
 function logout() {
 	vueCookies.remove("token"); // 删除token
@@ -179,9 +190,13 @@ getActiveIndex();
 				}
 				.uname {
 					height: 40px;
+					white-space: nowrap; /*强制单行显示*/
+					text-overflow: ellipsis; /*超出部分省略号表示*/
+					overflow: hidden; /*超出部分隐藏*/
+					width: 100px; /*设置显示的最大宽度*/
 				}
 				.menu {
-					margin-left: 50px;
+					margin-left: 10px;
 					padding-top: 12px;
 					.el-dropdown {
 						cursor: pointer;

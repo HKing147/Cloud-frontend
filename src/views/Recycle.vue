@@ -26,7 +26,7 @@
 						<el-icon :size="18" color="#c6c6c7"><RefreshLeft /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op">
+				<span class="op" @click="completelyDeleteFiles(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>彻底删除</template>
 						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
@@ -255,6 +255,11 @@ const draggableTreeRef = ref();
 function resumeFiles(...userFileIDList) {
 	console.log(userFileIDList);
 	service.post("/resumeFiles", { userFileIDList });
+}
+async function completelyDeleteFiles(...userFileIDList) {
+	console.log("completelyDeleteFiles: ", userFileIDList);
+	const res = await service.post("/completelyDeleteFiles", { userFileIDList });
+	console.log(res);
 }
 </script>
 
