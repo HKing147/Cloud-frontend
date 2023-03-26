@@ -56,7 +56,7 @@
 						<template #dropdown>
 							<el-dropdown-menu>
 								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
-								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
+								<el-dropdown-item @click="showShareDialog(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
 								<el-dropdown-item @click="showMoveDialog(prop.data.id)">移动</el-dropdown-item>
@@ -76,7 +76,7 @@
 						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op" @click="shareFiles(...draggableTreeRef.checkedList)">
+				<span class="op" @click="showShareDialog(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>分享</template>
 						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
@@ -209,6 +209,30 @@
 			<div class="attrValue">{{ new Date(fileDetail.createdTime).toLocaleString() }}</div>
 			<div>最后修改时间</div>
 			<div class="attrValue">{{ new Date(fileDetail.updatedTime).toLocaleString() }}</div>
+		</el-dialog>
+		<!-- 分享文件对话框 -->
+		<el-dialog class="detail" v-model="shareDialogVisible" title="分享文件" width="30%" style="border-radius: 10px" draggable>
+			<div style="text-align: center; padding: 10px">
+				<img style="height: 120px" :src="'/public/assets/icon/folder.png'" onerror="this.src='/public/assets/icon/other.png'" />
+			</div>
+			<div style="text-align: center; margin: 30px">共 {{ shareFileIDList.length }} 个文件</div>
+			<div style="margin: 20px 0">
+				<span style="margin-right: 10px"> 选择有效期 </span>
+				<el-select style="width: 120px" v-model="shareDuration" placeholder="Select">
+					<el-option v-for="item in duratinOptions" :key="item.value" :label="item.label" :value="item.value" />
+				</el-select>
+			</div>
+			<div style="margin: 20px 0">
+				<span style="margin-right: 24px">分享形式 </span>
+				<el-select style="width: 260px" v-model="shareMethod" placeholder="Select">
+					<el-option v-for="item in shareMethodOptions" :key="item.value" :label="item.label" :value="item.value" />
+				</el-select>
+			</div>
+			<template #footer>
+				<span>
+					<el-button color="#637dff" style="color: white" type="primary" @click="shareFiles"> 创建分享 </el-button>
+				</span>
+			</template>
 		</el-dialog>
 	</div>
 
@@ -539,10 +563,30 @@ watchEffect(() => {
 const detailDialogVisible = ref(false);
 const fileDetail = ref({});
 function showDetialDialog(item) {
-	detailDialogVisible.value = true;
 	fileDetail.value = item;
+	detailDialogVisible.value = true;
 }
 
+// 分享文件
+const duratinOptions = [
+	{ value: 30, label: "30天内有效" },
+	{ value: 0, label: "永久有效" },
+];
+const shareMethodOptions = [
+	{ value: false, label: "公开链接（不需提取码即可查看）" },
+	{ value: true, label: "私密链接（需要提取码才能查看）" },
+];
+const shareDialogVisible = ref(false);
+const shareFileIDList = ref([]);
+const shareDuration = ref(30);
+const shareMethod = ref(false);
+function showShareDialog(...fileIDList) {
+	console.log(fileIDList);
+	shareFileIDList.value = fileIDList;
+	shareDialogVisible.value = true;
+}
+
+// 搜索文件
 const searchFileDialogVisible = ref(false);
 const fileName = ref("");
 const searchFileList = ref([]);
@@ -590,8 +634,11 @@ function download(fileUrl) {
 }
 
 // 分享
-async function shareFiles(...userFileIDList) {
-	const res = await service.post("/shareFiles", { userFileIDList });
+async function shareFiles() {
+	console.log(shareDuration.value);
+	console.log(shareMethod.value);
+	console.log(shareFileIDList.value);
+	const res = await service.post("/shareFiles", { shareDuration: shareDuration.value, shareMethod: shareMethod.value, userFileIDList: shareFileIDList.value });
 	console.log(res);
 }
 
