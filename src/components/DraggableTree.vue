@@ -6,20 +6,32 @@
 					<el-checkbox v-model="isCheckAll" @change="checkAll">{{ isCheckAll ? "取消全选" : "全选" }}</el-checkbox>
 				</el-col>
 				<el-col :span="18"></el-col>
-				<el-col :span="3" style="display: flex; flex-direction: row; align-items: center">
+				<el-col :span="3" style="padding-left: 20px; display: flex; flex-direction: row; align-items: center">
 					<el-icon :size="16"><Sort /></el-icon>
-					按修改时间排序
+					按{{ sortMethod.startsWith("updated_at") ? "修改时间" : sortMethod.startsWith("file_name") ? "文件名称" : "文件大小" }}排序
 				</el-col>
 				<el-col :span="1">
 					<el-icon :size="16"><Menu /></el-icon>
 				</el-col>
 			</el-row>
 			<el-row :gutter="0" style="padding-left: 5px; line-height: 40px; font-size: 10px; color: #aaaaaa">
-				<el-col :span="2">名称</el-col>
-				<el-col :span="11"></el-col>
-				<el-col :span="5">修改时间</el-col>
-				<el-col :span="3"></el-col>
-				<el-col :span="2">大小</el-col>
+				<el-col :span="13" @click="changeSortMethod('file_name')" style="padding-left: 40px; display: flex; flex-direction: row; align-items: center">
+					名称
+					<el-icon v-show="sortMethod == 'file_name'"><Top /></el-icon>
+					<el-icon v-show="sortMethod == 'file_name desc'"><Bottom /></el-icon>
+				</el-col>
+				<!-- <el-col :span="4"></el-col> -->
+				<el-col @click="changeSortMethod('updated_at')" :span="5" style="padding-left: 110px; display: flex; flex-direction: row; align-items: center">
+					修改时间
+					<el-icon v-show="sortMethod == 'updated_at'"><Top /></el-icon>
+					<el-icon v-show="sortMethod == 'updated_at desc'"><Bottom /></el-icon>
+				</el-col>
+				<!-- <el-col :span="3"></el-col> -->
+				<el-col :span="5" @click="changeSortMethod('size')" style="padding-left: 190px; display: flex; flex-direction: row; align-items: center">
+					大小
+					<el-icon v-show="sortMethod == 'size'"><Top /></el-icon>
+					<el-icon v-show="sortMethod == 'size desc'"><Bottom /></el-icon>
+				</el-col>
 			</el-row>
 		</div>
 		<el-scrollbar height="100%">
@@ -105,6 +117,12 @@ const props = defineProps({
 		type: Boolean,
 		default: true,
 	},
+	getFileList: Function,
+	// sortMethod: {
+	// 	// 排序方法
+	// 	type: String,
+	// 	default: "updated_at",
+	// },
 });
 // var data = reactive([]);
 // onMounted(() => {
@@ -112,6 +130,7 @@ const props = defineProps({
 // 	console.log("tableData: ", props.data.value);
 // });
 const { data } = toRefs(props); // 还是响应式的，与父组件保持一致，而 data = props.data不是响应式的
+const sortMethod = ref("updated_at");
 
 console.log("tableData: ", data);
 const defaultProps = {
@@ -265,6 +284,16 @@ function openFolder(e) {
 	}
 }
 
+function changeSortMethod(s) {
+	console.log(sortMethod);
+	if (sortMethod.value != s) {
+		sortMethod.value = s;
+	} else {
+		sortMethod.value = s + " desc";
+	}
+	props.getFileList(sortMethod.value);
+}
+
 // function collected(item) {
 // 	console.log("collected: ");
 // 	var fileIDList = [];
@@ -289,6 +318,7 @@ function cancel() {
 defineExpose({
 	isCheckAll,
 	checkedList,
+	sortMethod,
 	// deleteFiles,
 	cancel,
 });

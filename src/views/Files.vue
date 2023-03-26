@@ -49,7 +49,7 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" ref="draggableTreeRef">
+			<DraggableTree :data="data" :getFileList="getFileList" ref="draggableTreeRef">
 				<template v-slot="prop">
 					<!-- {{ prop.prop }} -->
 					<el-dropdown>
@@ -68,50 +68,6 @@
 				</template>
 			</DraggableTree>
 		</div>
-
-		<!-- <div class="affix">
-			<el-affix position="bottom" target="#filePage" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
-				<div class="ops">
-					<span class="op">
-						<el-tooltip placement="top" :offset="20">
-							<template #content>下载</template>
-							<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
-						</el-tooltip>
-					</span>
-					<span class="op">
-						<el-tooltip placement="top" :offset="20">
-							<template #content>分享</template>
-							<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
-						</el-tooltip>
-					</span>
-					<span class="op">
-						<el-tooltip placement="top" :offset="20">
-							<template #content>收藏</template>
-							<el-icon :size="18" color="#c6c6c7"><Star /></el-icon>
-						</el-tooltip>
-					</span>
-					<span class="op" @click="draggableTreeRef.deleteFiles(currentDir + '/', ...draggableTreeRef.checkedList)">
-						<el-tooltip placement="top" :offset="20">
-							<template #content>放入回收站</template>
-							<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
-						</el-tooltip>
-					</span>
-					<span class="op">
-						<el-tooltip placement="top" :offset="20">
-							<template #content>更多</template>
-							<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
-						</el-tooltip>
-					</span>
-					<span class="op" @click="draggableTreeRef.cancel">
-						<el-tooltip placement="top" :offset="20">
-							<template #content>取消多选</template>
-							<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
-						</el-tooltip>
-					</span>
-				</div>
-			</el-affix>
-		</div> -->
-
 		<el-affix position="bottom" target="#filePage" :offset="100" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 			<div class="ops">
 				<span class="op">
@@ -219,6 +175,7 @@
 			</template>
 		</el-dialog>
 	</div>
+	<el-button @click="print">按钮</el-button>
 
 	<drag-upload :onDrop="drop"></drag-upload>
 </template>
@@ -376,6 +333,7 @@ const currentDir = ref("/"); // 当前文件夹（默认为'/'）
 // 当前请求的文件夹路径：/前端/Vue/
 var data = ref([]);
 // var data = reactive([]);
+const draggableTreeRef = ref();
 const path = ref([{ name: "文件", path: "" }]);
 const route = new useRoute();
 
@@ -395,12 +353,22 @@ function updatePath(list, path) {
 	console.log("currentDir:", currentDir.value);
 }
 
-async function getFileList(currentDir) {
-	const res = await service.get("/getFileList", { params: { path: currentDir.value + "/" } });
+async function getFileList(sortMethod) {
+	const res = await service.get("/getFileList", { params: { path: currentDir.value + "/", sortMethod } });
 	console.log("fileList: ", res.fileList);
-	return res.fileList;
+	data.value = res.fileList;
+	// return res.fileList;
 }
 
+// onMounted(() => {
+// 	console.log("*******", draggableTreeRef.value.sortMethod);
+// });
+// watchEffect(() => {
+// 	console.log("******* ", draggableTreeRef.value.sortMethod);
+// });
+function print() {
+	console.log("sortMethod:", draggableTreeRef.value.sortMethod);
+}
 // watch(
 // 	() => route.params.currentDir,
 // 	async (newval, oldval) => {
@@ -415,7 +383,9 @@ watchEffect(async () => {
 	path.value = [{ name: "文件", path: "/" }];
 	updatePath(list, path);
 	currentDir.value = path.value[path.value.length - 1].path;
-	data.value = await getFileList(currentDir);
+	// data.value = await getFileList(currentDir);
+	// data.value = await getFileList();
+	await getFileList();
 	// getFileList(currentDir);
 	// var res = await service.get("/getFileList", { params: { path: currentDir.value } });
 	// console.log("fileList: ", res.fileList);
@@ -634,8 +604,6 @@ onMounted(() => {
 	// disableDefaultEvents();
 	// document.querySelector("#filePage").addEventListener("drop", drop);
 });
-
-const draggableTreeRef = ref();
 </script>
 
 <style lang="scss" scoped>
