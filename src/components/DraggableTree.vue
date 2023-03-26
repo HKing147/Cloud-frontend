@@ -15,7 +15,7 @@
 				</el-col>
 			</el-row>
 			<el-row :gutter="0" style="padding-left: 5px; line-height: 40px; font-size: 10px; color: #aaaaaa">
-				<el-col :span="13" @click="changeSortMethod('file_name')" style="padding-left: 40px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
+				<el-col :span="13" @click="changeSortMethod('file_name')" style="padding-left: 45px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
 					名称
 					<el-icon v-show="sortMethod == 'file_name'"><Top /></el-icon>
 					<el-icon v-show="sortMethod == 'file_name desc'"><Bottom /></el-icon>
