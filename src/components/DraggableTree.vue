@@ -15,17 +15,17 @@
 				</el-col>
 			</el-row>
 			<el-row :gutter="0" style="padding-left: 5px; line-height: 40px; font-size: 10px; color: #aaaaaa">
-				<el-col :span="13" @click="changeSortMethod('file_name')" style="padding-left: 40px; display: flex; flex-direction: row; align-items: center">
+				<el-col :span="13" @click="changeSortMethod('file_name')" style="padding-left: 40px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
 					名称
 					<el-icon v-show="sortMethod == 'file_name'"><Top /></el-icon>
 					<el-icon v-show="sortMethod == 'file_name desc'"><Bottom /></el-icon>
 				</el-col>
-				<el-col @click="changeSortMethod('updated_at')" :span="5" style="padding-left: 110px; display: flex; flex-direction: row; align-items: center">
+				<el-col @click="changeSortMethod('updated_at')" :span="5" style="padding-left: 110px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
 					修改时间
 					<el-icon v-show="sortMethod == 'updated_at'"><Top /></el-icon>
 					<el-icon v-show="sortMethod == 'updated_at desc'"><Bottom /></el-icon>
 				</el-col>
-				<el-col :span="5" @click="changeSortMethod('size')" style="padding-left: 190px; display: flex; flex-direction: row; align-items: center">
+				<el-col :span="5" @click="changeSortMethod('size')" style="padding-left: 190px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
 					大小
 					<el-icon v-show="sortMethod == 'size'"><Top /></el-icon>
 					<el-icon v-show="sortMethod == 'size desc'"><Bottom /></el-icon>

@@ -59,7 +59,7 @@
 								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
-								<el-dropdown-item @click="showMoveDialog(prop.data)">移动</el-dropdown-item>
+								<el-dropdown-item @click="showMoveDialog(prop.data.id)">移动</el-dropdown-item>
 								<el-dropdown-item @click="showDetialDialog(prop.data)">查看详细信息</el-dropdown-item>
 								<el-dropdown-item divided @click="deleteFiles(prop.data.filePath, prop.data.id)">删除</el-dropdown-item>
 							</el-dropdown-menu>
@@ -94,11 +94,26 @@
 						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op">
+				<!-- <span class="op">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>更多</template>
 						<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
 					</el-tooltip>
+				</span> -->
+				<span class="op">
+					<el-dropdown trigger="click">
+						<span>
+							<el-tooltip placement="top" :offset="20">
+								<template #content>更多</template>
+								<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
+							</el-tooltip>
+						</span>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click="showMoveDialog(...draggableTreeRef.checkedList)">移动</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
 				</span>
 				<span class="op" @click="draggableTreeRef.cancel">
 					<el-tooltip placement="top" :offset="20">
@@ -154,9 +169,9 @@
 			<el-scrollbar max-height="300px" style="margin-top: 10px">
 				<div v-for="(item, index) in moveFileList" :key="index">
 					<div
-						@click="item.isFolder ? updateDirPath(item) : null"
+						@click="item.isFolder && canMoveTo(item.id) ? updateDirPath(item) : null"
 						style="padding: 3px; width: 95%; display: flex; flex-direction: row; align-items: center"
-						:class="item.isFolder ? 'canSelect' : 'cannotSelect'"
+						:class="item.isFolder && canMoveTo(item.id) ? 'canSelect' : 'cannotSelect'"
 					>
 						<img
 							style="width: 30px; height: 30px; margin-right: 15px"
@@ -484,19 +499,27 @@ function showRenameDialog(item) {
 }
 // 移动
 const moveDialogVisible = ref(false);
-const formFile = ref({});
+// const fromFile = ref({});
+const fromFiles = ref([]);
 const moveDir = ref("/");
 const movePath = ref([{ name: "文件", path: "/" }]);
 const moveFileList = ref([]);
-async function showMoveDialog(file) {
+async function showMoveDialog(...fileIDList) {
 	moveDialogVisible.value = true;
-	formFile.value = file;
+	// fromFile.value = file;
+	fromFiles.value = fileIDList;
 	moveDir.value = "/";
 	movePath.value = [{ name: "文件", path: "/" }];
 	// 获取文件列表
 	const res = await service.get("/getFileList", { params: { path: moveDir.value } });
 	console.log(res.fileList);
 	moveFileList.value = res.fileList;
+}
+function canMoveTo(targetID) {
+	for (var i = 0; i < fromFiles.value.length; ++i) {
+		if (targetID == fromFiles.value[i]) return false;
+	}
+	return true;
 }
 function updateDirPath(item) {
 	moveDir.value = item.filePath + item.fileName + "/";
@@ -598,52 +621,69 @@ async function rename() {
 
 // 移动
 async function move() {
-	console.log(formFile.value, " ===> ", moveDir.value);
-	if (formFile.value.filePath == moveDir.value) {
+	console.log(fromFiles.value, " ===> ", moveDir.value);
+	const res = await service.post("/moveFiles", { fromFileIDList: fromFiles.value, toFolderPath: moveDir.value });
+	if (res.meta.code == 0) {
 		ElMessage({
-			message: "已在该文件夹下",
+			message: "移动成功",
+			type: "success",
 		});
-	} else if (moveDir.value.startsWith(formFile.value.filePath + formFile.value.fileName + "/")) {
-		ElMessage({
-			message: "不能移动到自身目录下",
-			type: "warning",
-		});
+		moveDialogVisible.value = false;
 	} else {
-		// 文件夹移动
-		const res = await service.post("/moveFiles", { fromFileIDList: [formFile.value.id], toFolderPath: moveDir.value });
-		if (res.meta.code == 0) {
-			ElMessage({
-				message: "移动成功",
-				type: "success",
-			});
-			moveDialogVisible.value = false;
-		} else {
-			ElMessage({
-				message: "移动失败",
-				type: "error",
-			});
-		}
+		ElMessage({
+			message: "移动失败",
+			type: "error",
+		});
+	}
+	// if (fromFile.value.filePath == moveDir.value) {
+	// 	ElMessage({
+	// 		message: "已在该文件夹下",
+	// 	});
+	// } else if (moveDir.value.startsWith(fromFile.value.filePath + fromFile.value.fileName + "/")) {
+	// 	ElMessage({
+	// 		message: "不能移动到自身目录下",
+	// 		type: "warning",
+	// 	});
+	// } else {
+	// 	// 文件夹移动
+	// 	const res = await service.post("/moveFiles", { fromFileIDList: [fromFile.value.id], toFolderPath: moveDir.value });
+	// 	if (res.meta.code == 0) {
+	// 		ElMessage({
+	// 			message: "移动成功",
+	// 			type: "success",
+	// 		});
+	// 		moveDialogVisible.value = false;
+	// 	} else {
+	// 		ElMessage({
+	// 			message: "移动失败",
+	// 			type: "error",
+	// 		});
+	// 	}
+	// }
+}
+async function moveFiles() {
+	console.log(draggableTreeRef.value.checkedList);
+	var fromFileIDList = draggableTreeRef.value.checkedList;
+	const res = await service.post("/moveFiles", { fromFileIDList, toFolderPath: moveDir.value });
+	if (res.meta.code == 0) {
+		ElMessage({
+			message: "移动成功",
+			type: "success",
+		});
+		moveDialogVisible.value = false;
+	} else {
+		ElMessage({
+			message: "移动失败",
+			type: "error",
+		});
 	}
 }
+
 // 删除
 function deleteFiles(path, ...userFileIDList) {
 	console.log("deleteFiles: ", path, userFileIDList);
 	service.post("/deleteFiles", { userFileIDList, path });
 }
-
-onMounted(() => {
-	// document.addEventListener("dragleave", preventDe);
-	// document.addEventListener("dragover", preventDe);
-	// document.addEventListener("dragenter", preventDe);
-	// document.addEventListener("drop", drop);
-	// window.addEventListener("dragover", preventDe);
-	// window.addEventListener("dragenter", preventDe);
-	// window.addEventListener("drop", drop);
-	// document.querySelector("#filePage").addEventListener("dragover", preventDe);
-	// document.querySelector("#filePage").addEventListener("dragenter", preventDe);
-	// disableDefaultEvents();
-	// document.querySelector("#filePage").addEventListener("drop", drop);
-});
 </script>
 
 <style lang="scss" scoped>
