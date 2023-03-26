@@ -616,6 +616,7 @@ async function move() {
 				message: "移动成功",
 				type: "success",
 			});
+			moveDialogVisible.value = false;
 		} else {
 			ElMessage({
 				message: "移动失败",
