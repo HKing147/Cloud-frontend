@@ -20,7 +20,7 @@
 							<el-dropdown-menu>
 								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
 								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
-								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
+								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
 								<el-dropdown-item @click="showMoveDialog(prop.data)">移动</el-dropdown-item>
 								<el-dropdown-item @click="showDetialDialog(prop.data)">查看详细信息</el-dropdown-item>
@@ -31,6 +31,57 @@
 				</template>
 			</DraggableTree>
 		</div>
+
+		<el-affix position="bottom" target="#filePage" :offset="100" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
+			<div class="ops">
+				<span class="op">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>下载</template>
+						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op" @click="shareFiles(...draggableTreeRef.checkedList)">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>分享</template>
+						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op" @click="collectedFiles(...draggableTreeRef.checkedList)">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>取消收藏</template>
+						<el-icon :size="18" color="#f35b51"><Star /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op" @click="deleteFiles(currentDir + '/', ...draggableTreeRef.checkedList)">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>放入回收站</template>
+						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
+					</el-tooltip>
+				</span>
+				<span class="op">
+					<el-dropdown trigger="click">
+						<span>
+							<el-tooltip placement="top" :offset="20">
+								<template #content>更多</template>
+								<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
+							</el-tooltip>
+						</span>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click="showMoveDialog(...draggableTreeRef.checkedList)">移动</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
+				</span>
+				<span class="op" @click="draggableTreeRef.cancel">
+					<el-tooltip placement="top" :offset="20">
+						<template #content>取消多选</template>
+						<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
+					</el-tooltip>
+				</span>
+			</div>
+		</el-affix>
+
 		<!-- 重命名文件(夹)对话框 -->
 		<el-dialog v-model="renameDialogVisible" title="重命名" width="25%" style="border-radius: 10px" draggable>
 			<img style="width: 120px; display: block; margin: 0 auto" :src="'/public/assets/icon/' + renameFile.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
@@ -110,49 +161,6 @@
 			<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
 		</div>
 	</el-affix> -->
-
-	<div class="affix">
-		<el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
-			<div class="ops">
-				<span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>下载</template>
-						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
-					</el-tooltip>
-				</span>
-				<span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>分享</template>
-						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
-					</el-tooltip>
-				</span>
-				<span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>取消收藏</template>
-						<el-icon :size="18" color="#f35b51"><Star /></el-icon>
-					</el-tooltip>
-				</span>
-				<span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>放入回收站</template>
-						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
-					</el-tooltip>
-				</span>
-				<span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>更多</template>
-						<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
-					</el-tooltip>
-				</span>
-				<span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>取消多选</template>
-						<el-icon :size="18" color="#c6c6c7"><CircleCloseFilled /></el-icon>
-					</el-tooltip>
-				</span>
-			</div>
-		</el-affix>
-	</div>
 
 	<!-- <drag-upload :onDrop="drop"></drag-upload> -->
 </template>
@@ -389,13 +397,9 @@ async function shareFiles(...userFileIDList) {
 }
 
 // 收藏
-function collected(item) {
-	console.log("collected: ");
-	var fileIDList = [];
-	console.log(item);
-	fileIDList.push(item.id);
+function collectedFiles(...fileIDList) {
 	service.post("/collectedFiles", { fileIDList });
-	item.isCollect = !item.isCollect;
+	// item.isCollect = !item.isCollect;
 }
 
 // 重命名
@@ -469,38 +473,90 @@ function deleteFiles(path, ...userFileIDList) {
 		width: 100%;
 	}
 }
-.affix {
-	text-align: center;
-	.el-affix {
-		// width: 200px;
-		margin: 0 auto;
-		// width: 0px;
-		// overflow: hidden;
-		white-space: nowrap;
-		display: inline-block;
-		// text-align: center;
-		// position: absolute;
-		// padding: 20px;
-		.ops {
-			background: #313136;
-			padding: 15px;
-			// width: 100%;
-			border-radius: 15px;
-			.op {
-				padding: 5px;
-				padding-bottom: 0px;
-				margin: 5px;
-				// .el-icon {
-				// 	margin-left: 7px;
-				// 	margin-right: 7px;
-				// }
-				&:hover {
-					cursor: pointer;
-					background: #555559;
-					border-radius: 5px;
-				}
+// .affix {
+// 	text-align: center;
+// 	.el-affix {
+// 		// width: 200px;
+// 		margin: 0 auto;
+// 		// width: 0px;
+// 		// overflow: hidden;
+// 		white-space: nowrap;
+// 		display: inline-block;
+// 		// text-align: center;
+// 		// position: absolute;
+// 		// padding: 20px;
+// 		.ops {
+// 			background: #313136;
+// 			padding: 15px;
+// 			// width: 100%;
+// 			border-radius: 15px;
+// 			.op {
+// 				padding: 5px;
+// 				padding-bottom: 0px;
+// 				margin: 5px;
+// 				// .el-icon {
+// 				// 	margin-left: 7px;
+// 				// 	margin-right: 7px;
+// 				// }
+// 				&:hover {
+// 					cursor: pointer;
+// 					background: #555559;
+// 					border-radius: 5px;
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+.el-affix {
+	// width: 200px;
+	margin: 0 auto;
+	// width: 0px;
+	// overflow: hidden;
+	white-space: nowrap;
+	display: inline-block;
+	// text-align: center;
+	// position: absolute;
+	// padding: 20px;
+	.ops {
+		background: #313136;
+		padding: 15px;
+		// width: 100%;
+		border-radius: 15px;
+		.op {
+			padding: 5px;
+			padding-bottom: 0px;
+			margin: 5px;
+			// .el-icon {
+			// 	margin-left: 7px;
+			// 	margin-right: 7px;
+			// }
+			&:hover {
+				cursor: pointer;
+				background: #555559;
+				border-radius: 5px;
 			}
 		}
+	}
+}
+.canSelect {
+	&:hover {
+		cursor: pointer;
+		background: #f5f5f6;
+		border-radius: 5px;
+	}
+}
+.cannotSelect {
+	opacity: 0.5;
+	&:hover {
+		cursor: not-allowed;
+	}
+}
+.detail {
+	.attrValue {
+		font-size: 12px;
+		opacity: 0.5;
+		margin: 5px 0;
 	}
 }
 :deep(.el-upload-dragger) {

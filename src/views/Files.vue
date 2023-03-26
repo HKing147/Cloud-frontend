@@ -57,7 +57,7 @@
 							<el-dropdown-menu>
 								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
 								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
-								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
+								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
 								<el-dropdown-item @click="showMoveDialog(prop.data.id)">移动</el-dropdown-item>
 								<el-dropdown-item @click="showDetialDialog(prop.data)">查看详细信息</el-dropdown-item>
@@ -82,7 +82,7 @@
 						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op">
+				<span class="op" @click="collectedFiles(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>收藏</template>
 						<el-icon :size="18" color="#c6c6c7"><Star /></el-icon>
@@ -94,12 +94,6 @@
 						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
 					</el-tooltip>
 				</span>
-				<!-- <span class="op">
-					<el-tooltip placement="top" :offset="20">
-						<template #content>更多</template>
-						<el-icon :size="18" color="#c6c6c7"><MoreFilled /></el-icon>
-					</el-tooltip>
-				</span> -->
 				<span class="op">
 					<el-dropdown trigger="click">
 						<span>
@@ -602,13 +596,13 @@ async function shareFiles(...userFileIDList) {
 }
 
 // 收藏
-function collected(item) {
-	console.log("collected: ");
-	var fileIDList = [];
-	console.log(item);
-	fileIDList.push(item.id);
+function collectedFiles(...fileIDList) {
+	// console.log("collectedFiles: ");
+	// var fileIDList = [];
+	// console.log(item);
+	// fileIDList.push(item.id);
 	service.post("/collectedFiles", { fileIDList });
-	item.isCollect = !item.isCollect;
+	// item.isCollect = !item.isCollect;
 }
 
 // 重命名
