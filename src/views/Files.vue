@@ -61,6 +61,7 @@
 								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
 								<el-dropdown-item @click="showMoveDialog(prop.data)">移动</el-dropdown-item>
+								<el-dropdown-item @click="showDetialDialog(prop.data)">查看详细信息</el-dropdown-item>
 								<el-dropdown-item divided @click="deleteFiles(prop.data.filePath, prop.data.id)">删除</el-dropdown-item>
 							</el-dropdown-menu>
 						</template>
@@ -174,8 +175,34 @@
 				</span>
 			</template>
 		</el-dialog>
+		<!-- 查看详细信息对话框 -->
+		<el-dialog class="detail" v-model="detailDialogVisible" :title="fileDetail.fileName" width="25%" style="border-radius: 10px" draggable>
+			<div style="display: flex; flex-direction: row">
+				<img style="margin: 0 auto; height: 120px" :src="'/public/assets/icon/' + fileDetail.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+			</div>
+			<div style="font-size: 18px; margin: 10px 0">详细信息</div>
+			<div>文件名</div>
+			<div class="attrValue">{{ fileDetail.fileName }}</div>
+			<div>文件大小</div>
+			<div class="attrValue">
+				{{
+					fileDetail.type == "folder"
+						? "-" // 文件夹不显示大小
+						: fileDetail.size / 1024 < 1024
+						? (fileDetail.size / 1024).toFixed(2) + "KB" // 小于1MB
+						: fileDetail.size / 1024 / 1024 < 1024
+						? (fileDetail.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
+						: (fileDetail.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
+				}}
+			</div>
+			<div>文件位置</div>
+			<div class="attrValue">{{ fileDetail.filePath }}</div>
+			<div>云端创建时间</div>
+			<div class="attrValue">{{ new Date(fileDetail.createdTime).toLocaleString() }}</div>
+			<div>最后修改时间</div>
+			<div class="attrValue">{{ new Date(fileDetail.updatedTime).toLocaleString() }}</div>
+		</el-dialog>
 	</div>
-	<el-button @click="print">按钮</el-button>
 
 	<drag-upload :onDrop="drop"></drag-upload>
 </template>
@@ -366,9 +393,7 @@ async function getFileList(sortMethod) {
 // watchEffect(() => {
 // 	console.log("******* ", draggableTreeRef.value.sortMethod);
 // });
-function print() {
-	console.log("sortMethod:", draggableTreeRef.value.sortMethod);
-}
+
 // watch(
 // 	() => route.params.currentDir,
 // 	async (newval, oldval) => {
@@ -494,6 +519,14 @@ watchEffect(() => {
 	// 最后再更新moveFileList
 	updateMoveFileList();
 });
+
+// 查看详细信息
+const detailDialogVisible = ref(false);
+const fileDetail = ref({});
+function showDetialDialog(item) {
+	detailDialogVisible.value = true;
+	fileDetail.value = item;
+}
 
 const searchFileDialogVisible = ref(false);
 const fileName = ref("");
@@ -775,6 +808,13 @@ onMounted(() => {
 	opacity: 0.5;
 	&:hover {
 		cursor: not-allowed;
+	}
+}
+.detail {
+	.attrValue {
+		font-size: 12px;
+		opacity: 0.5;
+		margin: 5px 0;
 	}
 }
 // :deep(.el-dialog__body) {
