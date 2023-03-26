@@ -15,7 +15,7 @@
 							<span>{{ item.name }}</span>
 						</el-menu-item>
 						<div class="space">
-							<el-progress :percentage="50" />
+							<el-progress :percentage="Math.ceil((userInfo.usedSpace * 100 * 100) / userInfo.totalSpace) / 100" />
 						</div>
 						<div class="foot">
 							<img :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />

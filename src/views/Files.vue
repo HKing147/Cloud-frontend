@@ -661,23 +661,6 @@ async function move() {
 	// 	}
 	// }
 }
-async function moveFiles() {
-	console.log(draggableTreeRef.value.checkedList);
-	var fromFileIDList = draggableTreeRef.value.checkedList;
-	const res = await service.post("/moveFiles", { fromFileIDList, toFolderPath: moveDir.value });
-	if (res.meta.code == 0) {
-		ElMessage({
-			message: "移动成功",
-			type: "success",
-		});
-		moveDialogVisible.value = false;
-	} else {
-		ElMessage({
-			message: "移动失败",
-			type: "error",
-		});
-	}
-}
 
 // 删除
 function deleteFiles(path, ...userFileIDList) {
