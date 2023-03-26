@@ -12,8 +12,93 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" :parentDir="'../files/'" ref="draggableTreeRef" />
+			<DraggableTree :data="data" :parentDir="'../files/'" ref="draggableTreeRef">
+				<template v-slot="prop">
+					<el-dropdown>
+						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
+								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
+								<el-dropdown-item @click="collected(prop.data)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
+								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
+								<el-dropdown-item @click="showMoveDialog(prop.data)">移动</el-dropdown-item>
+								<el-dropdown-item @click="showDetialDialog(prop.data)">查看详细信息</el-dropdown-item>
+								<el-dropdown-item divided @click="deleteFiles(prop.data.filePath, prop.data.id)">删除</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
+				</template>
+			</DraggableTree>
 		</div>
+		<!-- 重命名文件(夹)对话框 -->
+		<el-dialog v-model="renameDialogVisible" title="重命名" width="25%" style="border-radius: 10px" draggable>
+			<img style="width: 120px; display: block; margin: 0 auto" :src="'/public/assets/icon/' + renameFile.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+			<template #footer>
+				<span>
+					<el-input size="large" style="margin-bottom: 20px" v-model="renameFile.fileName" />
+					<el-button color="#637dff" style="color: white" type="primary" @click="rename"> 确定 </el-button>
+				</span>
+			</template>
+		</el-dialog>
+		<!-- 移动文件对话框 -->
+		<el-dialog v-model="moveDialogVisible" title="移动到" width="30%" style="border-radius: 10px" draggable>
+			<el-breadcrumb separator-icon="ArrowRight">
+				<el-breadcrumb-item style="cursor: pointer" @click="moveDir = item.path" v-for="(item, index) in movePath" :key="index">{{ item.name }}</el-breadcrumb-item>
+				<!-- <el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
+				<el-breadcrumb-item><a href="./backup">我的备份</a></el-breadcrumb-item>
+				<el-breadcrumb-item>相册</el-breadcrumb-item> -->
+			</el-breadcrumb>
+			<el-scrollbar max-height="300px" style="margin-top: 10px">
+				<div v-for="(item, index) in moveFileList" :key="index">
+					<div
+						@click="item.isFolder ? updateDirPath(item) : null"
+						style="padding: 3px; width: 95%; display: flex; flex-direction: row; align-items: center"
+						:class="item.isFolder ? 'canSelect' : 'cannotSelect'"
+					>
+						<img
+							style="width: 30px; height: 30px; margin-right: 15px"
+							:src="'/public/assets/icon/' + item.type + '.png'"
+							onerror="this.src='/public/assets/icon/other.png'"
+						/>
+						{{ item.fileName }}
+					</div>
+				</div>
+			</el-scrollbar>
+			<template #footer>
+				<span>
+					<el-button @click="moveDialogVisible = false"> 取消 </el-button>
+					<el-button color="#637dff" style="color: white" type="primary" @click="move"> 移动到此处 </el-button>
+				</span>
+			</template>
+		</el-dialog>
+		<!-- 查看详细信息对话框 -->
+		<el-dialog class="detail" v-model="detailDialogVisible" :title="fileDetail.fileName" width="25%" style="border-radius: 10px" draggable>
+			<div style="display: flex; flex-direction: row">
+				<img style="margin: 0 auto; height: 120px" :src="'/public/assets/icon/' + fileDetail.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+			</div>
+			<div style="font-size: 18px; margin: 10px 0">详细信息</div>
+			<div>文件名</div>
+			<div class="attrValue">{{ fileDetail.fileName }}</div>
+			<div>文件大小</div>
+			<div class="attrValue">
+				{{
+					fileDetail.type == "folder"
+						? "-" // 文件夹不显示大小
+						: fileDetail.size / 1024 < 1024
+						? (fileDetail.size / 1024).toFixed(2) + "KB" // 小于1MB
+						: fileDetail.size / 1024 / 1024 < 1024
+						? (fileDetail.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
+						: (fileDetail.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
+				}}
+			</div>
+			<div>文件位置</div>
+			<div class="attrValue">{{ fileDetail.filePath }}</div>
+			<div>云端创建时间</div>
+			<div class="attrValue">{{ new Date(fileDetail.createdTime).toLocaleString() }}</div>
+			<div>最后修改时间</div>
+			<div class="attrValue">{{ new Date(fileDetail.updatedTime).toLocaleString() }}</div>
+		</el-dialog>
 	</div>
 	<!-- <el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 		<div class="ops">
@@ -78,9 +163,7 @@ import { onBeforeMount, onMounted, reactive, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
-function send() {
-	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
-}
+
 // const data = reactive([
 // 	{
 // 		id: 1,
@@ -222,7 +305,6 @@ function send() {
 
 // 当前请求的文件夹路径：/前端/Vue/
 var data = ref([]);
-// var data = reactive([]);
 const path = ref([{ name: "文件", path: "" }]);
 const route = new useRoute();
 
@@ -234,42 +316,123 @@ async function getCollectedList() {
 
 getCollectedList();
 
-// watchEffect(async () => {
-// 	var list = route.params.currentDir;
-// 	path.value = [{ name: "文件", path: "/" }];
-// 	updatePath(list);
-// 	currentDir.value = path.value[path.value.length - 1].path;
-// 	data.value = await getFileList(currentDir);
-// 	// getFileList(currentDir);
-// 	// var res = await service.get("/getFileList", { params: { path: currentDir.value } });
-// 	// console.log("fileList: ", res.fileList);
-// 	// data.value = reactive(res.fileList);
-// 	// console.log("data: ", data.value);
-// });
+const draggableTreeRef = ref();
 
-// // 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
-// function drop(e) {
-// 	console.log(e);
-// 	e.preventDefault();
-// 	console.log("currentDir:", currentDir);
-// 	upload(e, currentDir.value + "/");
-// }
-
-onMounted(() => {
-	// document.addEventListener("dragleave", preventDe);
-	// document.addEventListener("dragover", preventDe);
-	// document.addEventListener("dragenter", preventDe);
-	// document.addEventListener("drop", drop);
-	// window.addEventListener("dragover", preventDe);
-	// window.addEventListener("dragenter", preventDe);
-	// window.addEventListener("drop", drop);
-	// document.querySelector("#filePage").addEventListener("dragover", preventDe);
-	// document.querySelector("#filePage").addEventListener("dragenter", preventDe);
-	// disableDefaultEvents();
-	// document.querySelector("#filePage").addEventListener("drop", drop);
+// 重命名
+const renameDialogVisible = ref(false);
+const renameFile = ref({});
+function showRenameDialog(item) {
+	renameFile.value = item;
+	renameDialogVisible.value = true;
+	console.log(renameFile.value);
+}
+// 移动
+const moveDialogVisible = ref(false);
+const formFile = ref({});
+const moveDir = ref("/");
+const movePath = ref([{ name: "文件", path: "/" }]);
+const moveFileList = ref([]);
+async function showMoveDialog(file) {
+	moveDialogVisible.value = true;
+	formFile.value = file;
+	moveDir.value = "/";
+	movePath.value = [{ name: "文件", path: "/" }];
+	// 获取文件列表
+	const res = await service.get("/getFileList", { params: { path: moveDir.value } });
+	console.log(res.fileList);
+	moveFileList.value = res.fileList;
+}
+function updateDirPath(item) {
+	moveDir.value = item.filePath + item.fileName + "/";
+	movePath.value.push({ name: item.fileName, path: moveDir.value });
+}
+async function updateMoveFileList() {
+	const res = await service.get("/getFileList", { params: { path: moveDir.value } });
+	console.log(res.fileList);
+	moveFileList.value = res.fileList;
+}
+watchEffect(() => {
+	console.log("moveDir: ", moveDir.value);
+	// moveDir发生变化，更新movePath
+	var list = moveDir.value.split("/");
+	console.log("list: ", list);
+	movePath.value = movePath.value.slice(0, list.length - 1);
+	console.log("movePath: ", movePath.value);
+	// 最后再更新moveFileList
+	updateMoveFileList();
 });
 
-const draggableTreeRef = ref();
+// 查看详细信息
+const detailDialogVisible = ref(false);
+const fileDetail = ref({});
+function showDetialDialog(item) {
+	detailDialogVisible.value = true;
+	fileDetail.value = item;
+}
+
+// 下载
+function download(fileUrl) {
+	console.log("fileUrl: ", fileUrl);
+	// ElNotification({
+	// 	title: "Custom Position",
+	// 	dangerouslyUseHTMLString: true,
+	// 	message: "<div>{{data}}</div>",
+	// 	position: "bottom-right",
+	// });
+	// window.open(fileUrl);
+}
+
+// 分享
+async function shareFiles(...userFileIDList) {
+	const res = await service.post("/shareFiles", { userFileIDList });
+	console.log(res);
+}
+
+// 收藏
+function collected(item) {
+	console.log("collected: ");
+	var fileIDList = [];
+	console.log(item);
+	fileIDList.push(item.id);
+	service.post("/collectedFiles", { fileIDList });
+	item.isCollect = !item.isCollect;
+}
+
+// 重命名
+async function rename() {
+	console.log("重命名文件: ", renameFile.value);
+	const res = await service.post("/renameFile", { userFileID: renameFile.value.id, newFileName: renameFile.value.fileName });
+	console.log(res);
+	if (res.meta.code == 0) renameDialogVisible.value = false;
+}
+
+// 移动
+async function move() {
+	console.log(formFile.value, " ===> ", moveDir.value);
+	if (formFile.value.filePath == moveDir.value) {
+		ElMessage({
+			message: "已在该文件夹下",
+		});
+	} else if (moveDir.value.startsWith(formFile.value.filePath + formFile.value.fileName + "/")) {
+		ElMessage({
+			message: "不能移动到自身目录下",
+			type: "warning",
+		});
+	} else {
+		// 移动逻辑
+
+		// 文件夹移动
+		ElMessage({
+			message: "移动成功",
+			type: "success",
+		});
+	}
+}
+// 删除
+function deleteFiles(path, ...userFileIDList) {
+	console.log("deleteFiles: ", path, userFileIDList);
+	service.post("/deleteFiles", { userFileIDList, path });
+}
 </script>
 
 <style lang="scss" scoped>

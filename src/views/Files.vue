@@ -51,7 +51,6 @@
 		<div class="content">
 			<DraggableTree :data="data" :getFileList="getFileList" ref="draggableTreeRef">
 				<template v-slot="prop">
-					<!-- {{ prop.prop }} -->
 					<el-dropdown>
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 						<template #dropdown>
@@ -463,7 +462,7 @@ async function uploadFolder(e) {
 		console.log(res);
 	}
 }
-
+// 创建文件夹
 const createFolderDialogVisible = ref(false);
 const folderName = ref("新建文件夹");
 async function createFolder() {
@@ -475,16 +474,15 @@ async function createFolder() {
 		createFolderDialogVisible.value = false;
 	}
 }
-
+// 重命名
 const renameDialogVisible = ref(false);
-// const renemeFile = reactive({});
 const renameFile = ref({});
 function showRenameDialog(item) {
 	renameFile.value = item;
 	renameDialogVisible.value = true;
 	console.log(renameFile.value);
 }
-
+// 移动
 const moveDialogVisible = ref(false);
 const formFile = ref({});
 const moveDir = ref("/");
@@ -612,10 +610,18 @@ async function move() {
 		});
 	} else {
 		// 文件夹移动
-		ElMessage({
-			message: "移动成功",
-			type: "success",
-		});
+		const res = await service.post("/moveFiles", { fromFileIDList: [formFile.value.id], toFolderPath: moveDir.value });
+		if (res.meta.code == 0) {
+			ElMessage({
+				message: "移动成功",
+				type: "success",
+			});
+		} else {
+			ElMessage({
+				message: "移动失败",
+				type: "error",
+			});
+		}
 	}
 }
 // 删除
