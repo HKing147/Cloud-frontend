@@ -58,6 +58,11 @@ const routes = [
 			},
 		],
 	},
+	{
+		name: "Share",
+		path: "/share/:shareUrl",
+		component: () => import("../views/Share.vue"),
+	},
 
 	{
 		name: "Draggable",

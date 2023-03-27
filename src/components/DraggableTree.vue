@@ -25,7 +25,7 @@
 					<el-icon v-show="sortMethod == 'updated_at'"><Top /></el-icon>
 					<el-icon v-show="sortMethod == 'updated_at desc'"><Bottom /></el-icon>
 				</el-col>
-				<el-col :span="5" @click="changeSortMethod('size')" style="padding-left: 190px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
+				<el-col :span="5" @click="changeSortMethod('size')" style="padding-left: 180px; display: flex; flex-direction: row; align-items: center; cursor: pointer">
 					大小
 					<el-icon v-show="sortMethod == 'size'"><Top /></el-icon>
 					<el-icon v-show="sortMethod == 'size desc'"><Bottom /></el-icon>

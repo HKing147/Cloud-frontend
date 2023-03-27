@@ -1,0 +1,180 @@
+<template>
+	<div class="main">
+		<div class="head"></div>
+		<div class="container">
+			<div class="container-head">
+				<div class="avatar">
+					<img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
+					<div>
+						<div style="font-size: 16px; font-weight: 600">分享文件</div>
+						<div style="font-size: 13px; font-weight: 100; display: flex; flex-direction: row">
+							<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 50px">
+								{{ shareUserInfo.userName }}
+							</span>
+							<span> · 永久有效</span>
+						</div>
+					</div>
+				</div>
+				<el-button color="#637dff" style="color: white" @click="showSaveDialog(...draggableTreeRef.checkedList)">保存到我的云盘</el-button>
+			</div>
+			<DraggableTree :data="fileList" :getFileList="getFileList" ref="draggableTreeRef"></DraggableTree>
+		</div>
+		<!-- 保存文件对话框 -->
+		<el-dialog v-model="saveDialogVisible" title="保存到" width="30%" style="border-radius: 10px" draggable>
+			<el-breadcrumb separator-icon="ArrowRight">
+				<el-breadcrumb-item style="cursor: pointer" @click="saveDir = item.path" v-for="(item, index) in savePath" :key="index">{{ item.name }}</el-breadcrumb-item>
+				<!-- <el-breadcrumb-item :to="{ path: './' }"> 文件 </el-breadcrumb-item>
+				<el-breadcrumb-item><a href="./backup">我的备份</a></el-breadcrumb-item>
+				<el-breadcrumb-item>相册</el-breadcrumb-item> -->
+			</el-breadcrumb>
+			<el-scrollbar max-height="300px" style="margin-top: 10px">
+				<div v-for="(item, index) in saveFileList" :key="index">
+					<div
+						@click="item.isFolder ? updateDirPath(item) : null"
+						style="padding: 3px; width: 95%; display: flex; flex-direction: row; align-items: center"
+						:class="item.isFolder ? 'canSelect' : 'cannotSelect'"
+					>
+						<img
+							style="width: 30px; height: 30px; margin-right: 15px"
+							:src="'/public/assets/icon/' + item.type + '.png'"
+							onerror="this.src='/public/assets/icon/other.png'"
+						/>
+						{{ item.fileName }}
+					</div>
+				</div>
+			</el-scrollbar>
+			<template #footer>
+				<span>
+					<el-button @click="saveDialogVisible = false"> 取消 </el-button>
+					<el-button color="#637dff" style="color: white" type="primary" @click="save"> 保存到此处 </el-button>
+				</span>
+			</template>
+		</el-dialog>
+	</div>
+</template>
+
+<script setup>
+import { onMounted, ref } from "vue";
+import service from "../request";
+import router from "../router";
+
+const draggableTreeRef = ref();
+const shareUserInfo = ref({});
+const shareUrl = ref("");
+const fileList = ref([]);
+
+onMounted(async () => {
+	var list = router.currentRoute.value.params.shareUrl.split("_");
+	if (list.length != 3 || list[0] != "share") {
+		ElMessage({
+			message: "invalid params",
+			type: "error",
+		});
+		router.push("/home/files");
+	}
+	shareUrl.value = router.currentRoute.value.params.shareUrl;
+	var userID = parseInt(list[1]);
+	console.log(shareUrl);
+	console.log(userID);
+	const res = await service.get("selectUserByID", { params: { userID } });
+	if (res.meta.code == 0) {
+		shareUserInfo.value = res.user;
+	}
+	await getFileList("updated_at");
+});
+
+async function getFileList(sortMethod) {
+	const res = await service.get("/getShareByShareUrl", { params: { shareUrl: shareUrl.value, sortMethod } });
+	console.log("fileList: ", res.fileList);
+	if (res.meta.code == 0) {
+		fileList.value = res.fileList;
+	}
+}
+
+// 保存
+const saveDialogVisible = ref(false);
+// const fromFile = ref({});
+const fromFiles = ref([]);
+const saveDir = ref("/");
+const savePath = ref([{ name: "文件", path: "/" }]);
+const saveFileList = ref([]);
+async function showSaveDialog(...fileIDList) {
+	saveDialogVisible.value = true;
+	// fromFile.value = file;
+	fromFiles.value = fileIDList;
+	saveDir.value = "/";
+	savePath.value = [{ name: "文件", path: "/" }];
+	// 获取文件列表
+	const res = await service.get("/getFileList", { params: { path: saveDir.value } });
+	console.log(res.fileList);
+	saveFileList.value = res.fileList;
+}
+function updateDirPath(item) {
+	saveDir.value = item.filePath + item.fileName + "/";
+	savePath.value.push({ name: item.fileName, path: saveDir.value });
+}
+async function updateSaveFileList() {
+	const res = await service.get("/getFileList", { params: { path: saveDir.value } });
+	console.log(res.fileList);
+	saveFileList.value = res.fileList;
+}
+watchEffect(() => {
+	console.log("saveDir: ", saveDir.value);
+	// saveDir发生变化，更新savePath
+	var list = saveDir.value.split("/");
+	console.log("list: ", list);
+	savePath.value = savePath.value.slice(0, list.length - 1);
+	console.log("savePath: ", savePath.value);
+	// 最后再更新saveFileList
+	updateSaveFileList();
+});
+function save() {
+	console.log(fromFiles.value, " ==> ", saveDir.value);
+}
+</script>
+
+<style lang="scss" scoped>
+.main {
+	width: 100%;
+	height: 100%;
+	.head {
+		height: 50px;
+		background-color: aliceblue;
+	}
+	.container {
+		width: 70%;
+		margin: 0 auto;
+		margin-top: 50px;
+		.container-head {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-bottom: 30px;
+			.avatar {
+				display: flex;
+				flex-direction: row;
+				img {
+					margin-right: 10px;
+					width: 40px;
+					height: 40px;
+					border-radius: 50%;
+				}
+			}
+		}
+	}
+}
+
+.canSelect {
+	&:hover {
+		cursor: pointer;
+		background: #f5f5f6;
+		border-radius: 5px;
+	}
+}
+.cannotSelect {
+	opacity: 0.5;
+	&:hover {
+		cursor: not-allowed;
+	}
+}
+</style>
