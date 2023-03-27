@@ -216,21 +216,44 @@
 				<img style="height: 120px" :src="'/public/assets/icon/folder.png'" onerror="this.src='/public/assets/icon/other.png'" />
 			</div>
 			<div style="text-align: center; margin: 30px">共 {{ shareFileIDList.length }} 个文件</div>
-			<div style="margin: 20px 0">
-				<span style="margin-right: 10px"> 选择有效期 </span>
-				<el-select style="width: 120px" v-model="shareDuration" placeholder="Select">
-					<el-option v-for="item in duratinOptions" :key="item.value" :label="item.label" :value="item.value" />
-				</el-select>
+			<div v-if="!shareSuccess">
+				<div style="margin: 20px 0">
+					<span style="margin-right: 10px"> 选择有效期 </span>
+					<el-select style="width: 120px" v-model="shareDuration" placeholder="Select">
+						<el-option v-for="item in duratinOptions" :key="item.value" :label="item.label" :value="item.value" />
+					</el-select>
+				</div>
+				<div style="margin: 20px 0">
+					<span style="margin-right: 24px">分享形式 </span>
+					<el-select style="width: 260px" v-model="shareMethod" placeholder="Select">
+						<el-option v-for="item in shareMethodOptions" :key="item.value" :label="item.label" :value="item.value" />
+					</el-select>
+				</div>
 			</div>
-			<div style="margin: 20px 0">
-				<span style="margin-right: 24px">分享形式 </span>
-				<el-select style="width: 260px" v-model="shareMethod" placeholder="Select">
-					<el-option v-for="item in shareMethodOptions" :key="item.value" :label="item.label" :value="item.value" />
-				</el-select>
+			<div v-else>
+				<div>
+					<div style="font-size: 16px; margin: 10px 0">分享链接</div>
+					<el-input id="shareUrl" size="large" v-model="shareUrl" disabled>
+						<template #suffix>
+							<el-icon :size="20" style="cursor: pointer" @click="copy('#shareUrl')"><CopyDocument /></el-icon>
+						</template>
+					</el-input>
+					<div v-if="sharePassword != ''">
+						<div style="font-size: 16px; margin: 10px 0">提取码</div>
+						<el-input style="width: 30%" id="sharePassword" size="large" v-model="sharePassword" disabled>
+							<template #suffix>
+								<el-icon :size="20" style="cursor: pointer" @click="copy('#sharePassword')"><CopyDocument /></el-icon>
+							</template>
+						</el-input>
+					</div>
+				</div>
 			</div>
 			<template #footer>
-				<span>
+				<span v-if="!shareSuccess">
 					<el-button color="#637dff" style="color: white" type="primary" @click="shareFiles"> 创建分享 </el-button>
+				</span>
+				<span v-else>
+					<el-button color="#637dff" style="color: white" type="primary" @click="copyLink"> 复制链接口令 </el-button>
 				</span>
 			</template>
 		</el-dialog>
@@ -580,10 +603,48 @@ const shareDialogVisible = ref(false);
 const shareFileIDList = ref([]);
 const shareDuration = ref(30);
 const shareMethod = ref(false);
+const shareSuccess = ref(false);
+const shareUrl = ref("");
+const sharePassword = ref("");
 function showShareDialog(...fileIDList) {
 	console.log(fileIDList);
 	shareFileIDList.value = fileIDList;
 	shareDialogVisible.value = true;
+}
+
+function copy(id) {
+	const input = document.querySelector(id);
+	input.select();
+	navigator.clipboard.writeText(input.value);
+	ElMessage({
+		message: "复制成功",
+		type: "success",
+	});
+	// if (document.execCommand("copy")) {
+	// 	document.execCommand("copy");
+	// 	ElMessage({
+	// 		message: "复制成功",
+	// 		type: "success",
+	// 	});
+	// 	console.log("复制成功");
+	// } else {
+	// 	ElMessage({
+	// 		message: "复制失败",
+	// 		type: "error",
+	// 	});
+	// }
+}
+
+function copyLink() {
+	var link =
+		shareUrl.value +
+		(sharePassword.value != "" ? " 提取码: " + sharePassword.value : "") +
+		" 点击链接保存，或者复制本段内容，打开「阿里云盘」APP ，无需下载极速在线查看，视频原画倍速播放。";
+	navigator.clipboard.writeText(link);
+	ElMessage({
+		message: "复制成功",
+		type: "success",
+	});
 }
 
 // 搜索文件
@@ -640,6 +701,11 @@ async function shareFiles() {
 	console.log(shareFileIDList.value);
 	const res = await service.post("/shareFiles", { shareDuration: shareDuration.value, shareMethod: shareMethod.value, userFileIDList: shareFileIDList.value });
 	console.log(res);
+	if (res.meta.code == 0) {
+		shareSuccess.value = true;
+		shareUrl.value = "http://localhost:5173/share/" + res.shareUrl;
+		sharePassword.value = res.password;
+	}
 }
 
 // 收藏
