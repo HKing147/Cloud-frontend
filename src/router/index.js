@@ -92,7 +92,7 @@ router.beforeEach((to, from, next) => {
 	console.log("to: ", to);
 	console.log("from: ", from);
 	console.log("next: ", next);
-	if (to.fullPath == "/") {
+	if (to.fullPath == "/" || to.fullPath.startsWith("/share")) {
 		// 登录注册页
 		next();
 	} else {

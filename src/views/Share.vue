@@ -1,7 +1,9 @@
 <template>
 	<div class="main">
 		<div class="head">
-			<img src="/public/assets/img/logo.png" @click="toHome" />
+			<img class="logo" src="/public/assets/img/logo.png" @click="to('/home')" />
+			<img class="avatar" v-if="userInfo != null" :src="userInfo != null ? userInfo.avatar : ''" onerror="this.src='/public/assets/img/tou.jpg'" />
+			<el-button v-else @click="to('/')" round>登录</el-button>
 		</div>
 		<div v-if="shareInfo.password == ''" class="container">
 			<div class="container-head">
@@ -71,16 +73,26 @@ import service from "../request";
 import router from "../router";
 
 const draggableTreeRef = ref();
+const userInfo = ref(null);
 const shareUserInfo = ref({});
 const shareInfo = ref({});
 const shareUrl = ref("");
 const fileList = ref([]);
 
-function toHome() {
-	router.push("/home");
+function to(target) {
+	router.push(target);
+}
+
+async function getUserInfo() {
+	const res = await service.get("/getUserInfo");
+	console.log("getUserInfo: ", res);
+	if (res.meta.code == 0) {
+		userInfo.value = res.user;
+	}
 }
 
 onMounted(async () => {
+	await getUserInfo();
 	var list = router.currentRoute.value.params.shareUrl.split("_");
 	if (list.length != 3 || list[0] != "share") {
 		ElMessage({
@@ -168,14 +180,26 @@ async function saveFiles() {
 		display: flex;
 		padding: 0 20px;
 		flex-direction: row;
+		justify-content: space-between;
 		box-shadow: 0 0 1px 1px rgba(28, 28, 32, 0.05), 0 8px 24px rgba(28, 28, 32, 0.06);
-		img {
+		.logo {
 			width: 110px;
 			height: auto;
 			margin: auto 0;
 			&:hover {
 				cursor: pointer;
 			}
+		}
+		.avatar {
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			margin: auto 0;
+		}
+		.el-button {
+			width: 80px;
+			font-size: 14px;
+			margin: auto 0;
 		}
 	}
 	.container {
