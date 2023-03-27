@@ -86,9 +86,7 @@ function to(target) {
 async function getUserInfo() {
 	const res = await service.get("/getUserInfo");
 	console.log("getUserInfo: ", res);
-	if (res.meta.code == 0) {
-		userInfo.value = res.user;
-	}
+	userInfo.value = res.user;
 }
 
 onMounted(async () => {
