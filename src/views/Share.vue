@@ -46,7 +46,7 @@
 			<template #footer>
 				<span>
 					<el-button @click="saveDialogVisible = false"> 取消 </el-button>
-					<el-button color="#637dff" style="color: white" type="primary" @click="save"> 保存到此处 </el-button>
+					<el-button color="#637dff" style="color: white" type="primary" @click="saveFiles"> 保存到此处 </el-button>
 				</span>
 			</template>
 		</el-dialog>
@@ -128,8 +128,9 @@ watchEffect(() => {
 	// 最后再更新saveFileList
 	updateSaveFileList();
 });
-function save() {
+async function saveFiles() {
 	console.log(fromFiles.value, " ==> ", saveDir.value);
+	const res = await service.post("/saveFiles", { userFileIDList: fromFiles.value, savePath: saveDir.value });
 }
 </script>
 
