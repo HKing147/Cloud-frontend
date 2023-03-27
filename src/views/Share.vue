@@ -1,7 +1,7 @@
 <template>
 	<div class="main">
 		<div class="head"></div>
-		<div class="container">
+		<div v-if="shareInfo.password == ''" class="container">
 			<div class="container-head">
 				<div class="avatar">
 					<img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
@@ -11,13 +11,23 @@
 							<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 50px">
 								{{ shareUserInfo.userName }}
 							</span>
-							<span> · 永久有效</span>
+							<span> · {{ shareInfo.expirationTime == null ? "永久有效" : "30天内有效，请尽快保存" }}</span>
 						</div>
 					</div>
 				</div>
 				<el-button color="#637dff" style="color: white" @click="showSaveDialog(...draggableTreeRef.checkedList)">保存到我的云盘</el-button>
 			</div>
 			<DraggableTree :data="fileList" :getFileList="getFileList" ref="draggableTreeRef"></DraggableTree>
+		</div>
+		<div v-else style="width: 50%; margin: 0 auto; margin-top: 50px; display: flex; flex-direction: column; text-align: center">
+			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
+			<div style="font-size: 20px; display: flex; margin: 30px 0; justify-content: center">
+				<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100px">{{ shareUserInfo.userName }}</span>
+				分享了文件
+			</div>
+			<el-input v-model="inputPassword" size="large" style="width: 50%; display: block; margin: 20px auto" placeholder="请输入提取码"></el-input>
+			<el-button @click="check" color="#4f75ff" size="large" style="font-size: 18px; width: 28%; display: block; margin: 0 auto">查看文件</el-button>
+			<span style="margin-top: 10px; font-size: 12px; font-weight: 100">{{ shareInfo.expirationTime == null ? "永久有效" : "30天内有效" }}</span>
 		</div>
 		<!-- 保存文件对话框 -->
 		<el-dialog v-model="saveDialogVisible" title="保存到" width="30%" style="border-radius: 10px" draggable>
@@ -60,6 +70,7 @@ import router from "../router";
 
 const draggableTreeRef = ref();
 const shareUserInfo = ref({});
+const shareInfo = ref({});
 const shareUrl = ref("");
 const fileList = ref([]);
 
@@ -88,6 +99,14 @@ async function getFileList(sortMethod) {
 	console.log("fileList: ", res.fileList);
 	if (res.meta.code == 0) {
 		fileList.value = res.fileList;
+		shareInfo.value = res.shareInfo;
+	}
+}
+
+const inputPassword = ref("");
+function check() {
+	if (inputPassword.value == shareInfo.value.password) {
+		shareInfo.value.password = "";
 	}
 }
 
