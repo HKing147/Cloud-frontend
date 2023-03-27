@@ -1,6 +1,8 @@
 <template>
 	<div class="main">
-		<div class="head"></div>
+		<div class="head">
+			<img src="/public/assets/img/logo.png" @click="toHome" />
+		</div>
 		<div v-if="shareInfo.password == ''" class="container">
 			<div class="container-head">
 				<div class="avatar">
@@ -73,6 +75,10 @@ const shareUserInfo = ref({});
 const shareInfo = ref({});
 const shareUrl = ref("");
 const fileList = ref([]);
+
+function toHome() {
+	router.push("/home");
+}
 
 onMounted(async () => {
 	var list = router.currentRoute.value.params.shareUrl.split("_");
@@ -158,8 +164,19 @@ async function saveFiles() {
 	width: 100%;
 	height: 100%;
 	.head {
-		height: 50px;
-		background-color: aliceblue;
+		height: 60px;
+		display: flex;
+		padding: 0 20px;
+		flex-direction: row;
+		box-shadow: 0 0 1px 1px rgba(28, 28, 32, 0.05), 0 8px 24px rgba(28, 28, 32, 0.06);
+		img {
+			width: 110px;
+			height: auto;
+			margin: auto 0;
+			&:hover {
+				cursor: pointer;
+			}
+		}
 	}
 	.container {
 		width: 70%;
