@@ -86,7 +86,9 @@ function handleAvatarSuccess(res, uploadFile, uploadFiles) {
 <style lang="scss" scoped>
 .main {
 	.head {
-		padding: 30px;
+		padding-top: 30px;
+		padding-left: 30px;
+		padding-bottom: 10px;
 		font-size: 16px;
 		font-weight: 600;
 	}
