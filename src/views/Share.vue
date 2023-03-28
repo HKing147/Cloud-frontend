@@ -11,12 +11,14 @@
 					<img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
 					<div>
 						<!-- <div style="font-size: 16px; font-weight: 600">分享文件</div> -->
-						<div style="font-size: 16px; font-weight: 600; padding-bottom: 5px">
+						<div style="font-size: 16px; font-weight: 600">
 							<el-breadcrumb separator-icon="ArrowRight">
-								<el-breadcrumb-item v-for="(path, index) in paths" :key="index" @click="changePaths(path)">{{ path.name }}</el-breadcrumb-item>
+								<el-breadcrumb-item style="cursor: pointer" v-for="(path, index) in paths" :key="index" @click="changePaths(path)">{{
+									path.name
+								}}</el-breadcrumb-item>
 							</el-breadcrumb>
 						</div>
-						<div style="font-size: 13px; font-weight: 100; display: flex; flex-direction: row">
+						<div style="font-size: 13px; font-weight: 100; display: flex; flex-direction: row; margin-top: 8px">
 							<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 50px">
 								{{ shareUserInfo.userName }}
 							</span>
