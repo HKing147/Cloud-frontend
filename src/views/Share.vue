@@ -2,13 +2,32 @@
 	<div class="main">
 		<div class="head">
 			<img class="logo" src="/public/assets/img/logo.png" @click="to('/home')" />
-			<img class="avatar" v-if="userInfo != null" :src="userInfo != null ? userInfo.avatar : ''" onerror="this.src='/public/assets/img/tou.jpg'" />
+			<!-- <img class="avatar" v-if="userInfo != null" :src="userInfo != null ? userInfo.avatar : ''" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+			<div
+				v-if="userInfo != null"
+				class="avatar"
+				:style="{
+					backgroundImage: 'url(' + userInfo.avatar + ')',
+					backgroundSize: 'cover',
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center center',
+				}"
+			></div>
 			<el-button v-else @click="to('/')" round>登录</el-button>
 		</div>
 		<div v-if="shareInfo.password == ''" class="container">
 			<div class="container-head">
-				<div class="avatar">
-					<img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
+				<div class="avatarContainer">
+					<!-- <img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+					<div
+						class="avatar"
+						:style="{
+							backgroundImage: 'url(' + shareUserInfo.avatar + ')',
+							backgroundSize: 'cover',
+							backgroundRepeat: 'no-repeat',
+							backgroundPosition: 'center center',
+						}"
+					></div>
 					<div>
 						<!-- <div style="font-size: 16px; font-weight: 600">分享文件</div> -->
 						<div style="font-size: 16px; font-weight: 600">
@@ -261,15 +280,21 @@ async function saveFiles() {
 			flex-direction: row;
 			justify-content: space-between;
 			margin-bottom: 30px;
-			.avatar {
+			.avatarContainer {
 				display: flex;
 				flex-direction: row;
-				img {
-					margin-right: 10px;
+				.avatar {
 					width: 40px;
 					height: 40px;
 					border-radius: 50%;
+					margin-right: 10px;
 				}
+				// img {
+				// 	margin-right: 10px;
+				// 	width: 40px;
+				// 	height: 40px;
+				// 	border-radius: 50%;
+				// }
 			}
 		}
 	}

@@ -18,7 +18,7 @@
 							<el-progress :percentage="Math.ceil((userInfo.usedSpace * 100 * 100) / userInfo.totalSpace) / 100" />
 						</div>
 						<div class="foot">
-							<!-- <img :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+							<!-- <img style="width: 40px; height: 40px; border-radius: 50%" :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
 							<div
 								class="avatar"
 								:style="{

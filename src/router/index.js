@@ -84,6 +84,11 @@ const routes = [
 		path: "/dragUpload",
 		component: () => import("../components/DragUpload.vue"),
 	},
+	{
+		name: "Chat",
+		path: "/chat",
+		component: () => import("../views/Chat.vue"),
+	},
 ];
 
 const router = createRouter({
