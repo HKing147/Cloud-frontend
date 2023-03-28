@@ -69,7 +69,6 @@
 
 <script setup>
 import { reactive, ref } from "vue";
-// import type { FormRules } from "element-plus";
 import service from "../request";
 import router from "../router";
 
@@ -187,7 +186,6 @@ async function register() {
 			message: res.meta.msg,
 			type: "success",
 		});
-		// router.push("/home/files");
 		if (history.state.back != null) {
 			// 上一页存在则跳转过去
 			router.push(history.state.back);
