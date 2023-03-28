@@ -56,6 +56,11 @@ const routes = [
 				icon: "Document",
 				component: () => import("../views/Files.vue"),
 			},
+			{
+				name: "个人中心",
+				path: "/home/profile",
+				component: () => import("../views/Profile.vue"),
+			},
 		],
 	},
 	{

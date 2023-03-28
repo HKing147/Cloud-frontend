@@ -211,6 +211,13 @@ watchEffect(() => {
 async function saveFiles() {
 	console.log(fromFiles.value, " ==> ", saveDir.value);
 	const res = await service.post("/saveFiles", { userFileIDList: fromFiles.value, savePath: saveDir.value });
+	ElMessage({
+		message: res.meta.msg,
+		type: res.meta.msg,
+	});
+	if (res.meta.code == 0) {
+		saveDialogVisible.value = false;
+	}
 }
 </script>
 

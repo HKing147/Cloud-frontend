@@ -18,14 +18,23 @@
 							<el-progress :percentage="Math.ceil((userInfo.usedSpace * 100 * 100) / userInfo.totalSpace) / 100" />
 						</div>
 						<div class="foot">
-							<img :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
+							<!-- <img :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+							<div
+								class="avatar"
+								:style="{
+									backgroundImage: 'url(' + userInfo.avatar + ')',
+									backgroundSize: 'cover',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'center center',
+								}"
+							></div>
 							<span class="uname">{{ userInfo.userName }}</span>
 							<span class="menu">
 								<el-dropdown trigger="click">
 									<el-icon><More /></el-icon>
 									<template #dropdown>
 										<el-dropdown-menu>
-											<el-dropdown-item>个人中心</el-dropdown-item>
+											<el-dropdown-item @click="toProfile()">个人中心</el-dropdown-item>
 											<el-dropdown-item @click="logout">退出登录</el-dropdown-item>
 											<el-dropdown-item>Action 3</el-dropdown-item>
 											<el-dropdown-item disabled>Action 4</el-dropdown-item>
@@ -83,6 +92,10 @@ getUserInfo();
 function logout() {
 	vueCookies.remove("token"); // 删除token
 	router.push("/"); // 返回登陆页面
+}
+
+function toProfile() {
+	router.push("/home/profile");
 }
 
 onMounted(() => {
@@ -183,7 +196,7 @@ getActiveIndex();
 				// justify-content: center;
 				position: fixed;
 				bottom: 20px;
-				img {
+				.avatar {
 					width: 40px;
 					height: 40px;
 					border-radius: 50%;
