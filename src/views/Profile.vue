@@ -25,19 +25,19 @@
 						</div>
 					</el-upload>
 				</div>
-				<el-input size="large" v-model="userInfo.userName">
+				<el-input size="large" v-model="userInfo.userName" clearable>
 					<template #prepend>用户名</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.password">
+				<el-input size="large" v-model="userInfo.password" clearable>
 					<template #prepend>修改密码</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.email">
+				<el-input size="large" v-model="userInfo.email" clearable>
 					<template #prepend>邮箱</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.QQ">
+				<el-input size="large" v-model="userInfo.QQ" clearable>
 					<template #prepend>QQ</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.Wechat">
+				<el-input size="large" v-model="userInfo.Wechat" clearable>
 					<template #prepend>微信</template>
 				</el-input>
 				<el-input size="large" v-model="userInfo.totalSpace" disabled>
