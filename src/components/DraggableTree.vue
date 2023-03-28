@@ -116,6 +116,7 @@ const props = defineProps({
 		default: true,
 	},
 	getFileList: Function,
+	openFolder: Function,
 	// sortMethod: {
 	// 	// 排序方法
 	// 	type: String,
@@ -271,6 +272,10 @@ function handleNodeClick(e) {
 }
 
 function openFolder(e) {
+	if (props.openFolder != null) {
+		props.openFolder(e);
+		return;
+	}
 	console.log("openFolder: ", e);
 	// if (e.type == "folder") {
 	if (e.isFolder) {

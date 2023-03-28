@@ -10,7 +10,12 @@
 				<div class="avatar">
 					<img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
 					<div>
-						<div style="font-size: 16px; font-weight: 600">分享文件</div>
+						<!-- <div style="font-size: 16px; font-weight: 600">分享文件</div> -->
+						<div style="font-size: 16px; font-weight: 600; padding-bottom: 5px">
+							<el-breadcrumb separator-icon="ArrowRight">
+								<el-breadcrumb-item v-for="(path, index) in paths" :key="index" @click="changePaths(path)">{{ path.name }}</el-breadcrumb-item>
+							</el-breadcrumb>
+						</div>
 						<div style="font-size: 13px; font-weight: 100; display: flex; flex-direction: row">
 							<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 50px">
 								{{ shareUserInfo.userName }}
@@ -21,7 +26,7 @@
 				</div>
 				<el-button color="#637dff" style="color: white" @click="showSaveDialog(...draggableTreeRef.checkedList)">保存到我的云盘</el-button>
 			</div>
-			<DraggableTree :data="fileList" :getFileList="getFileList" ref="draggableTreeRef"></DraggableTree>
+			<DraggableTree :data="fileList" :getFileList="getFileList" :openFolder="openFolder" ref="draggableTreeRef"></DraggableTree>
 		</div>
 		<div v-else style="width: 50%; margin: 0 auto; margin-top: 50px; display: flex; flex-direction: column; text-align: center">
 			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
@@ -116,6 +121,36 @@ async function getFileList(sortMethod) {
 	if (res.meta.code == 0) {
 		fileList.value = res.fileList;
 		shareInfo.value = res.shareInfo;
+	}
+}
+
+const paths = ref([{ id: "0", name: "分享文件" }]);
+async function changePaths(path) {
+	var list = path.id.split("-");
+	var newLen = list.length;
+	console.log("newLen: ", newLen);
+	paths.value = paths.value.slice(0, newLen);
+	// 再更新fileList
+	if (newLen == 1) {
+		// folderID=0 => 获取分享文件列表
+		getFileList("");
+	} else {
+		const res = await service.get("/getFileListByFolderID", { params: { folderID: parseInt(list[newLen - 1]), sortMethod: "" } });
+		if (res.meta.code == 0) {
+			fileList.value = res.fileList;
+		}
+	}
+}
+
+async function openFolder(folder) {
+	console.log(folder);
+	// 打开该文件夹（获取文件列表）
+	const res = await service.get("/getFileListByFolderID", { params: { folderID: folder.id, sortMethod: "" } });
+	if (res.meta.code == 0) {
+		fileList.value = res.fileList;
+		// 更新paths
+		var lastPath = paths.value[paths.value.length - 1];
+		paths.value.push({ id: lastPath.id + "-" + folder.id, name: folder.fileName });
 	}
 }
 
