@@ -70,10 +70,8 @@
 <script setup>
 import { reactive, ref } from "vue";
 // import type { FormRules } from "element-plus";
-import { useRouter } from "vue-router";
 import service from "../request";
-
-const router = useRouter();
+import router from "../router";
 
 const loginForm = reactive({ email: "1470042308@qq.com", password: "123456", rememberMe: false });
 async function login() {
@@ -88,14 +86,19 @@ async function login() {
 			message: res.meta.msg,
 			type: "success",
 		});
-		router.push("/home/files");
+		if (history.state.back != null) {
+			// 上一页存在则跳转过去
+			router.push(history.state.back);
+		} else {
+			// 否则跳转至home
+			router.push("/home/files");
+		}
 	} else {
 		ElMessage({
 			message: res.meta.msg,
 			type: "error",
 		});
 	}
-	// router.push("/home");
 }
 const loginRules = reactive({
 	email: [
@@ -184,7 +187,14 @@ async function register() {
 			message: res.meta.msg,
 			type: "success",
 		});
-		router.push("/home/files");
+		// router.push("/home/files");
+		if (history.state.back != null) {
+			// 上一页存在则跳转过去
+			router.push(history.state.back);
+		} else {
+			// 否则跳转至home
+			router.push("/home/files");
+		}
 	} else {
 		ElMessage({
 			message: res.meta.msg,

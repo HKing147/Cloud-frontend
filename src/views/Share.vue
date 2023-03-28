@@ -134,6 +134,14 @@ const saveDir = ref("/");
 const savePath = ref([{ name: "文件", path: "/" }]);
 const saveFileList = ref([]);
 async function showSaveDialog(...fileIDList) {
+	// 先判断是否登录
+	if (userInfo.value == null) {
+		ElMessage({
+			message: "请先登录",
+			type: "error",
+		});
+		router.push("/");
+	}
 	saveDialogVisible.value = true;
 	// fromFile.value = file;
 	fromFiles.value = fileIDList;
