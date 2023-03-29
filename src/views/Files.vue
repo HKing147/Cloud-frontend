@@ -273,7 +273,7 @@ import { onBeforeMount, onMounted, reactive, ref, watch, watchEffect } from "vue
 import { useRoute } from "vue-router";
 import checkUploaded from "../apis";
 import DraggableTree from "../components/DraggableTree.vue";
-import service from "../request";
+import service, { baseURL } from "../request";
 import { upload, uploadFile, scan } from "../utils/index.js";
 
 const currentDir = ref("/"); // 当前文件夹（默认为'/'）
@@ -488,7 +488,7 @@ const fileList = ref([]);
 function uploadOneFile(file) {
 	// 每次上传一个
 	console.log("file:", file, "path: ", currentDir.value + "/");
-	// uploadFile(file.raw, currentDir.value + "/");
+	uploadFile(file.raw, currentDir.value + "/");
 }
 
 function clickInput() {
@@ -707,7 +707,8 @@ async function shareFiles() {
 	console.log(res);
 	if (res.meta.code == 0) {
 		shareSuccess.value = true;
-		shareUrl.value = "http://localhost:5173/share/" + res.shareUrl;
+		// shareUrl.value = "http://localhost:5173/share/" + res.shareUrl;
+		shareUrl.value = window.location.origin + "/share/" + res.shareUrl;
 		sharePassword.value = res.password;
 	}
 }
