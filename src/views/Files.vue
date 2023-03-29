@@ -120,7 +120,7 @@
 
 		<!-- 创建文件夹对话框 -->
 		<el-dialog v-model="createFolderDialogVisible" title="新建文件夹" width="25%" style="border-radius: 10px" draggable>
-			<img style="width: 120px; display: block; margin: 0 auto" src="/public/assets/img/maxfolder.png" />
+			<img style="width: 120px; display: block; margin: 0 auto" src="/assets/img/maxfolder.png" />
 			<template #footer>
 				<span>
 					<el-input size="large" style="margin-bottom: 20px" v-model="folderName" placeholder="请输入文件夹名" />
@@ -130,7 +130,11 @@
 		</el-dialog>
 		<!-- 重命名文件(夹)对话框 -->
 		<el-dialog v-model="renameDialogVisible" title="重命名" width="25%" style="border-radius: 10px" draggable>
-			<img style="width: 120px; display: block; margin: 0 auto" :src="'/public/assets/icon/' + renameFile.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+			<img
+				style="width: 120px; display: block; margin: 0 auto"
+				:src="'/assets/icon/' + renameFile.type + '.png'"
+				onerror="this.src='/public/assets/icon/other.png';this.onerror=null"
+			/>
 			<template #footer>
 				<span>
 					<el-input size="large" style="margin-bottom: 20px" v-model="renameFile.fileName" />
@@ -147,7 +151,7 @@
 			</template>
 			<el-scrollbar max-height="450px">
 				<div v-for="item in searchFileList" :key="item">
-					<img :src="'/public/assets/icon/' + item.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+					<img :src="'/public/assets/icon/' + item.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 					{{ item.fileName }}
 				</div>
 			</el-scrollbar>
@@ -170,7 +174,7 @@
 						<img
 							style="width: 30px; height: 30px; margin-right: 15px"
 							:src="'/public/assets/icon/' + item.type + '.png'"
-							onerror="this.src='/public/assets/icon/other.png'"
+							onerror="this.src='/public/assets/icon/other.png';this.onerror=null"
 						/>
 						{{ item.fileName }}
 					</div>
@@ -186,7 +190,7 @@
 		<!-- 查看详细信息对话框 -->
 		<el-dialog class="detail" v-model="detailDialogVisible" :title="fileDetail.fileName" width="25%" style="border-radius: 10px" draggable>
 			<div style="display: flex; flex-direction: row">
-				<img style="margin: 0 auto; height: 120px" :src="'/public/assets/icon/' + fileDetail.type + '.png'" onerror="this.src='/public/assets/icon/other.png'" />
+				<img style="margin: 0 auto; height: 120px" :src="'/assets/icon/' + fileDetail.type + '.png'" onerror="this.src='/public/assets/icon/other.png';this.onerror=null" />
 			</div>
 			<div style="font-size: 18px; margin: 10px 0">详细信息</div>
 			<div>文件名</div>
@@ -213,7 +217,7 @@
 		<!-- 分享文件对话框 -->
 		<el-dialog class="detail" v-model="shareDialogVisible" title="分享文件" width="30%" style="border-radius: 10px" draggable>
 			<div style="text-align: center; padding: 10px">
-				<img style="height: 120px" :src="'/public/assets/icon/folder.png'" onerror="this.src='/public/assets/icon/other.png'" />
+				<img style="height: 120px" :src="'/assets/icon/folder.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 			</div>
 			<div style="text-align: center; margin: 30px">共 {{ shareFileIDList.length }} 个文件</div>
 			<div v-if="!shareSuccess">

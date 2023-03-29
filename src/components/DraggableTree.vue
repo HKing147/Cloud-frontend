@@ -43,7 +43,7 @@
 							</el-col>
 							<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
 							<el-col :span="0.2" @click="props.canOpenFolder && openFolder(data)">
-								<img :src="'/public/assets/icon/' + data.type + '.png'" onerror="this.src='/public/assets/icon/other.png'"
+								<img :src="'/assets/icon/' + data.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null"
 							/></el-col>
 							<el-col :span="12" @click="props.canOpenFolder && openFolder(data)"> {{ node.label }}</el-col>
 							<el-col class="icon" :span="1">

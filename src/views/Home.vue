@@ -6,7 +6,7 @@
 					<el-menu :default-active="activeIndex" router>
 						<!-- <el-menu-item index="0" style="margin-bottom: 20px"> -->
 						<div class="logo">
-							<img src="/public/assets/img/logo.png" style="width: 104px; height: auto" />
+							<img src="/assets/img/logo.png" style="width: 104px; height: auto" />
 						</div>
 						<el-menu-item v-for="(item, index) in menuList.value" :index="item.path" :key="index">
 							<el-icon :size="20">

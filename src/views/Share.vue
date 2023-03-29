@@ -1,7 +1,7 @@
 <template>
 	<div class="main">
 		<div class="head">
-			<img class="logo" src="/public/assets/img/logo.png" @click="to('/home')" />
+			<img class="logo" src="/assets/img/logo.png" @click="to('/home')" />
 			<!-- <img class="avatar" v-if="userInfo != null" :src="userInfo != null ? userInfo.avatar : ''" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
 			<div
 				v-if="userInfo != null"
@@ -50,7 +50,7 @@
 			<DraggableTree :data="fileList" :getFileList="getFileList" :openFolder="openFolder" ref="draggableTreeRef"></DraggableTree>
 		</div>
 		<div v-else style="width: 50%; margin: 0 auto; margin-top: 50px; display: flex; flex-direction: column; text-align: center">
-			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" />
+			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg';this.onerror=null" />
 			<div style="font-size: 20px; display: flex; margin: 30px 0; justify-content: center">
 				<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100px">{{ shareUserInfo.userName }}</span>
 				分享了文件
@@ -76,8 +76,8 @@
 					>
 						<img
 							style="width: 30px; height: 30px; margin-right: 15px"
-							:src="'/public/assets/icon/' + item.type + '.png'"
-							onerror="this.src='/public/assets/icon/other.png'"
+							:src="'/assets/icon/' + item.type + '.png'"
+							onerror="this.src='/assets/icon/other.png';this.onerror=null"
 						/>
 						{{ item.fileName }}
 					</div>

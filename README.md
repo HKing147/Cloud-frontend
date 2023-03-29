@@ -27,3 +27,7 @@ npm run dev
 ```sh
 npm run build
 ```
+
+# 打包部署前的修改
+
+1. request 文件夹下的[index.js](./src/request/index.js)文件中的 baseURL 修改为服务器的地址。
