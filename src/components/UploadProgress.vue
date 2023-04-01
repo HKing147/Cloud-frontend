@@ -20,10 +20,6 @@ import { parseSize } from "../utils";
 const props = defineProps({
 	data: Array,
 });
-
-watchEffect(() => {
-	console.log("props:", props.data.value);
-});
 </script>
 
 <style lang="scss" scoped>

@@ -27,6 +27,8 @@
 								:show-file-list="false"
 								:auto-upload="false"
 								:on-change="uploadOneFile"
+								:on-success="uploadSuccess"
+								:on-progress="uploadSuccess"
 								multiple
 							>
 								<el-icon :size="18"><Document /></el-icon>上传文件
@@ -275,6 +277,11 @@ import DraggableTree from "../components/DraggableTree.vue";
 import service, { baseURL } from "../request";
 import { upload, uploadFile, scan } from "../utils/index.js";
 import UploadProgress from "../components/UploadProgress.vue";
+import router from "../router";
+
+function uploadSuccess(e) {
+	console.log("uploadSuccess:", e);
+}
 
 const currentDir = ref("/"); // 当前文件夹（默认为'/'）
 // const data = reactive([
@@ -480,11 +487,11 @@ watchEffect(async () => {
 // 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
 const uploadList = ref([]);
 const UploadProgressVisiable = ref(false);
-function drop(e) {
+async function drop(e) {
 	console.log(e);
 	e.preventDefault();
 	console.log("currentDir:", currentDir);
-	upload(e, currentDir.value + "/", uploadList);
+	const res = await upload(e, currentDir.value + "/", uploadList);
 	if (!UploadProgressVisiable.value) {
 		ElNotification({
 			title: "上传文件",
@@ -550,7 +557,9 @@ async function uploadFolder(e) {
 		});
 		UploadProgressVisiable.value = true;
 	}
-	const st = new Set(); // 存储已经创建的文件夹，防止重复创建
+	// const st = new Set();
+	const mp = new Map(); // 存储已经创建的文件夹，防止重复创建
+	mp.set(currentDir.value + "/", currentDir.value + "/");
 	for (var i = 0; i < fileList.length; ++i) {
 		// console.log(fileList[i].webkitRelativePath);
 		var filePath = fileList[i].webkitRelativePath;
@@ -558,18 +567,23 @@ async function uploadFolder(e) {
 		// 先创建该文件的所有祖先文件夹
 		var path = currentDir.value + "/";
 		for (var j = 0; j < list.length - 1; ++j) {
-			if (!st.has(path + list[j] + "/")) {
+			if (!mp.has(path + list[j] + "/")) {
 				// 没有就创建
-				const res = await service.post("/createFolder", { folderName: list[j], path: path });
+				const res = await service.post("/createFolder", { folderName: list[j], path: mp.get(path) });
+				// list[j] = res.file.fileName;
 				console.log(res);
+				// mp[path + list[j] + "/"] = path + res.file.fileName + "/";
+				mp.set(path + list[j] + "/", mp.get(path) + res.file.fileName + "/");
+				console.log(path + list[j] + "/", " ===> ", mp.get(path) + res.file.fileName + "/");
+				// list[j] = res.file.fileName;
 				console.log("create: ", path + list[j] + "/");
 			}
 			path += list[j] + "/";
-			st.add(path);
+			// st.add(path);
 		}
 		console.log(path, " ==> ", list[list.length - 1]);
 		// 最后再上传该文件
-		const res = await uploadFile(fileList[i], path, uploadList, idx);
+		const res = await uploadFile(fileList[i], mp.get(path), uploadList, idx);
 		console.log(res);
 	}
 }
@@ -581,8 +595,10 @@ async function createFolder() {
 		return;
 	}
 	const res = await service.post("/createFolder", { folderName: folderName.value, path: currentDir.value + "/" });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
 	if (res.meta.code == 0) {
 		createFolderDialogVisible.value = false;
+		router.go(0);
 	}
 }
 // 重命名
@@ -756,6 +772,7 @@ async function shareFiles() {
 	console.log(shareFileIDList.value);
 	const res = await service.post("/shareFiles", { shareDuration: shareDuration.value, shareMethod: shareMethod.value, userFileIDList: shareFileIDList.value });
 	console.log(res);
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
 	if (res.meta.code == 0) {
 		shareSuccess.value = true;
 		// shareUrl.value = "http://localhost:5173/share/" + res.shareUrl;
@@ -779,7 +796,10 @@ async function rename() {
 	console.log("重命名文件: ", renameFile.value);
 	const res = await service.post("/renameFile", { userFileID: renameFile.value.id, newFileName: renameFile.value.fileName });
 	console.log(res);
-	if (res.meta.code == 0) renameDialogVisible.value = false;
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		renameDialogVisible.value = false;
+	}
 }
 
 // 移动
