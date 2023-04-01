@@ -2,32 +2,56 @@ import axios from "axios";
 import SparkMD5 from "spark-md5";
 import { checkUploaded, uploadLargeFile } from "../apis";
 import service from "../request";
-export function upload(e, path) {
-	let files = e.dataTransfer.items;
-	console.log("files:", files);
-	for (var i = 0; i < files.length; ++i) {
-		console.log("file[", i, "] = ", files[i]);
-		scan(files[i].webkitGetAsEntry(), path); // 不要加await,加了只会遍历到第一个元素
+
+export async function calFileSize(file, uploadList, idx) {
+	if (file.isDirectory) {
+		console.log("Dire: ", file);
+		await file.createReader().readEntries(
+			async (entries) => {
+				for await (let entry of entries) {
+					calFileSize(entry, uploadList, idx);
+				}
+			},
+			(e) => reject(e)
+		);
+	} else {
+		await file.file((f) => {
+			uploadList.value[idx].size += f.size;
+		});
 	}
 }
 
-export async function uploadFile(file, path) {
+export function upload(e, path, uploadList) {
+	let files = e.dataTransfer.items;
+	console.log("files:", files);
+	for (var i = 0; i < files.length; ++i) {
+		var type = "folder";
+		if (files[i].webkitGetAsEntry().isFile) {
+			type = files[i].webkitGetAsEntry().name.split(".").at(-1);
+		}
+		uploadList.value.push({ fileName: files[i].webkitGetAsEntry().name, type: type, size: 0, uploadedSize: 0 });
+		var idx = uploadList.value.length - 1;
+		calFileSize(files[i].webkitGetAsEntry(), uploadList, idx);
+		scan(files[i].webkitGetAsEntry(), path, uploadList, idx); // 不要加await,加了只会遍历到第一个元素
+	}
+}
+
+export async function uploadFile(file, path, uploadList, idx) {
 	// file是file类型, path: 为文件夹路径，末尾带'/'
 	console.log("文件：", file);
-	// TODO: 上传文件  f 就是file类型
-	// uploadFile(f, "/upload");
 	// 先检查文件是否已经上传过
 	const res = await checkUploaded(file, path);
 	console.log("res+++", res);
 	if (res.meta.code == 0) {
 		// 上传过
+		uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
 	} else {
 		// 没上传过
-		uploadLargeFile(file, path);
+		uploadLargeFile(file, path, uploadList, idx);
 	}
 }
 
-export async function scan(file, path) {
+export async function scan(file, path, uploadList, idx) {
 	// file可能是文件夹
 	if (file.isFile) {
 		// 文件
@@ -42,9 +66,10 @@ export async function scan(file, path) {
 			console.log("res+++", res);
 			if (res.meta.code == 0) {
 				// 上传过
+				uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
 			} else {
 				// 没上传过
-				uploadLargeFile(f, path);
+				uploadLargeFile(f, path, uploadList, idx);
 			}
 		});
 	} else {
@@ -56,7 +81,7 @@ export async function scan(file, path) {
 		file.createReader().readEntries(
 			(entries) => {
 				for (var i = 0; i < entries.length; ++i) {
-					scan(entries[i], path + file.name + "/");
+					scan(entries[i], path + file.name + "/", uploadList, idx);
 				}
 			},
 			(e) => reject(e)
@@ -98,4 +123,20 @@ export function calMD5(file) {
 		}
 		loadNext();
 	});
+}
+
+/**
+ * 解析文件size => str
+ */
+export function parseSize(size) {
+	const base = 1024;
+	if (size / base < base) {
+		// 小于1MB
+		return (size / base).toFixed(2) + "KB";
+	} else if (size / base / base < base) {
+		// 小于1GB
+		return (size / base / base).toFixed(2) + "MB";
+	} else {
+		return (size / base / base / base).toFixed(2) + "GB";
+	}
 }

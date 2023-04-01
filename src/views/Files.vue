@@ -262,7 +262,6 @@
 			</template>
 		</el-dialog>
 	</div>
-
 	<drag-upload :onDrop="drop"></drag-upload>
 </template>
 
@@ -275,6 +274,7 @@ import checkUploaded from "../apis";
 import DraggableTree from "../components/DraggableTree.vue";
 import service, { baseURL } from "../request";
 import { upload, uploadFile, scan } from "../utils/index.js";
+import UploadProgress from "../components/UploadProgress.vue";
 
 const currentDir = ref("/"); // 当前文件夹（默认为'/'）
 // const data = reactive([
@@ -478,17 +478,47 @@ watchEffect(async () => {
 });
 
 // 拖拽上传文件方法（传给drag-upload组件的onDrop方法）
+const uploadList = ref([]);
+const UploadProgressVisiable = ref(false);
 function drop(e) {
 	console.log(e);
 	e.preventDefault();
 	console.log("currentDir:", currentDir);
-	upload(e, currentDir.value + "/");
+	upload(e, currentDir.value + "/", uploadList);
+	if (!UploadProgressVisiable.value) {
+		ElNotification({
+			title: "上传文件",
+			dangerouslyUseHTMLString: true,
+			message: h(UploadProgress, { data: uploadList }),
+			position: "bottom-right",
+			duration: 0,
+			onClose: () => {
+				UploadProgressVisiable.value = false;
+			},
+		});
+		UploadProgressVisiable.value = true;
+	}
 }
 const fileList = ref([]);
 function uploadOneFile(file) {
 	// 每次上传一个
 	console.log("file:", file, "path: ", currentDir.value + "/");
-	uploadFile(file.raw, currentDir.value + "/");
+	uploadList.value.push({ fileName: file.raw.name, type: file.raw.name.split(".").at(-1), size: file.raw.size, uploadedSize: 0 });
+	var idx = uploadList.value.length - 1;
+	uploadFile(file.raw, currentDir.value + "/", uploadList, idx);
+	if (!UploadProgressVisiable.value) {
+		ElNotification({
+			title: "上传文件",
+			dangerouslyUseHTMLString: true,
+			message: h(UploadProgress, { data: uploadList }),
+			position: "bottom-right",
+			duration: 0,
+			onClose: () => {
+				UploadProgressVisiable.value = false;
+			},
+		});
+		UploadProgressVisiable.value = true;
+	}
 }
 
 function clickInput() {
@@ -499,6 +529,27 @@ async function uploadFolder(e) {
 	console.log(e);
 	var fileList = e.target.files;
 	console.log(fileList);
+	var totSize = 0;
+	for (var i = 0; i < fileList.length; ++i) {
+		totSize += fileList[i].size;
+	}
+	var folderName = fileList[0].webkitRelativePath.split("/")[0];
+	uploadList.value.push({ fileName: folderName, type: "folder", size: totSize, uploadedSize: 0 });
+	var idx = uploadList.value.length - 1;
+
+	if (!UploadProgressVisiable.value) {
+		ElNotification({
+			title: "上传文件",
+			dangerouslyUseHTMLString: true,
+			message: h(UploadProgress, { data: uploadList }),
+			position: "bottom-right",
+			duration: 0,
+			onClose: () => {
+				UploadProgressVisiable.value = false;
+			},
+		});
+		UploadProgressVisiable.value = true;
+	}
 	const st = new Set(); // 存储已经创建的文件夹，防止重复创建
 	for (var i = 0; i < fileList.length; ++i) {
 		// console.log(fileList[i].webkitRelativePath);
@@ -518,7 +569,7 @@ async function uploadFolder(e) {
 		}
 		console.log(path, " ==> ", list[list.length - 1]);
 		// 最后再上传该文件
-		const res = await uploadFile(fileList[i], path);
+		const res = await uploadFile(fileList[i], path, uploadList, idx);
 		console.log(res);
 	}
 }
@@ -958,6 +1009,9 @@ function deleteFiles(path, ...userFileIDList) {
 		opacity: 0.5;
 		margin: 5px 0;
 	}
+}
+:deep(.el-notification) {
+	width: 500px;
 }
 // :deep(.el-dialog__body) {
 // 	text-align: center;

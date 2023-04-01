@@ -105,6 +105,7 @@ router.beforeEach((to, from, next) => {
 	if (to.fullPath == "/" || to.fullPath.startsWith("/share")) {
 		// 登录注册页
 		next();
+		return;
 	} else {
 		// 检查是否有token
 		var token = VueCookies.get("token");

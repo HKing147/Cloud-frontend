@@ -45,7 +45,8 @@ import { calMD5 } from "../utils/index.js";
 // 	// 	});
 // }
 
-export async function uploadLargeFile(file, path) {
+export async function uploadLargeFile(file, path, uploadList, idx) {
+	console.log("uploadList: ", uploadList);
 	console.log(file.name, " ==> ", path);
 	// 初始化分片上传事件
 	// var res = await service.get("InitiateMultipartUpload", { params: { filename: file.name } }, { headers: { "Content-Type": "application/json, text/plain, */*" } });
@@ -58,7 +59,7 @@ export async function uploadLargeFile(file, path) {
 	var UploadID = res.UploadID;
 	// console.log("UploadID: ", UploadID);
 	// 默认分片大小 2MB
-	let chunkSize = 1024 * 1024 * 100; // 100MB
+	let chunkSize = 1024 * 1024 * 1; // 1MB
 
 	let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
 		// 总分片数
@@ -84,9 +85,10 @@ export async function uploadLargeFile(file, path) {
 			{ file: new File([e.target.result], file.name), idx: currentChunk, UploadID: UploadID },
 			{ headers: { "Content-Type": "multipart/form-data" } }
 		);
-		if (res.meta.code == 1) {
+		if (res.meta.code == 0) {
 			console.log(res.meta.msg);
-			return;
+			uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + chunkSize);
+			console.log("uploadList--: ", uploadList);
 		}
 		// service.post("UploadPart", { idx: currentChunk, imur: imur }, { headers: { "Content-Type": "multipart/form-data" } });
 		// service.post("UploadPart", formdata, { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
@@ -98,6 +100,7 @@ export async function uploadLargeFile(file, path) {
 			console.log("allMD5: ", MD5);
 			var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5, size: file.size }, { headers: { "Content-Type": "multipart/form-data" } });
 			if (res.meta.code == 1) {
+				uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
 				console.log(res.meta.msg);
 			}
 			return;

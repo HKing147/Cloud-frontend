@@ -70,11 +70,7 @@
 									>{{
 										data.type == "folder"
 											? "" // 文件夹不显示大小
-											: data.size / 1024 < 1024
-											? (data.size / 1024).toFixed(2) + "KB" // 小于1MB
-											: data.size / 1024 / 1024 < 1024
-											? (data.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
-											: (data.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
+											: parseSize(data.size)
 									}}
 								</span></el-col
 							>
@@ -100,6 +96,7 @@
 import { onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import service from "../request";
 import router from "../router";
+import { parseSize } from "../utils";
 const props = defineProps({
 	data: Object,
 	parentDir: {
