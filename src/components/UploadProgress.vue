@@ -1,7 +1,7 @@
 <template>
 	<el-scrollbar max-height="400px">
 		<div class="line" v-for:="(item, idx) in props.data.value" :key="idx">
-			<img :src="'/public/assets/icon/' + item.type + '.png'" onerror="this.src='/public/assets/icon/other.png';this.onerror=null" />
+			<img :src="'/assets/icon/' + item.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 			<div>
 				<span style="display: flex; flex-direction: row; width: 250px">
 					<span class="fileName">{{ item.fileName }}</span>
