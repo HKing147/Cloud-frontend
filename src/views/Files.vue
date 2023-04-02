@@ -491,7 +491,7 @@ async function drop(e) {
 	console.log(e);
 	e.preventDefault();
 	console.log("currentDir:", currentDir);
-	const res = await upload(e, currentDir.value + "/", uploadList);
+	upload(e, currentDir.value + "/", uploadList);
 	if (!UploadProgressVisiable.value) {
 		ElNotification({
 			title: "上传文件",
@@ -846,9 +846,13 @@ async function move() {
 }
 
 // 删除
-function deleteFiles(path, ...userFileIDList) {
+async function deleteFiles(path, ...userFileIDList) {
 	console.log("deleteFiles: ", path, userFileIDList);
-	service.post("/deleteFiles", { userFileIDList, path });
+	const res = await service.post("/deleteFiles", { userFileIDList, path });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 </script>
 

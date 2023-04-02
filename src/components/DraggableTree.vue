@@ -1,5 +1,5 @@
 <template>
-	<div class="main">
+	<div class="main" v-if="props.data.length">
 		<div class="head">
 			<el-row :gutter="0" style="padding-left: 25px; line-height: 18px; color: #6a6a6a; font-size: 12px; display: flex; flex-direction: row; align-items: center">
 				<el-col :span="2">
@@ -90,6 +90,9 @@
 		</template>
 	</el-tree-v2> -->
 	</div>
+	<slot v-else name="empty">
+		<el-empty description="空空如也" />
+	</slot>
 </template>
 
 <script setup>

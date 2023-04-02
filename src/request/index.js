@@ -1,4 +1,6 @@
 import axios from "axios";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 
 export const baseURL = "http://localhost:8080/api"; // 开发
 // export const baseURL = "http://www.lab-0.com:8080/api"; // 发布
@@ -31,10 +33,12 @@ var service = axios.create({
 service.interceptors.request.use(
 	function (config) {
 		// 在发送请求之前做些什么
+		NProgress.start();
 		return config;
 	},
 	function (error) {
 		// 对请求错误做些什么
+		NProgress.done();
 		console.log(error);
 		return Promise.reject(error);
 	}
@@ -43,6 +47,7 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
 	function (response) {
+		NProgress.done();
 		console.log("response: ", response);
 		// ElMessage({
 		// 	message: response.data.meta.msg,
@@ -58,6 +63,7 @@ service.interceptors.response.use(
 		return dataAxios;
 	},
 	function (error) {
+		NProgress.done();
 		// 超出 2xx 范围的状态码都会触发该函数。
 		// 对响应错误做点什么
 		console.log(error);

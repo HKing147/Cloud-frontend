@@ -5,7 +5,7 @@
 			<!-- <el-breadcrumb separator-icon="ArrowRight">
 				<el-breadcrumb-item v-for="(item, index) in path" :to="{ path: '/home/files' + item.path }" :key="index">{{ item.name }}</el-breadcrumb-item>
 			</el-breadcrumb> -->
-			<div class="delete" style="display: flex; flex-direction: row; align-items: center">
+			<div class="delete" style="display: flex; flex-direction: row; align-items: center" @click="clearRecycle">
 				<el-icon :size="20"><Delete /> </el-icon>清空
 			</div>
 			<!-- <div class="addContainer">
@@ -14,7 +14,19 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" :canOpenFolder="false" :parentDir="'../files/'" ref="draggableTreeRef" />
+			<DraggableTree :data="data" :canOpenFolder="false" :parentDir="'../files/'" ref="draggableTreeRef">
+				<template v-slot="prop">
+					<el-dropdown>
+						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click="resumeFiles(prop.data.id)">恢复</el-dropdown-item>
+								<el-dropdown-item @click="completelyDeleteFiles(prop.data.id)">彻底删除</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
+				</template>
+			</DraggableTree>
 		</div>
 	</div>
 	<div class="affix">
@@ -53,6 +65,7 @@ import { onBeforeMount, onMounted, reactive, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
+import router from "../router";
 function send() {
 	axios.post("http://localhost:8080/api/upload", { name: "test", age: 18 }, { headers: { "Content-Type": "multipart/form-data" } });
 }
@@ -204,9 +217,18 @@ async function getRecycle() {
 	data.value = res.recycle;
 }
 getRecycle();
+
+async function clearRecycle() {
+	console.log("清空回收站");
+	const res = await service.post("/clearRecycle");
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
+}
 // var data = reactive([]);
 const path = ref([{ name: "文件", path: "" }]);
-const route = new useRoute();
+// const route = new useRoute();
 
 // watchEffect(async () => {
 // 	var list = route.params.currentDir;
@@ -252,14 +274,22 @@ const draggableTreeRef = ref();
 // 	console.log(draggableTreeRef.value.checkedList);
 // }
 // 恢复文件
-function resumeFiles(...userFileIDList) {
+async function resumeFiles(...userFileIDList) {
 	console.log(userFileIDList);
-	service.post("/resumeFiles", { userFileIDList });
+	const res = await service.post("/resumeFiles", { userFileIDList });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 async function completelyDeleteFiles(...userFileIDList) {
 	console.log("completelyDeleteFiles: ", userFileIDList);
 	const res = await service.post("/completelyDeleteFiles", { userFileIDList });
 	console.log(res);
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 </script>
 

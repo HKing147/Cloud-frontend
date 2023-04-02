@@ -21,7 +21,7 @@ export async function calFileSize(file, uploadList, idx) {
 	}
 }
 
-export async function upload(e, path, uploadList) {
+export function upload(e, path, uploadList) {
 	let files = e.dataTransfer.items;
 	console.log("files:", files);
 	for (var i = 0; i < files.length; ++i) {
@@ -32,9 +32,8 @@ export async function upload(e, path, uploadList) {
 		uploadList.value.push({ fileName: files[i].webkitGetAsEntry().name, type: type, size: 0, uploadedSize: 0 });
 		var idx = uploadList.value.length - 1;
 		calFileSize(files[i].webkitGetAsEntry(), uploadList, idx);
-		await scan(files[i].webkitGetAsEntry(), path, uploadList, idx); // 不要加await,加了只会遍历到第一个元素
+		scan(files[i].webkitGetAsEntry(), path, uploadList, idx); // 不要加await,加了只会遍历到第一个元素
 	}
-	return true;
 }
 
 export async function uploadFile(file, path, uploadList, idx) {
