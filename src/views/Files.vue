@@ -691,19 +691,6 @@ function copy(id) {
 		message: "复制成功",
 		type: "success",
 	});
-	// if (document.execCommand("copy")) {
-	// 	document.execCommand("copy");
-	// 	ElMessage({
-	// 		message: "复制成功",
-	// 		type: "success",
-	// 	});
-	// 	console.log("复制成功");
-	// } else {
-	// 	ElMessage({
-	// 		message: "复制失败",
-	// 		type: "error",
-	// 	});
-	// }
 }
 
 function copyLink() {
@@ -782,13 +769,12 @@ async function shareFiles() {
 }
 
 // 收藏
-function collectedFiles(...fileIDList) {
-	// console.log("collectedFiles: ");
-	// var fileIDList = [];
-	// console.log(item);
-	// fileIDList.push(item.id);
-	service.post("/collectedFiles", { fileIDList });
-	// item.isCollect = !item.isCollect;
+async function collectedFiles(...fileIDList) {
+	const res = await service.post("/collectedFiles", { fileIDList });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 
 // 重命名

@@ -19,7 +19,7 @@
 						<template #dropdown>
 							<el-dropdown-menu>
 								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
-								<el-dropdown-item @click="shareFiles(prop.data.id)">分享</el-dropdown-item>
+								<el-dropdown-item @click="showShareDialog(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
 								<el-dropdown-item @click="showMoveDialog(prop.data)">移动</el-dropdown-item>
@@ -40,7 +40,7 @@
 						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op" @click="shareFiles(...draggableTreeRef.checkedList)">
+				<span class="op" @click="showShareDialog(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>分享</template>
 						<el-icon :size="18" color="#c6c6c7"><Share /></el-icon>
@@ -158,6 +158,53 @@
 			<div>最后修改时间</div>
 			<div class="attrValue">{{ new Date(fileDetail.updatedTime).toLocaleString() }}</div>
 		</el-dialog>
+		<!-- 分享文件对话框 -->
+		<el-dialog class="detail" v-model="shareDialogVisible" title="分享文件" width="30%" style="border-radius: 10px" draggable>
+			<div style="text-align: center; padding: 10px">
+				<img style="height: 120px" :src="'/assets/icon/folder.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
+			</div>
+			<div style="text-align: center; margin: 30px">共 {{ shareFileIDList.length }} 个文件</div>
+			<div v-if="!shareSuccess">
+				<div style="margin: 20px 0">
+					<span style="margin-right: 10px"> 选择有效期 </span>
+					<el-select style="width: 120px" v-model="shareDuration" placeholder="Select">
+						<el-option v-for="item in duratinOptions" :key="item.value" :label="item.label" :value="item.value" />
+					</el-select>
+				</div>
+				<div style="margin: 20px 0">
+					<span style="margin-right: 24px">分享形式 </span>
+					<el-select style="width: 260px" v-model="shareMethod" placeholder="Select">
+						<el-option v-for="item in shareMethodOptions" :key="item.value" :label="item.label" :value="item.value" />
+					</el-select>
+				</div>
+			</div>
+			<div v-else>
+				<div>
+					<div style="font-size: 16px; margin: 10px 0">分享链接</div>
+					<el-input id="shareUrl" size="large" v-model="shareUrl" disabled>
+						<template #suffix>
+							<el-icon :size="20" style="cursor: pointer" @click="copy('#shareUrl')"><CopyDocument /></el-icon>
+						</template>
+					</el-input>
+					<div v-if="sharePassword != ''">
+						<div style="font-size: 16px; margin: 10px 0">提取码</div>
+						<el-input style="width: 30%" id="sharePassword" size="large" v-model="sharePassword" disabled>
+							<template #suffix>
+								<el-icon :size="20" style="cursor: pointer" @click="copy('#sharePassword')"><CopyDocument /></el-icon>
+							</template>
+						</el-input>
+					</div>
+				</div>
+			</div>
+			<template #footer>
+				<span v-if="!shareSuccess">
+					<el-button color="#637dff" style="color: white" type="primary" @click="shareFiles"> 创建分享 </el-button>
+				</span>
+				<span v-else>
+					<el-button color="#637dff" style="color: white" type="primary" @click="copyLink"> 复制链接口令 </el-button>
+				</span>
+			</template>
+		</el-dialog>
 	</div>
 	<!-- <el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 		<div class="ops">
@@ -179,6 +226,7 @@ import { onBeforeMount, onMounted, reactive, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
+import router from "../router";
 
 // const data = reactive([
 // 	{
@@ -399,14 +447,69 @@ function download(fileUrl) {
 }
 
 // 分享
-async function shareFiles(...userFileIDList) {
-	const res = await service.post("/shareFiles", { userFileIDList });
+// 分享文件
+const duratinOptions = [
+	{ value: 30, label: "30天内有效" },
+	{ value: 0, label: "永久有效" },
+];
+const shareMethodOptions = [
+	{ value: false, label: "公开链接（不需提取码即可查看）" },
+	{ value: true, label: "私密链接（需要提取码才能查看）" },
+];
+const shareDialogVisible = ref(false);
+const shareFileIDList = ref([]);
+const shareDuration = ref(30);
+const shareMethod = ref(false);
+const shareSuccess = ref(false);
+const shareUrl = ref("");
+const sharePassword = ref("");
+function showShareDialog(...fileIDList) {
+	console.log(fileIDList);
+	shareFileIDList.value = fileIDList;
+	shareDialogVisible.value = true;
+}
+async function shareFiles() {
+	console.log(shareDuration.value);
+	console.log(shareMethod.value);
+	console.log(shareFileIDList.value);
+	const res = await service.post("/shareFiles", { shareDuration: shareDuration.value, shareMethod: shareMethod.value, userFileIDList: shareFileIDList.value });
 	console.log(res);
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		shareSuccess.value = true;
+		// shareUrl.value = "http://localhost:5173/share/" + res.shareUrl;
+		shareUrl.value = window.location.origin + "/share/" + res.shareUrl;
+		sharePassword.value = res.password;
+	}
+}
+function copy(id) {
+	const input = document.querySelector(id);
+	input.select();
+	navigator.clipboard.writeText(input.value);
+	ElMessage({
+		message: "复制成功",
+		type: "success",
+	});
+}
+function copyLink() {
+	var link =
+		shareUrl.value +
+		(sharePassword.value != "" ? " 提取码: " + sharePassword.value : "") +
+		" 点击链接保存，或者复制本段内容，打开「阿里云盘」APP ，无需下载极速在线查看，视频原画倍速播放。";
+	navigator.clipboard.writeText(link);
+	ElMessage({
+		message: "复制成功",
+		type: "success",
+	});
 }
 
 // 收藏
-function collectedFiles(...fileIDList) {
-	service.post("/collectedFiles", { fileIDList });
+async function collectedFiles(...fileIDList) {
+	const res = await service.post("/collectedFiles", { fileIDList });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 	// item.isCollect = !item.isCollect;
 }
 
@@ -441,9 +544,13 @@ async function move() {
 	}
 }
 // 删除
-function deleteFiles(path, ...userFileIDList) {
+async function deleteFiles(path, ...userFileIDList) {
 	console.log("deleteFiles: ", path, userFileIDList);
-	service.post("/deleteFiles", { userFileIDList, path });
+	const res = await service.post("/deleteFiles", { userFileIDList, path });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 </script>
 
