@@ -38,9 +38,9 @@
 						<el-icon :size="18" color="#c6c6c7"><TurnOff /></el-icon>
 					</el-tooltip>
 				</span>
-				<span class="op">
+				<span class="op" @click="copyLink(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
-						<template #content>彻底删除</template>
+						<template #content>复制链接口令</template>
 						<el-icon :size="18" color="#c6c6c7"><CopyDocument /></el-icon>
 					</el-tooltip>
 				</span>
@@ -84,12 +84,17 @@ async function deleteShares(...shareIDList) {
 		router.go(0);
 	}
 }
-async function copyLink(shareID) {
-	const res = await service.get("/getShareByID", { params: { shareID } });
-	var shareUrl = window.location.origin + "/share/share_" + res.shareInfo.userID + "_" + res.shareInfo.ID;
-	var sharePassword = res.shareInfo.password;
-	var link = shareUrl + (sharePassword != "" ? " 提取码: " + sharePassword : "") + " 点击链接保存，或者复制本段内容，打开「阿里云盘」APP ，无需下载极速在线查看，视频原画倍速播放。";
-	navigator.clipboard.writeText(link);
+async function copyLink(...shareIDList) {
+	var links = "";
+	for (var i = 0; i < shareIDList.length; ++i) {
+		var shareID = shareIDList[i];
+		const res = await service.get("/getShareByID", { params: { shareID } });
+		var shareUrl = window.location.origin + "/share/share_" + res.shareInfo.userID + "_" + res.shareInfo.ID;
+		var sharePassword = res.shareInfo.password;
+		var link = shareUrl + (sharePassword != "" ? " 提取码: " + sharePassword : "") + " 点击链接保存，或者复制本段内容，打开「阿里云盘」APP ，无需下载极速在线查看，视频原画倍速播放。\n";
+		links += link;
+	}
+	navigator.clipboard.writeText(links);
 	ElMessage({
 		message: "复制成功",
 		type: "success",
