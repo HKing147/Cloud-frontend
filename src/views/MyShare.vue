@@ -14,22 +14,34 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" :menuItem="'myShare'" :parentDir="'./share/'" ref="draggableTreeRef" />
+			<DraggableTree :data="data" :menuItem="'myShare'" :parentDir="'./share/'" ref="draggableTreeRef">
+				<template v-slot="prop">
+					<el-dropdown>
+						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click="deleteShares(prop.data.id)">取消分享</el-dropdown-item>
+								<el-dropdown-item @click="copyLink(prop.data.id)">复制链接口令</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
+				</template>
+			</DraggableTree>
 		</div>
 	</div>
 	<div class="affix">
 		<el-affix position="bottom" :offset="60" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 			<div class="ops">
-				<span class="op" @click="resumeFiles(...draggableTreeRef.checkedList)">
+				<span class="op" @click="deleteShares(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
-						<template #content>恢复</template>
-						<el-icon :size="18" color="#c6c6c7"><RefreshLeft /></el-icon>
+						<template #content>取消分享</template>
+						<el-icon :size="18" color="#c6c6c7"><TurnOff /></el-icon>
 					</el-tooltip>
 				</span>
 				<span class="op">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>彻底删除</template>
-						<el-icon :size="18" color="#c6c6c7"><Delete /></el-icon>
+						<el-icon :size="18" color="#c6c6c7"><CopyDocument /></el-icon>
 					</el-tooltip>
 				</span>
 				<!-- <span class="op">
@@ -49,6 +61,7 @@
 
 <script setup>
 import service from "../request";
+import router from "../router";
 const draggableTreeRef = ref();
 const data = ref([]);
 
@@ -63,7 +76,25 @@ async function getShareByID(shareID) {
 	const res = await service.get("/getShareByID", { params: { shareID } });
 	console.log("getShareByID:", res.fileList);
 }
-getShareByID(3);
+async function deleteShares(...shareIDList) {
+	console.log("取消分享: ", shareIDList);
+	const res = await service.post("/deleteShares", { shareIDList });
+	ElMessage({ message: res.meta.msg, type: res.meta.msg });
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
+}
+async function copyLink(shareID) {
+	const res = await service.get("/getShareByID", { params: { shareID } });
+	var shareUrl = window.location.origin + "/share/share_" + res.shareInfo.userID + "_" + res.shareInfo.ID;
+	var sharePassword = res.shareInfo.password;
+	var link = shareUrl + (sharePassword != "" ? " 提取码: " + sharePassword : "") + " 点击链接保存，或者复制本段内容，打开「阿里云盘」APP ，无需下载极速在线查看，视频原画倍速播放。";
+	navigator.clipboard.writeText(link);
+	ElMessage({
+		message: "复制成功",
+		type: "success",
+	});
+}
 </script>
 
 <style lang="scss" scoped>

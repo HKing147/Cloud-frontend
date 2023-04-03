@@ -217,7 +217,7 @@
 			<div class="attrValue">{{ new Date(fileDetail.updatedTime).toLocaleString() }}</div>
 		</el-dialog>
 		<!-- 分享文件对话框 -->
-		<el-dialog class="detail" v-model="shareDialogVisible" title="分享文件" width="30%" style="border-radius: 10px" draggable>
+		<el-dialog class="detail" v-model="shareDialogVisible" :before-close="shareDialogClose" title="分享文件" width="30%" style="border-radius: 10px" draggable>
 			<div style="text-align: center; padding: 10px">
 				<img style="height: 120px" :src="'/assets/icon/folder.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 			</div>
@@ -682,7 +682,6 @@ function showShareDialog(...fileIDList) {
 	shareFileIDList.value = fileIDList;
 	shareDialogVisible.value = true;
 }
-
 function copy(id) {
 	const input = document.querySelector(id);
 	input.select();
@@ -692,7 +691,6 @@ function copy(id) {
 		type: "success",
 	});
 }
-
 function copyLink() {
 	var link =
 		shareUrl.value +
@@ -703,6 +701,9 @@ function copyLink() {
 		message: "复制成功",
 		type: "success",
 	});
+}
+function shareDialogClose(done) {
+    router.go(0)
 }
 
 // 搜索文件
