@@ -15,8 +15,10 @@
 							<span>{{ item.name }}</span>
 						</el-menu-item>
 						<div class="space">
-							<el-progress :percentage="Math.ceil((userInfo.usedSpace * 100 * 100) / userInfo.totalSpace) / 100" />
+							<div style="font-size: 13px; color: #25262b">{{ parseSize(userInfo.usedSpace) }} / {{ parseSize(userInfo.totalSpace) }}</div>
+							<el-progress color="#697fe8" :percentage="Math.ceil((userInfo.usedSpace * 100 * 100) / userInfo.totalSpace) / 100" />
 						</div>
+						<el-divider border-style="double" />
 						<div class="foot">
 							<!-- <img style="width: 40px; height: 40px; border-radius: 50%" :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
 							<div
@@ -70,6 +72,7 @@
 import { inject, onMounted, reactive, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import service from "../request";
+import { parseSize } from "../utils";
 const router = useRouter();
 const route = useRoute();
 const menuList = reactive({});
@@ -195,13 +198,15 @@ getActiveIndex();
 				// flex-direction: column;
 				// justify-content: center;
 				position: fixed;
-				bottom: 20px;
+				bottom: 10px;
 				.avatar {
 					width: 40px;
 					height: 40px;
 					border-radius: 50%;
 				}
 				.uname {
+					font-size: 14px;
+					color: #25262b;
 					height: 40px;
 					white-space: nowrap; /*强制单行显示*/
 					text-overflow: ellipsis; /*超出部分省略号表示*/

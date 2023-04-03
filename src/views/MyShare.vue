@@ -5,9 +5,9 @@
 			<!-- <el-breadcrumb separator-icon="ArrowRight">
 				<el-breadcrumb-item v-for="(item, index) in path" :to="{ path: '/home/files' + item.path }" :key="index">{{ item.name }}</el-breadcrumb-item>
 			</el-breadcrumb> -->
-			<div class="delete" style="display: flex; flex-direction: row; align-items: center">
+			<!-- <div class="delete" style="display: flex; flex-direction: row; align-items: center">
 				<el-icon :size="20"><Delete /> </el-icon>清空
-			</div>
+			</div> -->
 			<!-- <div class="addContainer">
 				<el-icon class="add" :size="20" @click="send"><Plus /></el-icon>
 			</div> -->
@@ -49,7 +49,9 @@
 
 <script setup>
 import service from "../request";
+const draggableTreeRef = ref();
 const data = ref([]);
+
 async function getShareList() {
 	const res = await service.get("/getShareList");
 	console.log("getShareList:", res.fileList);
