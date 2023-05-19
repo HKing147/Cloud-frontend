@@ -781,23 +781,73 @@ function saveAs(blob, filename) {
 }
 function download(data) {
 	console.log("fileUrl: ", data.fileUrl);
-	ElNotification({
-		title: "Custom Position",
-		dangerouslyUseHTMLString: true,
-		message: `<div>${data.fileName}</div><div>${data.fileUrl}</div>`,
-		position: "bottom-right",
-	});
-	fetch(data.fileUrl).then((res) => {
-		res.blob().then((myBlob) => {
-			const href = URL.createObjectURL(myBlob);
-			const a = document.createElement("a");
-			a.href = href;
-			a.download = data.fileName; // 下载文件重命名
-			a.click();
-			a.remove();
-		});
-	});
+	// ElNotification({
+	// 	title: "Custom Position",
+	// 	dangerouslyUseHTMLString: true,
+	// 	message: `<div>${data.fileName}</div><div>${data.fileUrl}</div>`,
+	// 	position: "bottom-right",
+	// });
+	console.log("===========");
+	downLoadFile(data.fileUrl, data.fileName);
+	// fetch(data.fileUrl, {
+	// 	headers: {
+	// 		"content-disposition": 'attachment; filename="' + encodeURIComponent(data.fileName) + '"',
+	// 	},
+	// }).then((res) => {
+	// 	res.blob().then((myBlob) => {
+	// 		const href = URL.createObjectURL(myBlob);
+	// 		const a = document.createElement("a");
+	// 		a.href = href;
+	// 		a.download = data.fileName; // 下载文件重命名
+	// 		a.click();
+	// 		a.remove();
+	// 	});
+	// });
 	// window.open(fileUrl);
+}
+
+function downLoadFile(url, name) {
+	// 下载文件
+	download(url, name); // OSS可下载的文件url，你想要改的名字
+	function getBlob(url, cb) {
+		// 获取文件流
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.responseType = "blob";
+		xhr.onload = function () {
+			if (xhr.status === 200) {
+				cb(xhr.response);
+			}
+		};
+		xhr.send();
+	}
+	function saveAs(blob, filename) {
+		// 改名字
+		if (window.navigator.msSaveOrOpenBlob) {
+			navigator.msSaveBlob(blob, filename);
+		} else {
+			var link = document.createElement("a");
+			var body = document.querySelector("body");
+
+			link.href = window.URL.createObjectURL(blob);
+			link.download = filename;
+
+			// fix Firefox
+			link.style.display = "none";
+			body.appendChild(link);
+
+			link.click();
+			body.removeChild(link);
+
+			window.URL.revokeObjectURL(link.href);
+		}
+	}
+	function download(url, filename) {
+		// 执行
+		getBlob(url, function (blob) {
+			saveAs(blob, filename);
+		});
+	}
 }
 
 // 分享
