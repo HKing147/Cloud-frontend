@@ -42,10 +42,12 @@
 								<el-checkbox v-bind="data.id" :key="data.id" :label="data.id"><br /></el-checkbox>
 							</el-col>
 							<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
-							<el-col :span="0.2" @click="props.canOpenFolder && openFolder(data)">
+							<!-- <el-col :span="0.2" @click="props.canOpenFolder ? openFolder(data): preview(data.fileUrl,data.type)"> -->
+							<el-col :span="0.2" @click="data.isFolder ? openFolder(data) : preview(data.fileUrl, data.type)">
 								<img :src="'/assets/icon/' + data.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null"
 							/></el-col>
-							<el-col :span="12" @click="props.canOpenFolder && openFolder(data)"> {{ node.label }}</el-col>
+							<!-- <el-col :span="12" @click="props.canOpenFolder ? openFolder(data): preview(data.fileUrl,data.type)"> {{ node.label }}</el-col> -->
+							<el-col :span="12" @click="data.isFolder ? openFolder(data) : preview(data.fileUrl, data.type)"> {{ node.label }}</el-col>
 							<el-col class="icon" :span="1">
 								<slot :data="data"></slot>
 								<!-- <el-dropdown>
@@ -100,6 +102,7 @@ import { onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import service from "../request";
 import router from "../router";
 import { parseSize } from "../utils";
+import { Base64 } from "js-base64";
 const props = defineProps({
 	data: Object,
 	parentDir: {
@@ -316,6 +319,11 @@ function cancel() {
 	console.log(checkedList.value);
 	isCheckAll.value = false;
 	checkedList.value = [];
+}
+
+function preview(fileUrl, type) {
+	// router.push({ path: "/filePreview", query: { fileUrl, type } });
+	window.open("https://file.kkview.cn/onlinePreview?url=" + encodeURIComponent(Base64.encode(fileUrl)));
 }
 //这里需要暴露出去不然父组件获取不到
 defineExpose({

@@ -68,7 +68,35 @@ const routes = [
 		path: "/share/:shareUrl",
 		component: () => import("../views/Share.vue"),
 	},
-
+	{
+		name: "ManagerLogin",
+		path: "/manager/login",
+		component: () => import("../views/ManagerLogin.vue"),
+	},
+	// {
+	// 	name: "Manager",
+	// 	path: "/manager",
+	// 	component: () => import("../views/Manager.vue"),
+	// },
+	{
+		name: "Manager",
+		path: "/manager",
+		component: () => import("../views/Manager.vue"),
+		// redirect: "/home/files",
+		children: [
+			{
+				name: "用户管理",
+				path: "/manager/user",
+				icon: "Document",
+				component: () => import("../views/ManagerUser.vue"),
+			},
+		],
+	},
+	{
+		name: "FilePreview",
+		path: "/filePreview/:fileUrl*",
+		component: () => import("../components/FilePreview.vue"),
+	},
 	{
 		name: "Draggable",
 		path: "/draggable",

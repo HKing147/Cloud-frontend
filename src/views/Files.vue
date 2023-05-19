@@ -57,7 +57,7 @@
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
+								<el-dropdown-item @click="download(prop.data)">下载</el-dropdown-item>
 								<el-dropdown-item @click="showShareDialog(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
@@ -268,7 +268,7 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import axios, { Axios } from "axios";
 import { set } from "lodash";
 import { onBeforeMount, onMounted, reactive, ref, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
@@ -703,7 +703,7 @@ function copyLink() {
 	});
 }
 function shareDialogClose(done) {
-    router.go(0)
+	router.go(0);
 }
 
 // 搜索文件
@@ -742,14 +742,61 @@ async function searchFile() {
 // }
 
 // 下载
-function download(fileUrl) {
-	console.log("fileUrl: ", fileUrl);
-	// ElNotification({
-	// 	title: "Custom Position",
-	// 	dangerouslyUseHTMLString: true,
-	// 	message: "<div>{{data}}</div>",
-	// 	position: "bottom-right",
-	// });
+/**
+ * 获取 blob
+ * url 目标文件地址
+ */
+function getBlob(url) {
+	return new Promise((resolve) => {
+		const xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.responseType = "blob";
+		xhr.onload = () => {
+			if (xhr.status === 200) {
+				resolve(xhr.response);
+			}
+		};
+		xhr.send();
+	});
+}
+/**
+ * 保存 blob
+ * filename 想要保存的文件名称
+ */
+function saveAs(blob, filename) {
+	if (window.navigator.msSaveOrOpenBlob) {
+		navigator.msSaveBlob(blob, filename);
+	} else {
+		const link = document.createElement("a");
+		const body = document.querySelector("body");
+		link.href = window.URL.createObjectURL(blob);
+		link.download = filename;
+		// fix Firefox
+		link.style.display = "none";
+		body.appendChild(link);
+		link.click();
+		body.removeChild(link);
+		window.URL.revokeObjectURL(link.href);
+	}
+}
+function download(data) {
+	console.log("fileUrl: ", data.fileUrl);
+	ElNotification({
+		title: "Custom Position",
+		dangerouslyUseHTMLString: true,
+		message: `<div>${data.fileName}</div><div>${data.fileUrl}</div>`,
+		position: "bottom-right",
+	});
+	fetch(data.fileUrl).then((res) => {
+		res.blob().then((myBlob) => {
+			const href = URL.createObjectURL(myBlob);
+			const a = document.createElement("a");
+			a.href = href;
+			a.download = data.fileName; // 下载文件重命名
+			a.click();
+			a.remove();
+		});
+	});
 	// window.open(fileUrl);
 }
 
