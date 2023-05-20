@@ -73,7 +73,7 @@
 					<el-input type="password" v-model="updatePasswordForm.newPass" show-password />
 				</el-form-item>
 				<el-form-item label="确认密码">
-					<el-input type="password" v-model="updatePasswordForm.newPass2" show-password />
+					<el-input type="password" v-model="updatePasswordForm.newPass2" @keyup.enter="updatePassword" show-password />
 				</el-form-item>
 				<el-form-item label="">
 					<el-button type="primary" style="width: 200px; height: 40px" @click="updatePassword" round>确认修改</el-button>

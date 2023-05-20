@@ -28,9 +28,6 @@
 				<el-input size="large" v-model="userInfo.userName" clearable>
 					<template #prepend>用户名</template>
 				</el-input>
-				<el-input size="large" type="password" v-model="userInfo.password" clearable>
-					<template #prepend>修改密码</template>
-				</el-input>
 				<el-input size="large" v-model="userInfo.email" disabled>
 					<template #prepend>邮箱</template>
 				</el-input>
@@ -60,6 +57,7 @@
 <script setup>
 import { ref } from "vue";
 import service, { baseURL } from "../request";
+import router from "../router";
 import { parseSize } from "../utils";
 const userInfo = ref({});
 async function getUserInfo() {
@@ -67,7 +65,6 @@ async function getUserInfo() {
 	console.log("getUserInfo: ", res);
 	if (res.meta.code == 0) {
 		userInfo.value = res.user;
-		userInfo.value.password = "";
 	}
 }
 getUserInfo();
@@ -86,6 +83,13 @@ function handleAvatarSuccess(res, uploadFile, uploadFiles) {
 async function updateUserInfo() {
 	console.log(userInfo.value);
 	const res = await service.post("/updateUserInfo", userInfo.value);
+	ElMessage({
+		message: res.meta.msg,
+		type: res.meta.msg,
+	});
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 </script>
 
