@@ -37,10 +37,8 @@
 									<template #dropdown>
 										<el-dropdown-menu>
 											<el-dropdown-item @click="toProfile()">个人中心</el-dropdown-item>
-											<el-dropdown-item @click="logout">退出登录</el-dropdown-item>
-											<el-dropdown-item>Action 3</el-dropdown-item>
-											<el-dropdown-item disabled>Action 4</el-dropdown-item>
-											<el-dropdown-item divided>Action 5</el-dropdown-item>
+											<el-dropdown-item @click="updatePasswordDialogVisible = true">修改密码</el-dropdown-item>
+											<el-dropdown-item @click="logout" divided>退出登录</el-dropdown-item>
 										</el-dropdown-menu>
 									</template>
 								</el-dropdown>
@@ -65,6 +63,23 @@
 				</el-affix> -->
 			</el-main>
 		</el-container>
+		<!-- 修改密码对话框 -->
+		<el-dialog class="detail" v-model="updatePasswordDialogVisible" title="修改密码" width="25%" style="border-radius: 10px" draggable>
+			<el-form label-width="70px" :model="updatePasswordForm" style="max-width: 600px">
+				<el-form-item label="原密码">
+					<el-input type="password" v-model="updatePasswordForm.oldPass" show-password />
+				</el-form-item>
+				<el-form-item label="新密码">
+					<el-input type="password" v-model="updatePasswordForm.newPass" show-password />
+				</el-form-item>
+				<el-form-item label="确认密码">
+					<el-input type="password" v-model="updatePasswordForm.newPass2" show-password />
+				</el-form-item>
+				<el-form-item label="">
+					<el-button type="primary" style="width: 200px; height: 40px" @click="updatePassword" round>确认修改</el-button>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
 	</div>
 </template>
 
@@ -78,6 +93,8 @@ const route = useRoute();
 const menuList = reactive({});
 const activeIndex = ref("0");
 const userInfo = ref({});
+const updatePasswordDialogVisible = ref(false);
+const updatePasswordForm = ref({});
 
 // 从Cookie获取登录信息：token
 const vueCookies = inject("vueCookies");
@@ -142,6 +159,31 @@ watchEffect(() => {
 });
 
 getActiveIndex();
+
+async function updatePassword() {
+	console.log(updatePasswordForm.value);
+	if (updatePasswordForm.value.newPass != updatePasswordForm.value.newPass2) {
+		ElMessage({
+			message: "两次密码不一致",
+			type: "error",
+		});
+		return;
+	}
+	updatePasswordForm.value.id = userInfo.value.ID;
+	const res = await service.post("/updatePassword", updatePasswordForm.value);
+	if (res.meta.code == 0) {
+		ElMessage({
+			message: "修改成功，请重新登录",
+			type: "success",
+		});
+		logout();
+	} else {
+		ElMessage({
+			message: res.meta.msg,
+			type: "error",
+		});
+	}
+}
 </script>
 
 <style lang="scss" scoped>

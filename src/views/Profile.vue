@@ -28,7 +28,7 @@
 				<el-input size="large" v-model="userInfo.userName" clearable>
 					<template #prepend>用户名</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.password" clearable>
+				<el-input size="large" type="password" v-model="userInfo.password" clearable>
 					<template #prepend>修改密码</template>
 				</el-input>
 				<el-input size="large" v-model="userInfo.email" disabled>
@@ -50,7 +50,7 @@
 					<template #prepend>注册时间</template>
 				</el-input>
 				<div class="btn">
-					<el-button color="#577aff" round>修改信息</el-button>
+					<el-button color="#577aff" @click="updateUserInfo" round>修改信息</el-button>
 				</div>
 			</el-card>
 		</div>
@@ -60,6 +60,7 @@
 <script setup>
 import { ref } from "vue";
 import service, { baseURL } from "../request";
+import { parseSize } from "../utils";
 const userInfo = ref({});
 async function getUserInfo() {
 	const res = await service.get("/getUserInfo");
@@ -80,6 +81,11 @@ function handleAvatarSuccess(res, uploadFile, uploadFiles) {
 	if (res.meta.code == 0) {
 		userInfo.value.avatar = res.avatar;
 	}
+}
+
+async function updateUserInfo() {
+	console.log(userInfo.value);
+	const res = await service.post("/updateUserInfo", userInfo.value);
 }
 </script>
 

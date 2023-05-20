@@ -152,7 +152,7 @@
 				</div>
 			</template>
 			<el-scrollbar max-height="450px">
-				<div v-for="item in searchFileList" :key="item">
+				<div v-for="item in searchFileList" :key="item" @click="item.isFolder ? openFolder(item) : preview(item.fileUrl, item.type)">
 					<img :src="'/public/assets/icon/' + item.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 					{{ item.fileName }}
 				</div>
@@ -202,11 +202,7 @@
 				{{
 					fileDetail.type == "folder"
 						? "-" // 文件夹不显示大小
-						: fileDetail.size / 1024 < 1024
-						? (fileDetail.size / 1024).toFixed(2) + "KB" // 小于1MB
-						: fileDetail.size / 1024 / 1024 < 1024
-						? (fileDetail.size / 1024 / 1024).toFixed(2) + "MB" // 小于1GB
-						: (fileDetail.size / 1024 / 1024 / 1024).toFixed(2) + "GB"
+						: parseSize(fileDetail.size)
 				}}
 			</div>
 			<div>文件位置</div>
@@ -275,9 +271,10 @@ import { useRoute } from "vue-router";
 import checkUploaded from "../apis";
 import DraggableTree from "../components/DraggableTree.vue";
 import service, { baseURL } from "../request";
-import { upload, uploadFile, scan } from "../utils/index.js";
+import { upload, uploadFile, scan, parseSize } from "../utils/index.js";
 import UploadProgress from "../components/UploadProgress.vue";
 import router from "../router";
+import { Base64 } from "js-base64";
 
 function uploadSuccess(e) {
 	console.log("uploadSuccess:", e);
@@ -790,7 +787,7 @@ function download(data) {
 	console.log("===========");
 	downLoadFile(data.fileUrl, data.fileName);
 	// 文件下载次数加1
-	service.post("/downloadFile", { id: data.id  });
+	service.post("/downloadFile", { id: data.id });
 	// fetch(data.fileUrl, {
 	// 	headers: {
 	// 		"content-disposition": 'attachment; filename="' + encodeURIComponent(data.fileName) + '"',
@@ -939,6 +936,21 @@ async function deleteFiles(path, ...userFileIDList) {
 	if (res.meta.code == 0) {
 		router.go(0);
 	}
+}
+
+function openFolder(e) {
+	console.log("openFolder: ", e);
+	// if (e.type == "folder") {
+	if (e.isFolder) {
+		// 点击的是文件夹
+		router.push("/home/files" + e.filePath + e.fileName);
+		// router.push("/home/" + props.menuItem + e.filePath + e.fileName);
+		searchFileDialogVisible.value = false;
+	}
+}
+function preview(fileUrl, type) {
+	// router.push({ path: "/filePreview", query: { fileUrl, type } });
+	window.open("https://file.kkview.cn/onlinePreview?url=" + encodeURIComponent(Base64.encode(fileUrl)));
 }
 </script>
 
