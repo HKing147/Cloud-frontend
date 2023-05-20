@@ -30,6 +30,7 @@
 <script setup>
 import { reactive } from "vue";
 import service from "../request";
+import router from "../router";
 const loginForm = reactive({ email: "123456@qq.com", password: "123456", rememberMe: false });
 const loginRules = reactive({
 	email: [
