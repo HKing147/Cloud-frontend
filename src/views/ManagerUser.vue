@@ -39,7 +39,7 @@
 			</el-table>
 		</div>
 		<!-- 修改用户信息对话框 -->
-		<el-dialog class="detail" v-model="updateUserDialogVisible" title="修改用户信息" width="40%" style="border-radius: 10px" draggable>
+		<el-dialog class="detail" v-model="updateUserDialogVisible" title="修改用户信息" width="38%" style="border-radius: 10px" draggable>
 			<el-form label-width="100px" :model="updatedUser" style="max-width: 460px">
 				<el-form-item label="用户名">
 					<el-input size="large" v-model="updatedUser.userName" />
@@ -66,11 +66,11 @@
 						<el-option :value="false" :key="false" label="普通用户" />
 					</el-select>
 				</el-form-item>
+				<el-button class="btn" @click="updateUser()" type="primary" round>确定修改</el-button>
 			</el-form>
-			<el-button @click="updateUser()" type="primary" round>确定修改</el-button>
 		</el-dialog>
 		<!-- 创建用户对话框 -->
-		<el-dialog class="detail" v-model="createUserDialogVisible" title="创建用户" width="40%" style="border-radius: 10px" draggable>
+		<el-dialog class="detail" v-model="createUserDialogVisible" title="创建用户" width="38%" style="border-radius: 10px" draggable>
 			<el-form label-width="100px" :model="createdUser" style="max-width: 460px">
 				<el-form-item label="用户名">
 					<el-input size="large" v-model="createdUser.userName" />
@@ -97,8 +97,8 @@
 						<el-option :value="false" :key="false" label="普通用户" />
 					</el-select>
 				</el-form-item>
+				<el-button class="btn" @click="createUser()" type="primary" round>确定创建</el-button>
 			</el-form>
-			<el-button @click="createUser()" type="primary" round>确定创建</el-button>
 		</el-dialog>
 	</div>
 </template>
@@ -108,6 +108,7 @@ import { parseSize } from "../utils";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import service from "../request";
+import router from "../router";
 const userList = ref([]);
 async function getUserList() {
 	const res = await service.get("/getUserList");
@@ -121,7 +122,7 @@ function handleSelectionChange(users) {
 	console.log(users);
 	selectedUserList = users;
 }
-function deleteUsers(...userList) {
+async function deleteUsers(...userList) {
 	console.log(userList);
 	var len = userList.length;
 	var userIDList = [];
@@ -129,6 +130,14 @@ function deleteUsers(...userList) {
 		userIDList.push(userList[i].ID);
 	}
 	console.log(userIDList);
+	const res = await service.post("/deleteUsers", userIDList);
+	ElMessage({
+		message: res.meta.msg,
+		type: res.meta.msg,
+	});
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 
 const updateUserDialogVisible = ref(false);
@@ -141,9 +150,17 @@ function showUpdateUserDialogVisible(user) {
 	console.log(updatedUser.value);
 	updateUserDialogVisible.value = true;
 }
-function updateUser() {
+async function updateUser() {
 	updatedUser.value.totalSpace = totalSpace.value * 1024 * 1024 * 1024;
 	console.log(updatedUser.value);
+	const res = await service.post("/updateUserInfo", updatedUser.value);
+	ElMessage({
+		message: res.meta.msg,
+		type: res.meta.msg,
+	});
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 
 const createUserDialogVisible = ref(false);
@@ -152,9 +169,17 @@ function showCreateUserDialogVisible() {
 	totalSpace.value = 10;
 	createUserDialogVisible.value = true;
 }
-function createUser() {
+async function createUser() {
 	createdUser.value.totalSpace = totalSpace.value * 1024 * 1024 * 1024;
 	console.log(createdUser.value);
+	const res = await service.post("/createUser", createdUser.value);
+	ElMessage({
+		message: res.meta.msg,
+		type: res.meta.msg,
+	});
+	if (res.meta.code == 0) {
+		router.go(0);
+	}
 }
 </script>
 
@@ -166,6 +191,15 @@ function createUser() {
 		width: 80%;
 		margin: 0 auto;
 		// margin-top: 20px;
+	}
+	.btn {
+		margin-left: 100px;
+		width: 80%;
+		height: 40px;
+		border-radius: 10px;
+		font-size: 14px;
+		color: white;
+		background: linear-gradient(175deg, #476fff, #8da1ff);
 	}
 }
 </style>
