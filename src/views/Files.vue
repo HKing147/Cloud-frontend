@@ -789,6 +789,8 @@ function download(data) {
 	// });
 	console.log("===========");
 	downLoadFile(data.fileUrl, data.fileName);
+	// 文件下载次数加1
+	service.post("/downloadFile", { id: data.id  });
 	// fetch(data.fileUrl, {
 	// 	headers: {
 	// 		"content-disposition": 'attachment; filename="' + encodeURIComponent(data.fileName) + '"',

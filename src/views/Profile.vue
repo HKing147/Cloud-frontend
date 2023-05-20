@@ -31,7 +31,7 @@
 				<el-input size="large" v-model="userInfo.password" clearable>
 					<template #prepend>修改密码</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.email" clearable>
+				<el-input size="large" v-model="userInfo.email" disabled>
 					<template #prepend>邮箱</template>
 				</el-input>
 				<el-input size="large" v-model="userInfo.QQ" clearable>
