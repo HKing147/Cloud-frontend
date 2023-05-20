@@ -29,7 +29,8 @@
 
 <script setup>
 import { reactive } from "vue";
-const loginForm = reactive({ email: "1470042308@qq.com", password: "123456", rememberMe: false });
+import service from "../request";
+const loginForm = reactive({ email: "123456@qq.com", password: "123456", rememberMe: false });
 const loginRules = reactive({
 	email: [
 		{
@@ -51,6 +52,32 @@ const loginRules = reactive({
 		},
 	],
 });
+async function login() {
+	console.log(loginForm);
+	// 登录逻辑
+	// service.defaults.withCredentials = true;
+	var res = await service.post("/login", loginForm);
+	console.log(res);
+	//登录成功
+	if (res.meta.code == 0) {
+		ElMessage({
+			message: res.meta.msg,
+			type: "success",
+		});
+		if (history.state.back != null) {
+			// 上一页存在则跳转过去
+			router.push(history.state.back);
+		} else {
+			// 否则跳转至home
+			router.push("/admin/statistics");
+		}
+	} else {
+		ElMessage({
+			message: res.meta.msg,
+			type: "error",
+		});
+	}
+}
 </script>
 
 <style lang="scss" scoped>

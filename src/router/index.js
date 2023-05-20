@@ -69,9 +69,9 @@ const routes = [
 		component: () => import("../views/Share.vue"),
 	},
 	{
-		name: "ManagerLogin",
-		path: "/manager/login",
-		component: () => import("../views/ManagerLogin.vue"),
+		name: "AdminLogin",
+		path: "/admin/login",
+		component: () => import("../views/AdminLogin.vue"),
 	},
 	// {
 	// 	name: "Manager",
@@ -79,16 +79,28 @@ const routes = [
 	// 	component: () => import("../views/Manager.vue"),
 	// },
 	{
-		name: "Manager",
-		path: "/manager",
-		component: () => import("../views/Manager.vue"),
-		// redirect: "/home/files",
+		name: "Admin",
+		path: "/admin",
+		component: () => import("../views/Admin.vue"),
+		redirect: "/admin/statistics",
 		children: [
 			{
+				name: "统计",
+				path: "/admin/statistics",
+				icon: "Document",
+				component: () => import("../views/Statistics.vue"),
+			},
+			{
 				name: "用户管理",
-				path: "/manager/user",
+				path: "/admin/managerUser",
 				icon: "Document",
 				component: () => import("../views/ManagerUser.vue"),
+			},
+			{
+				name: "文件管理",
+				path: "/admin/managerFile",
+				icon: "Document",
+				component: () => import("../views/ManagerFile.vue"),
 			},
 		],
 	},
@@ -130,7 +142,7 @@ router.beforeEach((to, from, next) => {
 	console.log("to: ", to);
 	console.log("from: ", from);
 	console.log("next: ", next);
-	if (to.fullPath == "/" || to.fullPath.startsWith("/share")) {
+	if (to.fullPath == "/" || to.fullPath == "/admin/login" || to.fullPath.startsWith("/share")) {
 		// 登录注册页
 		next();
 		return;
@@ -138,12 +150,23 @@ router.beforeEach((to, from, next) => {
 		// 检查是否有token
 		var token = VueCookies.get("token");
 		console.log("token: ", token);
-		if (token == null) {
+		if (token == null && !to.fullPath.startsWith("/admin")) {
 			router.push("/");
 			ElMessage({
 				message: "请先登录！！！",
 				type: "error",
 			});
+		} else {
+			// 检查是否有admin_token
+			var admin_token = VueCookies.get("admin_token");
+			console.log("admin_token: ", admin_token);
+			if (admin_token == null && to.fullPath.startsWith("/admin")) {
+				router.push("/admin/login");
+				ElMessage({
+					message: "请先登录！！！",
+					type: "error",
+				});
+			}
 		}
 	}
 	next();

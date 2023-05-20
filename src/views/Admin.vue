@@ -7,11 +7,23 @@
 						<div class="logo">
 							<img src="/assets/img/logo.png" style="width: 104px; height: auto" />
 						</div>
-						<el-menu-item index="/manager/user" key="0">
+						<el-menu-item index="/admin" key="0">
 							<el-icon :size="20">
-								<component :is="'Avatar'"></component>
+								<component :is="'PieChart'"></component>
+							</el-icon>
+							<span> 首页 </span>
+						</el-menu-item>
+						<el-menu-item index="/admin/managerUser" key="1">
+							<el-icon :size="20">
+								<component :is="'User'"></component>
 							</el-icon>
 							<span> 用户管理 </span>
+						</el-menu-item>
+						<el-menu-item index="/admin/managerFile" key="2">
+							<el-icon :size="20">
+								<component :is="'Files'"></component>
+							</el-icon>
+							<span> 文件管理 </span>
 						</el-menu-item>
 						<!-- <el-menu-item v-for="(item, index) in menuList.value" :index="item.path" :key="index">
 							<el-icon :size="20">

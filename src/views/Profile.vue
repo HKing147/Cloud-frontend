@@ -11,6 +11,7 @@
 						:on-success="handleAvatarSuccess"
 						:before-upload="beforeAvatarUpload"
 						:with-credentials="true"
+						accept="image/png, image/jpeg, .gif, .ico"
 					>
 						<div
 							class="avatar"
@@ -76,7 +77,7 @@ function handleAvatarSuccess(res, uploadFile, uploadFiles) {
 		type: res.meta.msg,
 	});
 	if (res.meta.code == 0) {
-		userInfo.value.avatar = res.avatar;
+		router.go(0);
 	}
 }
 
