@@ -5,7 +5,7 @@ import * as echarts from "echarts/core";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
 
 // 引入提示框，标题，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
-import { TitleComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, LegendComponent, ToolboxComponent } from "echarts/components";
+import { TitleComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, LegendComponent, ToolboxComponent, DataZoomComponent } from "echarts/components";
 
 // 标签自动布局，全局过渡动画等特性
 import { LabelLayout, UniversalTransition } from "echarts/features";
@@ -28,6 +28,7 @@ echarts.use([
 	LegendComponent,
 	ToolboxComponent,
 	PieChart,
+	DataZoomComponent,
 ]);
 
 // 导出

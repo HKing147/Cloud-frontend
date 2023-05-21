@@ -39,11 +39,14 @@
 			</el-card>
 		</div>
 		<div class="down">
-			<el-card style="height: 500px; margin: 40px 20px" header="文件统计">
-				<div id="chart2" style="width: 400px; height: 400px"></div>
+			<el-card style="height: 400px; margin: 40px 10px" header="一周数据统计">
+				<div id="chart1" style="width: 380px; height: 300px"></div>
 			</el-card>
-			<el-card style="height: 500px; margin: 40px 20px" header="空间使用情况">
-				<div id="chart3" style="width: 400px; height: 400px"></div>
+			<el-card style="height: 400px; margin: 40px 10px" header="文件统计">
+				<div id="chart2" style="width: 380px; height: 300px"></div>
+			</el-card>
+			<el-card style="height: 400px; margin: 40px 10px" header="空间使用情况">
+				<div id="chart3" style="width: 380px; height: 300px"></div>
 			</el-card>
 		</div>
 	</div>
@@ -53,6 +56,21 @@
 import { inject, onMounted, reactive, ref } from "vue";
 import service from "../request";
 import { parseSize } from "../utils";
+Date.prototype.Format = function (fmt) {
+	// author: meizz
+	var o = {
+		"M+": this.getMonth() + 1, // 月份
+		"d+": this.getDate(), // 日
+		"h+": this.getHours(), // 小时
+		"m+": this.getMinutes(), // 分
+		"s+": this.getSeconds(), // 秒
+		"q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+		S: this.getMilliseconds(), // 毫秒
+	};
+	if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+	for (var k in o) if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+	return fmt;
+};
 const echarts = inject("$echarts");
 let MyChart1 = null;
 let MyChart2 = null;
@@ -61,18 +79,85 @@ const folderCount = ref(0);
 const fileCount = ref(0);
 const totalSpace = ref(1024 ** 4); // 1TB
 const usedSpace = ref(0);
-const option1 = reactive({
-	xAxis: {
-		data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+const list = ref([]);
+const weekDataList = ref({
+	animationDuration: 3000, // 动画时间
+	dataZoom: [
+		// 滚轮缩放
+		{
+			type: "inside",
+		},
+	],
+	tooltip: {
+		trigger: "axis",
 	},
-	yAxis: {},
+	legend: {
+		top: "bottom",
+		data: ["用户注册数", "文件分享数", "文件上传数"],
+	},
+	grid: {
+		left: "0",
+		width: "97%",
+		containLabel: true,
+	},
+	toolbox: {
+		show: true,
+		feature: {
+			mark: { show: true },
+			dataView: { show: true, readOnly: false },
+			restore: { show: true },
+			saveAsImage: { show: true },
+		},
+	},
+	xAxis: {
+		type: "category",
+		boundaryGap: true,
+		data: list.value.map((item) => {
+			// 对x轴数据的处理
+			return new Date(item.day).Format("MM-dd");
+		}),
+		axisLabel: {
+			// 对坐标值的处理
+			interval: 0,
+			formatter: (value, idx) => {
+				return new Date(value).Format("MM-dd");
+			},
+		},
+	},
+	yAxis: {
+		type: "value",
+	},
 	series: [
 		{
-			type: "bar",
-			data: [23, 24, 18, 25, 27, 28, 25],
+			name: "用户注册数",
+			type: "line",
+			smooth: true,
+			stack: "Total",
+			// data: list.value.map((item) => {
+			// 	return item.regCnt;
+			// }),
+		},
+		{
+			name: "文件分享数",
+			type: "line",
+			smooth: true,
+			stack: "Total",
+			// data: list.value.map((item) => {
+			// 	return item.regCnt;
+			// }),
+		},
+		{
+			name: "文件上传数",
+			type: "line",
+			smooth: true,
+			stack: "Total",
+			// data: list.value.map((item) => {
+			// 	return item.regCnt;
+			// }),
 		},
 	],
 });
+
 const fileCategoryList = ref({
 	legend: {
 		top: "bottom",
@@ -95,7 +180,7 @@ const fileCategoryList = ref({
 			name: "Nightingale Chart",
 			type: "pie",
 			radius: [30, 100],
-			center: ["50%", "50%"],
+			center: ["50%", "40%"],
 			roseType: "area",
 			itemStyle: {
 				borderRadius: 8,
@@ -121,7 +206,6 @@ const storage = ref({
 			console.log("val:", val);
 			return item.data.name + " : " + parseSize(item.data.value) + " (" + item.percent + "%)";
 		},
-		// formatter: "{b} : {c} ({d}%)",
 	},
 	legend: {
 		top: "bottom",
@@ -141,6 +225,7 @@ const storage = ref({
 			name: "Access From",
 			type: "pie",
 			radius: ["40%", "70%"],
+			center: ["50%", "40%"],
 			avoidLabelOverlap: false,
 			itemStyle: {
 				borderRadius: 10,
@@ -163,11 +248,29 @@ const storage = ref({
 			},
 			data: [
 				{ value: 1024 ** 4, name: "空闲空间" },
-				{ value: 100 * 1024 ** 3, name: "使用空间" },
+				{ value: 100 * 1024 ** 4, name: "使用空间" },
 			],
 		},
 	],
 });
+
+async function getDataByDay() {
+	const res = await service.get("/getDataByDay");
+	var dates = res.dates;
+	var registerCntList = res.registerCntList;
+	var shareCntList = res.shareCntList;
+	var uploadCntList = res.uploadCntList;
+
+	var len = dates.length;
+	for (var i = 0; i < len; i++) {
+		dates[i] = new Date(dates[i]).Format("MM-dd");
+	}
+
+	weekDataList.value.xAxis.data = dates;
+	weekDataList.value.series[0].data = registerCntList;
+	weekDataList.value.series[1].data = shareCntList;
+	weekDataList.value.series[2].data = uploadCntList;
+}
 async function getFileCategory() {
 	const res = await service.get("/getFileCategory");
 	fileCategoryList.value.series[0].data = res.fileCategoryList;
@@ -183,18 +286,18 @@ async function getFileCategory() {
 }
 async function getStorage() {
 	const res = await service.get("/getStorage");
-	var tot = 1024 ** 4; // 1TB
 	console.log("-_-", storage.value.series[0].data[0].name);
-	storage.value.series[0].data[0].value = tot - res.storage;
+	storage.value.series[0].data[0].value = totalSpace.value - res.storage;
 	storage.value.series[0].data[1].value = res.storage;
 	console.log("-_-", storage.value.series[0].data);
 }
 
 onMounted(async () => {
+	await getDataByDay();
 	await getFileCategory();
 	await getStorage();
-	// MyChart1 = echarts.init(document.getElementById("chart1"));
-	// MyChart1.setOption(option1);
+	MyChart1 = echarts.init(document.getElementById("chart1"));
+	MyChart1.setOption(weekDataList.value);
 	MyChart2 = echarts.init(document.getElementById("chart2"));
 	MyChart2.setOption(fileCategoryList.value);
 	MyChart3 = echarts.init(document.getElementById("chart3"));
