@@ -37,6 +37,17 @@
 					</template>
 				</el-table-column>
 			</el-table>
+			<el-pagination
+				style="margin-top: 20px"
+				v-model:current-page="currentPage"
+				v-model:page-size="pageSize"
+				:page-sizes="[10, 20, 30, 40]"
+				layout="sizes, prev, pager, next, jumper"
+				:page-count="totalPage"
+				@size-change="handleSizeChange"
+				@current-change="handleCurrentChange"
+				background
+			/>
 		</div>
 		<!-- 修改用户信息对话框 -->
 		<el-dialog class="detail" v-model="updateUserDialogVisible" title="修改用户信息" width="38%" style="border-radius: 10px" draggable>
@@ -110,10 +121,26 @@ import { onMounted, reactive, ref } from "vue";
 import service from "../request";
 import router from "../router";
 const userList = ref([]);
+const pageSize = ref(10);
+const totalPage = ref(0);
+const currentPage = ref(1);
+function handleSizeChange(val) {
+	pageSize.value = val;
+	console.log(pageSize.value);
+	getUserList();
+}
+function handleCurrentChange(val) {
+	currentPage.value = val;
+	console.log(currentPage.value);
+	getUserList();
+}
 async function getUserList() {
-	const res = await service.get("/getUserList");
+	const res = await service.get("/getUserList", { params: { pageSize: pageSize.value, currentPage: currentPage.value } });
 	console.log(res.userList);
 	userList.value = res.userList;
+	console.log(totalPage.value);
+	totalPage.value = res.totalPage;
+	console.log(totalPage.value);
 }
 getUserList();
 
