@@ -87,12 +87,12 @@ const routes = [
 				icon: "Files",
 				component: () => import("../views/ManagerFile.vue"),
 			},
-			{
-				name: "AdminLogin",
-				path: "/admin/login",
-				component: () => import("../views/AdminLogin.vue"),
-			},
 		],
+	},
+	{
+		name: "AdminLogin",
+		path: "/admin/login",
+		component: () => import("../views/AdminLogin.vue"),
 	},
 	{
 		name: "Share",

@@ -326,7 +326,7 @@ onMounted(async () => {
 		justify-content: space-between;
 		.el-card {
 			height: 100px;
-			width: 21%;
+			width: 22%;
 			.cardContent {
 				display: flex;
 				flex-direction: row;

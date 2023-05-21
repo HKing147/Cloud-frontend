@@ -153,6 +153,8 @@
 			</div>
 			<div>文件位置</div>
 			<div class="attrValue">{{ fileDetail.filePath }}</div>
+			<div>下载次数</div>
+			<div class="attrValue">{{ fileDetail.downCount }}</div>
 			<div>云端创建时间</div>
 			<div class="attrValue">{{ new Date(fileDetail.createdTime).toLocaleString() }}</div>
 			<div>最后修改时间</div>
