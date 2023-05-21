@@ -12,7 +12,7 @@
 			</el-card>
 			<el-card style="background-color: #ff6d5b">
 				<div class="cardContent">
-					<el-icon style="background-color: #ff8a7c" :size="30" :color="'white'"><Folder /></el-icon>
+					<el-icon style="background-color: #ff8a7c" :size="30" :color="'white'"><Document /></el-icon>
 					<div>
 						<div style="font-size: 12px; float: right; margin-bottom: 4px">文件数</div>
 						<div style="font-size: 22px">{{ fileCount }}</div>
@@ -21,7 +21,7 @@
 			</el-card>
 			<el-card style="background-color: #00b07f">
 				<div class="cardContent">
-					<el-icon style="background-color: #00ba97" :size="30" :color="'white'"><Folder /></el-icon>
+					<el-icon style="background-color: #00ba97" :size="30" :color="'white'"><Share /></el-icon>
 					<div>
 						<div style="font-size: 12px; float: right; margin-bottom: 4px">分享数</div>
 						<div style="font-size: 22px">{{ shareCnt }}</div>
@@ -30,7 +30,7 @@
 			</el-card>
 			<el-card style="background-color: #9b78e0">
 				<div class="cardContent">
-					<el-icon style="background-color: #ac90e6" :size="30" :color="'white'"><Folder /></el-icon>
+					<el-icon style="background-color: #ac90e6" :size="30" :color="'white'"><Coin /></el-icon>
 					<div>
 						<div style="font-size: 12px; float: right; margin-bottom: 4px">存储空间</div>
 						<div style="font-size: 18px">{{ parseSize(usedSpace) }}/{{ parseSize(totalSpace) }}</div>

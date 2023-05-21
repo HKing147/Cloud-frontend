@@ -64,21 +64,6 @@ const routes = [
 		],
 	},
 	{
-		name: "Share",
-		path: "/share/:shareUrl",
-		component: () => import("../views/Share.vue"),
-	},
-	{
-		name: "AdminLogin",
-		path: "/admin/login",
-		component: () => import("../views/AdminLogin.vue"),
-	},
-	// {
-	// 	name: "Manager",
-	// 	path: "/manager",
-	// 	component: () => import("../views/Manager.vue"),
-	// },
-	{
 		name: "Admin",
 		path: "/admin",
 		component: () => import("../views/Admin.vue"),
@@ -87,23 +72,38 @@ const routes = [
 			{
 				name: "统计",
 				path: "/admin/statistics",
-				icon: "Document",
+				icon: "PieChart",
 				component: () => import("../views/Statistics.vue"),
 			},
 			{
 				name: "用户管理",
 				path: "/admin/managerUser",
-				icon: "Document",
+				icon: "User",
 				component: () => import("../views/ManagerUser.vue"),
 			},
 			{
 				name: "文件管理",
 				path: "/admin/managerFile",
-				icon: "Document",
+				icon: "Files",
 				component: () => import("../views/ManagerFile.vue"),
+			},
+			{
+				name: "AdminLogin",
+				path: "/admin/login",
+				component: () => import("../views/AdminLogin.vue"),
 			},
 		],
 	},
+	{
+		name: "Share",
+		path: "/share/:shareUrl",
+		component: () => import("../views/Share.vue"),
+	},
+	// {
+	// 	name: "Manager",
+	// 	path: "/manager",
+	// 	component: () => import("../views/Manager.vue"),
+	// },
 	{
 		name: "FilePreview",
 		path: "/filePreview/:fileUrl*",

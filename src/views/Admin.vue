@@ -7,7 +7,7 @@
 						<div class="logo">
 							<img src="/assets/img/logo.png" style="width: 104px; height: auto" />
 						</div>
-						<el-menu-item index="/admin" key="0">
+						<!-- <el-menu-item index="/admin" :key="0">
 							<el-icon :size="20">
 								<component :is="'PieChart'"></component>
 							</el-icon>
@@ -24,13 +24,13 @@
 								<component :is="'Files'"></component>
 							</el-icon>
 							<span> 文件管理 </span>
-						</el-menu-item>
-						<!-- <el-menu-item v-for="(item, index) in menuList.value" :index="item.path" :key="index">
+						</el-menu-item> -->
+						<el-menu-item v-for="(item, index) in menuList.value" :index="item.path" :key="index">
 							<el-icon :size="20">
 								<component :is="item.icon"></component>
 							</el-icon>
 							<span>{{ item.name }}</span>
-						</el-menu-item> -->
+						</el-menu-item>
 						<el-divider style="margin-top: 430px" border-style="double" />
 						<div class="foot">
 							<div
@@ -72,9 +72,21 @@ import { useRoute, useRouter } from "vue-router";
 import service from "../request";
 const router = useRouter();
 const route = useRoute();
+const menuList = reactive({});
 const activeIndex = ref("0");
 const userInfo = ref({});
 
+function getMenuList() {
+	menuList.value = router.options.routes[2].children.slice(0, 3); // 第4个不要，它是管理员登录页面
+	console.log("menuList:", menuList.value);
+	// for (var i = 0; i < router.options.routes.length; i++) {
+	// 	if (router.options.routes[i].path == route.path) {
+	// 		menuList.value = router.options.routes[i].children;
+	// 		console.log(menuList.value);
+	// 	}
+	// }
+}
+getMenuList();
 // 从Cookie获取登录信息：token
 const vueCookies = inject("vueCookies");
 const token = vueCookies.get("token");
@@ -94,7 +106,7 @@ onMounted(() => {
 
 function getActiveIndex() {
 	// console.log("route.path: ", route.path);
-	activeIndex.value = route.path == "/home" ? menuList.value[0].path : route.path;
+	activeIndex.value = route.path == "/admin" ? menuList.value[0].path : route.path;
 	console.log(activeIndex);
 	// for (var i = 0; i < menuList.value.length; i++) {
 	// 	console.log(menuList.value[i].path, route.path);
@@ -109,7 +121,7 @@ watchEffect(() => {
 	var list = route.path.split("/");
 	console.log("list: ", list);
 	if (list.length == 2) {
-		activeIndex.value = "/home/files";
+		activeIndex.value = "/admin/statistics";
 	} else {
 		activeIndex.value = "/home/" + list[2];
 	}
