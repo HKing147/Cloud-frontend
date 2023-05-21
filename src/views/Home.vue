@@ -20,7 +20,7 @@
 						</div>
 						<el-divider border-style="double" />
 						<div class="foot">
-							<!-- <img style="width: 40px; height: 40px; border-radius: 50%" :src="userInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+							<!-- <img style="width: 40px; height: 40px; border-radius: 50%" :src="userInfo.avatar" onerror="this.src='/assets/img/tou.jpg'" /> -->
 							<div
 								class="avatar"
 								:style="{

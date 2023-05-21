@@ -2,7 +2,7 @@
 	<div class="main">
 		<div class="head">
 			<img class="logo" src="/assets/img/logo.png" @click="to('/home')" />
-			<!-- <img class="avatar" v-if="userInfo != null" :src="userInfo != null ? userInfo.avatar : ''" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+			<!-- <img class="avatar" v-if="userInfo != null" :src="userInfo != null ? userInfo.avatar : ''" onerror="this.src='/assets/img/tou.jpg'" /> -->
 			<div
 				v-if="userInfo != null"
 				class="avatar"
@@ -18,7 +18,7 @@
 		<div v-if="shareInfo.password == ''" class="container">
 			<div class="container-head">
 				<div class="avatarContainer">
-					<!-- <img :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg'" /> -->
+					<!-- <img :src="shareUserInfo.avatar" onerror="this.src='/assets/img/tou.jpg'" /> -->
 					<div
 						class="avatar"
 						:style="{
@@ -50,7 +50,7 @@
 			<DraggableTree :data="fileList" :getFileList="getFileList" :openFolder="openFolder" ref="draggableTreeRef"></DraggableTree>
 		</div>
 		<div v-else style="width: 50%; margin: 0 auto; margin-top: 50px; display: flex; flex-direction: column; text-align: center">
-			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/public/assets/img/tou.jpg';this.onerror=null" />
+			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/assets/img/tou.jpg';this.onerror=null" />
 			<div style="font-size: 20px; display: flex; margin: 30px 0; justify-content: center">
 				<span style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100px">{{ shareUserInfo.userName }}</span>
 				分享了文件

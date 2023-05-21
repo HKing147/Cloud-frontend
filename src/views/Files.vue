@@ -132,11 +132,7 @@
 		</el-dialog>
 		<!-- 重命名文件(夹)对话框 -->
 		<el-dialog v-model="renameDialogVisible" title="重命名" width="25%" style="border-radius: 10px" draggable>
-			<img
-				style="width: 120px; display: block; margin: 0 auto"
-				:src="'/assets/icon/' + renameFile.type + '.png'"
-				onerror="this.src='/public/assets/icon/other.png';this.onerror=null"
-			/>
+			<img style="width: 120px; display: block; margin: 0 auto" :src="'/assets/icon/' + renameFile.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 			<template #footer>
 				<span>
 					<el-input size="large" style="margin-bottom: 20px" v-model="renameFile.fileName" />
@@ -153,7 +149,7 @@
 			</template>
 			<el-scrollbar max-height="450px">
 				<div v-for="item in searchFileList" :key="item" @click="item.isFolder ? openFolder(item) : preview(item.fileUrl, item.type)">
-					<img :src="'/public/assets/icon/' + item.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
+					<img :src="'/assets/icon/' + item.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 					{{ item.fileName }}
 				</div>
 			</el-scrollbar>
@@ -175,8 +171,8 @@
 					>
 						<img
 							style="width: 30px; height: 30px; margin-right: 15px"
-							:src="'/public/assets/icon/' + item.type + '.png'"
-							onerror="this.src='/public/assets/icon/other.png';this.onerror=null"
+							:src="'/assets/icon/' + item.type + '.png'"
+							onerror="this.src='/assets/icon/other.png';this.onerror=null"
 						/>
 						{{ item.fileName }}
 					</div>
@@ -192,7 +188,7 @@
 		<!-- 查看详细信息对话框 -->
 		<el-dialog class="detail" v-model="detailDialogVisible" :title="fileDetail.fileName" width="25%" style="border-radius: 10px" draggable>
 			<div style="display: flex; flex-direction: row">
-				<img style="margin: 0 auto; height: 120px" :src="'/assets/icon/' + fileDetail.type + '.png'" onerror="this.src='/public/assets/icon/other.png';this.onerror=null" />
+				<img style="margin: 0 auto; height: 120px" :src="'/assets/icon/' + fileDetail.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null" />
 			</div>
 			<div style="font-size: 18px; margin: 10px 0">详细信息</div>
 			<div>文件名</div>
