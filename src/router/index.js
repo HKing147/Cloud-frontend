@@ -149,16 +149,16 @@ router.beforeEach((to, from, next) => {
 	} else {
 		// 检查是否有token
 		var token = VueCookies.get("token");
+		// 检查是否有admin_token
+		var admin_token = VueCookies.get("admin_token");
 		console.log("token: ", token);
-		if (token == null && !to.fullPath.startsWith("/admin")) {
+		if (token == null && admin_token == null && !to.fullPath.startsWith("/admin")) {
 			router.push("/");
 			ElMessage({
 				message: "请先登录！！！",
 				type: "error",
 			});
 		} else {
-			// 检查是否有admin_token
-			var admin_token = VueCookies.get("admin_token");
 			console.log("admin_token: ", admin_token);
 			if (admin_token == null && to.fullPath.startsWith("/admin")) {
 				router.push("/admin/login");

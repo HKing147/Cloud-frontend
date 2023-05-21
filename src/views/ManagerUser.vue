@@ -4,28 +4,28 @@
 		<div class="table">
 			<el-button type="primary" @click="showCreateUserDialogVisible" round>创建用户</el-button>
 			<el-button type="danger" @click="deleteUsers(...selectedUserList)" round>删除用户</el-button>
-			<el-table style="margin-top: 20px" :data="userList" @selection-change="handleSelectionChange" stripe border>
+			<el-table style="margin-top: 20px" max-height="542" :data="userList" @selection-change="handleSelectionChange" stripe border>
 				<el-table-column type="selection" width="40" />
-				<el-table-column fixed prop="userName" label="用户名" width="200" />
+				<el-table-column fixed prop="userName" label="用户名" width="200" sortable />
 				<el-table-column prop="email" label="邮箱" width="200" />
 				<el-table-column prop="QQ" label="QQ" width="150" />
 				<el-table-column prop="Wechat" label="微信" width="150" />
-				<el-table-column prop="totalSpace" label="总空间" width="100">
+				<el-table-column prop="totalSpace" label="总空间" width="100" sortable>
 					<template #default="scope">
 						<span>{{ parseSize(scope.row.totalSpace) }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="usedSpace" label="已用空间" width="100">
+				<el-table-column prop="usedSpace" label="已用空间" width="120" sortable>
 					<template #default="scope">
 						<span>{{ parseSize(scope.row.usedSpace) }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="CreatedAt" label="创建时间" width="180">
+				<el-table-column prop="CreatedAt" label="创建时间" width="180" sortable>
 					<template #default="scope">
 						<span>{{ new Date(scope.row.CreatedAt).toLocaleString() }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="right" label="权限" width="100">
+				<el-table-column prop="right" label="权限" width="100" sortable>
 					<template #default="scope">
 						<el-tag :type="scope.row.right ? 'success' : ''" disable-transitions>{{ scope.row.right ? "管理员" : "普通用户" }}</el-tag>
 					</template>

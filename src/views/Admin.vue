@@ -31,6 +31,29 @@
 							</el-icon>
 							<span>{{ item.name }}</span>
 						</el-menu-item> -->
+						<el-divider style="margin-top: 430px" border-style="double" />
+						<div class="foot">
+							<div
+								class="avatar"
+								:style="{
+									backgroundImage: 'url(' + userInfo.avatar + ')',
+									backgroundSize: 'cover',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'center center',
+								}"
+							></div>
+							<span class="uname">{{ userInfo.userName }}</span>
+							<span class="menu">
+								<el-dropdown trigger="click">
+									<el-icon><More /></el-icon>
+									<template #dropdown>
+										<el-dropdown-menu>
+											<el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+										</el-dropdown-menu>
+									</template>
+								</el-dropdown>
+							</span>
+						</div>
 					</el-menu>
 				</div>
 			</el-aside>
@@ -94,6 +117,11 @@ watchEffect(() => {
 });
 
 getActiveIndex();
+
+function logout() {
+	vueCookies.remove("admin_token"); // 删除token
+	router.push("/admin/login"); // 返回登陆页面
+}
 </script>
 
 <style lang="scss" scoped>
@@ -127,6 +155,45 @@ getActiveIndex();
 				padding-top: 25px;
 				padding-bottom: 25px;
 				margin-left: 10px;
+			}
+
+			.foot {
+				margin-left: 20px;
+				line-height: 40px;
+				display: flex;
+				flex-direction: row;
+				// flex-direction: column;
+				// justify-content: center;
+				position: fixed;
+				bottom: 10px;
+				.avatar {
+					width: 40px;
+					height: 40px;
+					border-radius: 50%;
+				}
+				.uname {
+					font-size: 14px;
+					color: #25262b;
+					height: 40px;
+					white-space: nowrap; /*强制单行显示*/
+					text-overflow: ellipsis; /*超出部分省略号表示*/
+					overflow: hidden; /*超出部分隐藏*/
+					width: 100px; /*设置显示的最大宽度*/
+				}
+				.menu {
+					margin-left: 10px;
+					padding-top: 12px;
+					.el-dropdown {
+						cursor: pointer;
+						:hover {
+							background-color: #e3e3e5;
+							border-radius: 3px;
+						}
+						.el-icon {
+							outline: none; // 去黑边
+						}
+					}
+				}
 			}
 		}
 	}

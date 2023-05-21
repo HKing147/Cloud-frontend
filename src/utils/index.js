@@ -136,7 +136,10 @@ export function parseSize(size) {
 	} else if (size / base / base < base) {
 		// 小于1GB
 		return (size / base / base).toFixed(2) + "MB";
-	} else {
+	} else if (size / base / base / base < base) {
+		// 小于1TB
 		return (size / base / base / base).toFixed(2) + "GB";
+	} else {
+		return (size / base / base / base / base).toFixed(2) + "TB";
 	}
 }
