@@ -97,7 +97,7 @@ export function calMD5(file) {
 	console.log("file ==> ", file);
 	return new Promise((resolve, reject) => {
 		const blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
-		const chunkSize = 1024 * 1024 * 10; // Read in chunks of 2MB
+		const chunkSize = 1024 * 1024 * 100; // Read in chunks of 100MB
 		const chunks = Math.ceil(file.size / chunkSize);
 		const spark = new SparkMD5.ArrayBuffer();
 		const fileReader = new FileReader();

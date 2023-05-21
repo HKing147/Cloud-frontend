@@ -14,8 +14,8 @@
 				<div class="cardContent">
 					<el-icon style="background-color: #ff8a7c" :size="30" :color="'white'"><Folder /></el-icon>
 					<div>
-						<div style="font-size: 12px">文件数</div>
-						<div style="font-size: 22px; margin-top: 4px">{{ fileCount }}</div>
+						<div style="font-size: 12px; float: right; margin-bottom: 4px">文件数</div>
+						<div style="font-size: 22px">{{ fileCount }}</div>
 					</div>
 				</div>
 			</el-card>
@@ -23,8 +23,8 @@
 				<div class="cardContent">
 					<el-icon style="background-color: #00ba97" :size="30" :color="'white'"><Folder /></el-icon>
 					<div>
-						<div style="font-size: 12px">分享数</div>
-						<div style="font-size: 22px; margin-top: 4px">2</div>
+						<div style="font-size: 12px; float: right; margin-bottom: 4px">分享数</div>
+						<div style="font-size: 22px">{{ shareCnt }}</div>
 					</div>
 				</div>
 			</el-card>
@@ -32,8 +32,8 @@
 				<div class="cardContent">
 					<el-icon style="background-color: #ac90e6" :size="30" :color="'white'"><Folder /></el-icon>
 					<div>
-						<div style="font-size: 12px">存储空间</div>
-						<div style="font-size: 20px; margin-top: 4px">{{ parseSize(usedSpace) }}/{{ parseSize(totalSpace) }}</div>
+						<div style="font-size: 12px; float: right; margin-bottom: 4px">存储空间</div>
+						<div style="font-size: 18px">{{ parseSize(usedSpace) }}/{{ parseSize(totalSpace) }}</div>
 					</div>
 				</div>
 			</el-card>
@@ -77,6 +77,7 @@ let MyChart2 = null;
 let MyChart3 = null;
 const folderCount = ref(0);
 const fileCount = ref(0);
+const shareCnt = ref(0);
 const totalSpace = ref(1024 ** 4); // 1TB
 const usedSpace = ref(0);
 const list = ref([]);
@@ -284,9 +285,14 @@ async function getFileCategory() {
 		}
 	}
 }
+async function getShareCnt() {
+	const res = await service.get("/getShareCnt");
+	shareCnt.value = res.shareCnt;
+}
 async function getStorage() {
 	const res = await service.get("/getStorage");
 	console.log("-_-", storage.value.series[0].data[0].name);
+	usedSpace.value = res.storage;
 	storage.value.series[0].data[0].value = totalSpace.value - res.storage;
 	storage.value.series[0].data[1].value = res.storage;
 	console.log("-_-", storage.value.series[0].data);
@@ -295,6 +301,7 @@ async function getStorage() {
 onMounted(async () => {
 	await getDataByDay();
 	await getFileCategory();
+	await getShareCnt();
 	await getStorage();
 	MyChart1 = echarts.init(document.getElementById("chart1"));
 	MyChart1.setOption(weekDataList.value);
