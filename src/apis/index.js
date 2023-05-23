@@ -59,16 +59,17 @@ export async function uploadLargeFile(file, path, uploadList, idx) {
 	var UploadID = res.UploadID;
 	// console.log("UploadID: ", UploadID);
 	// 默认分片大小 100MB
-	let chunkSize = 1024 * 1024 * 100; // 100MB
+	let chunkSize = 1024 * 1024 * 10; // 100MB
 
 	let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
 		// 总分片数
 		chunks = Math.ceil(file.size / chunkSize),
 		currentChunk = 0,
 		allMD5 = new SparkMD5.ArrayBuffer(),
-		fileReader = new FileReader();
+		fileReader = new FileReader(),
+		PromiseList = []; // Promise列表
 
-	fileReader.onload = async function (e) {
+	fileReader.onload = function (e) {
 		console.log("read chunk nr", currentChunk + 1, "of", chunks);
 		console.log("e:", e);
 		allMD5.append(e.target.result); // Append array buffer
@@ -80,29 +81,51 @@ export async function uploadLargeFile(file, path, uploadList, idx) {
 		// formdata.append("file", new File([e.target.result], file.name));
 		// formdata.append("idx", currentChunk);
 		// formdata.append("imur", imur);
-		var res = await service.post(
-			"/UploadPart",
-			{ file: new File([e.target.result], file.name), idx: currentChunk, UploadID: UploadID },
-			{ headers: { "Content-Type": "multipart/form-data" } }
-		);
+		// 异步
+		var res = service
+			.post("/UploadPart", { file: new File([e.target.result], file.name), idx: currentChunk, UploadID: UploadID }, { headers: { "Content-Type": "multipart/form-data" } })
+			.then((res) => {
+				console.log("res", res);
+				if (res.meta.code == 0) {
+					console.log(res.meta.msg);
+					uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + chunkSize);
+					console.log("uploadList--: ", uploadList);
+				}
+			});
+		PromiseList.push(res);
+		/*
 		if (res.meta.code == 0) {
 			console.log(res.meta.msg);
 			uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + chunkSize);
 			console.log("uploadList--: ", uploadList);
 		}
+        */
+		// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + chunkSize);
 		// service.post("UploadPart", { idx: currentChunk, imur: imur }, { headers: { "Content-Type": "multipart/form-data" } });
 		// service.post("UploadPart", formdata, { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
 		if (currentChunk < chunks) {
 			loadNext();
 		} else {
 			// resolve(spark.end());
+			/*
 			var MD5 = allMD5.end();
 			console.log("allMD5: ", MD5);
 			var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5, size: file.size }, { headers: { "Content-Type": "multipart/form-data" } });
-			if (res.meta.code == 1) {
+			if (res.meta.code == 0) {
 				uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
-				console.log(res.meta.msg);
+				console.log("CompleteUpload", res.meta.msg);
 			}
+            */
+			// 等所有的分片上传请求都完成了再合并
+			Promise.all(PromiseList).then(async () => {
+				var MD5 = allMD5.end();
+				console.log("allMD5: ", MD5);
+				var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5, size: file.size }, { headers: { "Content-Type": "multipart/form-data" } });
+				if (res.meta.code == 0) {
+					uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
+					console.log("CompleteUpload", res.meta.msg);
+				}
+			});
 			return;
 		}
 	};
@@ -124,6 +147,13 @@ export async function uploadLargeFile(file, path, uploadList, idx) {
 	}
 
 	loadNext();
+	// var MD5 = allMD5.end();
+	// console.log("allMD5: ", MD5);
+	// var res = await service.post("/CompleteMultipartUpload", { UploadID, path, MD5, size: file.size }, { headers: { "Content-Type": "multipart/form-data" } });
+	// if (res.meta.code == 0) {
+	// 	uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
+	// 	console.log("CompleteUpload", res.meta.msg);
+	// }
 }
 
 /**
