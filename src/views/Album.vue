@@ -6,9 +6,9 @@
 				<el-breadcrumb-item v-for="(item, index) in path" :to="{ path: '/home/files' + item.path }" :key="index">{{ item.name }}</el-breadcrumb-item>
 			</el-breadcrumb> -->
 			<!-- <el-icon class="search" :size="24"><Search /></el-icon> -->
-			<div class="addContainer" style="display: flex; flex-direction: column">
+			<!-- <div class="addContainer" style="display: flex; flex-direction: column">
 				<el-icon class="add" :size="20" @click="send"><Plus /></el-icon>
-			</div>
+			</div> -->
 		</div>
 
 		<div class="content">

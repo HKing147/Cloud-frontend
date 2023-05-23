@@ -32,12 +32,12 @@ const routes = [
 				icon: "Star",
 				component: () => import("../views/Collected.vue"),
 			},
-			{
-				name: "共享文件",
-				path: "/home/shareFiles",
-				icon: "Connection",
-				component: () => import("../views/ShareFiles.vue"),
-			},
+			// {
+			// 	name: "共享文件",
+			// 	path: "/home/shareFiles",
+			// 	icon: "Connection",
+			// 	component: () => import("../views/ShareFiles.vue"),
+			// },
 			{
 				name: "我的分享",
 				path: "/home/myShare",
@@ -81,12 +81,12 @@ const routes = [
 				icon: "User",
 				component: () => import("../views/ManagerUser.vue"),
 			},
-			{
-				name: "文件管理",
-				path: "/admin/managerFile",
-				icon: "Files",
-				component: () => import("../views/ManagerFile.vue"),
-			},
+			// {
+			// 	name: "文件管理",
+			// 	path: "/admin/managerFile",
+			// 	icon: "Files",
+			// 	component: () => import("../views/ManagerFile.vue"),
+			// },
 		],
 	},
 	{

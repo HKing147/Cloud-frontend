@@ -20,7 +20,14 @@
 								<el-input v-model="loginForm.email" placeholder="请输入邮箱" style="height: 46px" />
 							</el-form-item>
 							<el-form-item prop="password">
-								<el-input v-model="loginForm.password" placeholder="请输入密码" @keyup.enter="login" style="height: 46px" />
+								<el-input
+									type="password"
+									show-password
+									v-model="loginForm.password"
+									placeholder="请输入密码"
+									@keyup.enter="login"
+									style="height: 46px"
+								/>
 							</el-form-item>
 							<el-button class="btn" @click="login">登录</el-button>
 							<el-checkbox v-model="loginForm.rememberMe" label="下次自动登录" size="large" style="float: left" />
@@ -29,7 +36,7 @@
 					<el-tab-pane>
 						<template #label>
 							<span class="custom-tabs-label">
-								<span style="font-size: 18px">扫码登录</span>
+								<span style="font-size: 18px">扫码登陆</span>
 							</span>
 						</template>
 						<img src="/assets/img/qrcode.png" style="width: 150px; height: 150px; margin-top: 30px" />
@@ -45,7 +52,7 @@
 								<el-input v-model="registerForm.email" placeholder="请输入邮箱" style="height: 46px" />
 							</el-form-item>
 							<el-form-item prop="password">
-								<el-input v-model="registerForm.password" placeholder="请输入密码" style="height: 46px" />
+								<el-input type="password" show-password v-model="registerForm.password" placeholder="请输入密码" style="height: 46px" />
 							</el-form-item>
 							<el-form-item prop="checkCode">
 								<el-input v-model="registerForm.checkCode" placeholder="请输入验证码" @keyup.enter="register" style="height: 46px">

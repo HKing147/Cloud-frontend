@@ -123,7 +123,7 @@ onMounted(() => {
 });
 
 function getMenuList() {
-	menuList.value = router.options.routes[1].children.slice(0, 6); // 第7个不要，它是用来正则匹配files的
+	menuList.value = router.options.routes[1].children.slice(0, 5); // 第6个不要，它是用来正则匹配files的
 	console.log("menuList:", menuList.value);
 	// for (var i = 0; i < router.options.routes.length; i++) {
 	// 	if (router.options.routes[i].path == route.path) {
@@ -229,7 +229,7 @@ async function updatePassword() {
 				margin-left: 10px;
 			}
 			.space {
-				margin-top: 200px;
+				margin-top: 260px;
 				margin-left: 20px;
 			}
 			.foot {

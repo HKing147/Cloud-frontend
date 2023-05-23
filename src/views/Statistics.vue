@@ -39,14 +39,14 @@
 			</el-card>
 		</div>
 		<div class="down">
-			<el-card style="height: 400px; margin: 40px 10px" header="一周数据统计">
-				<div id="chart1" style="width: 380px; height: 300px"></div>
+			<el-card style="height: 500px; margin: 40px 10px" header="一周数据统计">
+				<div id="chart1" style="width: 380px; height: 380px"></div>
 			</el-card>
-			<el-card style="height: 400px; margin: 40px 10px" header="文件统计">
-				<div id="chart2" style="width: 380px; height: 300px"></div>
+			<el-card style="height: 500px; margin: 40px 10px" header="文件统计">
+				<div id="chart2" style="width: 380px; height: 380px"></div>
 			</el-card>
-			<el-card style="height: 400px; margin: 40px 10px" header="空间使用情况">
-				<div id="chart3" style="width: 380px; height: 300px"></div>
+			<el-card style="height: 500px; margin: 40px 10px" header="空间使用情况">
+				<div id="chart3" style="width: 380px; height: 380px"></div>
 			</el-card>
 		</div>
 	</div>
@@ -318,7 +318,7 @@ onMounted(async () => {
 	height: 100%;
 	.up {
 		// margin: 10px;
-		padding: 40px 20px 0;
+		padding: 60px 20px 0;
 		display: flex;
 		flex-direction: row;
 		// width: 100%;

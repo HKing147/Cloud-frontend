@@ -38,13 +38,22 @@
 				<el-input size="large" v-model="userInfo.Wechat" clearable>
 					<template #prepend>微信</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.totalSpace" disabled>
+				<!-- <el-input size="large" v-model="userInfo.totalSpace" disabled>
 					<template #prepend>网盘空间</template>
 				</el-input>
 				<el-input size="large" v-model="userInfo.usedSpace" disabled>
 					<template #prepend>使用空间</template>
+				</el-input> 
+                <el-input size="large" v-model="userInfo.CreatedAt" disabled>
+					<template #prepend>注册时间</template>
+				</el-input> -->
+				<el-input size="large" :value="parseSize(userInfo.totalSpace)" disabled>
+					<template #prepend>网盘空间</template>
 				</el-input>
-				<el-input size="large" v-model="userInfo.CreatedAt" disabled>
+				<el-input size="large" :value="parseSize(userInfo.usedSpace)" disabled>
+					<template #prepend>使用空间</template>
+				</el-input>
+				<el-input size="large" :value="new Date(userInfo.CreatedAt).toLocaleString()" disabled>
 					<template #prepend>注册时间</template>
 				</el-input>
 				<div class="btn">

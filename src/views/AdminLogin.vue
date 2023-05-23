@@ -12,12 +12,15 @@
 							</template>
 						</el-input>
 					</el-form-item>
-					<el-form-item prop="password">
+					<!-- <el-form-item prop="password">
 						<el-input v-model="loginForm.password" placeholder="请输入密码" style="height: 46px">
 							<template #suffix>
 								<el-icon size="20"><WalletFilled /></el-icon>
 							</template>
 						</el-input>
+					</el-form-item> -->
+					<el-form-item prop="password">
+						<el-input type="password" show-password v-model="loginForm.password" placeholder="请输入密码" style="height: 46px"> </el-input>
 					</el-form-item>
 					<el-button type="primary" class="btn" @click="login">登录</el-button>
 					<el-checkbox v-model="loginForm.rememberMe" label="下次自动登录" size="large" style="float: left" />

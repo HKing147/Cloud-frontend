@@ -64,9 +64,7 @@
 				<el-form-item label="微信">
 					<el-input size="large" v-model="updatedUser.Wechat" />
 				</el-form-item>
-				<el-form-item label="总空间">
-					<el-input-number v-model="totalSpace" size="large" :precision="0" :min="1" :max="100" />
-				</el-form-item>
+				<el-form-item label="总空间"> <el-input-number v-model="totalSpace" style="margin-right: 10px" size="large" :precision="0" :min="1" :max="100" />GB </el-form-item>
 				<el-form-item label="密码">
 					<el-input size="large" type="password" v-model="updatedUser.password" show-password />
 				</el-form-item>
@@ -95,9 +93,7 @@
 				<el-form-item label="微信">
 					<el-input size="large" v-model="createdUser.Wechat" />
 				</el-form-item>
-				<el-form-item label="总空间">
-					<el-input-number v-model="totalSpace" size="large" :precision="0" :min="1" :max="100" />
-				</el-form-item>
+				<el-form-item label="总空间"> <el-input-number style="margin-right: 10px" v-model="totalSpace" size="large" :precision="0" :min="1" :max="100" />GB </el-form-item>
 				<el-form-item label="密码">
 					<el-input size="large" type="password" v-model="createdUser.password" show-password />
 				</el-form-item>
