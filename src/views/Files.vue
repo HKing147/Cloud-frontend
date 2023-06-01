@@ -77,7 +77,7 @@
 		</div>
 		<el-affix position="bottom" target="#filePage" :offset="100" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 			<div class="ops">
-				<span class="op">
+				<span class="op" @click="downloadFiles(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>下载</template>
 						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
@@ -784,6 +784,15 @@ function download(data) {
 	downLoadFile(data.fileUrl, data.fileName);
 	// 文件下载次数加1
 	service.post("/downloadFile", { id: data.id });
+}
+async function downloadFiles(...userFileIDList) {
+	console.log("userFileIDList:", userFileIDList);
+	const res = await service.get("/getFiles", { params: { userFileIDList } });
+	var fileList = res.fileList,
+		len = fileList.length;
+	for (var i = 0; i < len; i++) {
+		download(fileList[i]);
+	}
 }
 
 // 分享
