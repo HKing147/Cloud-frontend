@@ -1,7 +1,9 @@
+import OSS from "ali-oss";
 import axios from "axios";
 import SparkMD5 from "spark-md5";
 import { checkUploaded, uploadLargeFile } from "../apis";
 import service from "../request";
+import streamSaver from "./StreamSaver";
 
 export async function calFileSize(file, uploadList, idx) {
 	if (file.isDirectory) {
@@ -40,14 +42,17 @@ export async function uploadFile(file, path, uploadList, idx) {
 	// file是file类型, path: 为文件夹路径，末尾带'/'
 	console.log("文件：", file);
 	// 先检查文件是否已经上传过
-	const res = await checkUploaded(file, path);
+	const MD5 = await calMD5(file);
+	const res = await checkUploaded(file.name, MD5, path);
+	// uploadList.value[idx].size = file.size;
 	console.log("res+++", res);
 	if (res.meta.code == 0) {
 		// 上传过
 		uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
 	} else {
 		// 没上传过
-		uploadLargeFile(file, path, uploadList, idx);
+		uploadToOSS(file, MD5, path, uploadList, idx);
+		// uploadLargeFile(file, MD5, path, uploadList, idx);
 	}
 }
 
@@ -59,13 +64,16 @@ export async function scan(file, path, uploadList, idx) {
 			console.log("文件：", f.name, f.size, file.fullPath, file);
 			// 先检查文件是否已经上传过
 			console.log("文件f：", f);
-			const res = await checkUploaded(f, path);
+			const MD5 = await calMD5(f);
+			const res = await checkUploaded(f.name, MD5, path);
 			if (res.meta.code == 0) {
 				// 上传过, 不用再次上传
-				uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
+				uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + f.size);
+				// uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
 			} else {
 				// 没上传过
-				uploadLargeFile(f, path, uploadList, idx);
+				uploadToOSS(f, MD5, path, uploadList, idx);
+				// uploadLargeFile(f, MD5, path, uploadList, idx);
 			}
 		});
 	} else {
@@ -90,7 +98,7 @@ export async function scan(file, path, uploadList, idx) {
  * @resolve {string} md5
  */
 export function calMD5(file) {
-	console.log("file ==> ", file);
+	console.log("calMD5 file ==> ", file);
 	return new Promise((resolve, reject) => {
 		const blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
 		const chunkSize = 1024 * 1024 * 100; // Read in chunks of 100MB
@@ -138,4 +146,88 @@ export function parseSize(size) {
 	} else {
 		return (size / base / base / base / base).toFixed(2) + "TB";
 	}
+}
+
+/**
+ * 直接上传至OSS
+ */
+export async function uploadToOSS(file, MD5, path, uploadList, idx) {
+	console.log("uploadToOSS file:", file);
+	const client = new OSS({
+		region: "oss-cn-hangzhou", // 根据那你的Bucket地点来填写
+		accessKeyId: "LTAI5tRnVo7L548yNZ2bRJxv", // 自己账户的accessKeyId或临时秘钥
+		accessKeySecret: "X848KXtK7imYFSAjcCQUK0W6TH4cTR", // 自己账户的accessKeySecret或临时秘钥
+		// stsToken: "securityToken", //  从STS服务获取的安全令牌（SecurityToken）。
+		bucket: "file-bucket001", // bucket名字
+	});
+	var list = file.name.split(".");
+	var type = list[list.length - 1];
+	var uploadSize = 0;
+	console.log(file.name, type);
+	try {
+		var last = file.size;
+		const result = await client.multipartUpload(
+			`${type + "/" + MD5 + "." + type}`, //如果需要传入到指定的文件夹下，需要在文件名前加上文件夹名称，如： `xxxxx/${file.name}`
+			file,
+			{
+				progress: (p, cpt, res) => {
+					// 获取分片上传进度、断点和返回值。
+					console.log(p, cpt, res);
+					if (cpt != null) {
+						uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + Math.min(last, cpt.partSize));
+						last -= Math.min(last, cpt.partSize);
+						// // uploadSize = Math.min(cpt.fileSize);
+						// // var delta = Math.max(0, Math.min(cpt.fileSize, cpt.partSize * cpt.doneParts.length) - cpt.partSize * (cpt.doneParts.length - 1));
+						// // console.log(cpt.partSize, cpt.doneParts.length, delta);
+						// // origin += delta;
+						// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + delta);
+					}
+					// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, Math.min(cpt.fileSize, cpt.partSize * cpt.doneParts.length));
+					// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + cpt.partSize * cpt.doneParts.length);
+					// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + cpt.partSize);
+				},
+				parallel: 8, //并发上传的分片数量
+				partSize: 1024 * 1024 * 10, //分片大小
+				headers: {
+					//上传请求头设置
+					"Content-Disposition": "inline",
+					"Content-Type": file.type,
+				},
+				// meta: { year: 2023, people: "test" }, // 自定义元数据，通过HeadObject接口可以获取Object的元数据。
+				mime: file.type, //上传文件类型
+			}
+		);
+		console.log(result, "result= 切片上传完毕=");
+		const res = service.post("/completeUploadFile", { fileName: file.name, size: file.size, type, path, MD5 });
+		uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + last);
+	} catch (e) {
+		console.log("异常--->", e);
+		if (e.code === "ConnectionTimeoutError") {
+			// 请求超时异常处理
+			console.log("TimeoutError");
+		}
+	}
+}
+
+/**
+ * 下载文件
+ */
+export function downLoadFile(url, fileName) {
+	fetch(url, {
+		method: "GET",
+		cache: "no-cache",
+	}).then((res) => {
+		const fileStream = streamSaver.createWriteStream(fileName, {
+			size: res.headers.get("content-length"),
+		});
+		const readableStream = res.body;
+		// more optimized
+		if (window.WritableStream && readableStream.pipeTo) {
+			return readableStream.pipeTo(fileStream).then(() => console.log("done writing"));
+		}
+		window.writer = fileStream.getWriter();
+		const reader = res.body.getReader();
+		const pump = () => reader.read().then((res) => (res.done ? window.writer.close() : window.writer.write(res.value).then(pump)));
+		pump();
+	});
 }

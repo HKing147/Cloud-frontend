@@ -45,7 +45,7 @@ import { calMD5 } from "../utils/index.js";
 // 	// 	});
 // }
 
-export async function uploadLargeFile(file, path, uploadList, idx) {
+export async function uploadLargeFile(file, MD5, path, uploadList, idx) {
 	console.log("uploadList: ", uploadList);
 	console.log(file.name, " ==> ", path);
 	// 初始化分片上传事件
@@ -159,10 +159,8 @@ export async function uploadLargeFile(file, path, uploadList, idx) {
 /**
  * 查看文件是否上传过
  */
-export async function checkUploaded(file, path) {
-	console.log("file => ", file);
-	const MD5 = await calMD5(file);
-	return service.get("/checkUploaded", { params: { MD5, fileName: file.name, path } });
+export async function checkUploaded(fileName, MD5, path) {
+	return service.get("/checkUploaded", { params: { MD5, fileName, path } });
 }
 
 export default checkUploaded;
