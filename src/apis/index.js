@@ -58,8 +58,8 @@ export async function uploadLargeFile(file, path, uploadList, idx) {
 	}
 	var UploadID = res.UploadID;
 	// console.log("UploadID: ", UploadID);
-	// 默认分片大小 100MB
-	let chunkSize = 1024 * 1024 * 10; // 100MB
+	// 默认分片大小 10MB
+	let chunkSize = 1024 * 1024 * 10; // 10MB
 
 	let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
 		// 总分片数

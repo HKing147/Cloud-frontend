@@ -82,7 +82,7 @@ const totalSpace = ref(1024 ** 4); // 1TB
 const usedSpace = ref(0);
 const list = ref([]);
 const weekDataList = ref({
-	animationDuration: 3000, // 动画时间
+	animationDuration: 2000, // 动画时间
 	dataZoom: [
 		// 滚轮缩放
 		{

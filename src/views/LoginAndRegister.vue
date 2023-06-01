@@ -8,14 +8,14 @@
 				<img src="/assets/img/logo.png" alt="" />
 			</div>
 			<div class="login-container">
-				<el-tabs type="border-card">
+				<el-tabs type="border-card" stretch>
 					<el-tab-pane>
 						<template #label>
 							<span class="custom-tabs-label">
 								<span style="font-size: 18px">密码登录</span>
 							</span>
 						</template>
-						<el-form :model="loginForm" :rules="loginRules" size="large" style="margin: 30px 10px" class="login-form">
+						<el-form :model="loginForm" :rules="loginRules" size="large" style="margin: 30px 10px; width: 285px" class="login-form">
 							<el-form-item prop="email">
 								<el-input v-model="loginForm.email" placeholder="请输入邮箱" style="height: 46px" />
 							</el-form-item>
@@ -33,21 +33,21 @@
 							<el-checkbox v-model="loginForm.rememberMe" label="下次自动登录" size="large" style="float: left" />
 						</el-form>
 					</el-tab-pane>
-					<el-tab-pane>
+					<!-- <el-tab-pane>
 						<template #label>
 							<span class="custom-tabs-label">
 								<span style="font-size: 18px">扫码登陆</span>
 							</span>
 						</template>
 						<img src="/assets/img/qrcode.png" style="width: 150px; height: 150px; margin-top: 30px" />
-					</el-tab-pane>
+					</el-tab-pane> -->
 					<el-tab-pane>
 						<template #label>
 							<span class="custom-tabs-label">
 								<span style="font-size: 18px">注册账号</span>
 							</span>
 						</template>
-						<el-form :model="registerForm" :rules="registerRules" size="large" style="margin: 30px 10px" class="login-form">
+						<el-form :model="registerForm" :rules="registerRules" size="large" style="margin: 30px 10px; margin-bottom: 10px" class="login-form">
 							<el-form-item prop="email">
 								<el-input v-model="registerForm.email" placeholder="请输入邮箱" style="height: 46px" />
 							</el-form-item>

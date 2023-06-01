@@ -18,7 +18,7 @@
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item @click="download(prop.data.fileUrl)">下载</el-dropdown-item>
+								<el-dropdown-item @click="download(prop.data.fileUrl)" :disabled="prop.data.isFolder">下载</el-dropdown-item>
 								<el-dropdown-item @click="showShareDialog(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>

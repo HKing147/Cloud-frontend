@@ -9,7 +9,7 @@ export const baseURL = "http://localhost:8080/api"; // 开发
 // axios.defaults.withCredentials = true;
 var service = axios.create({
 	baseURL: baseURL, // 所有的请求地址前缀部分
-	timeout: 60000, // 请求超时时间毫秒
+	timeout: 1000 * 60 * 60 * 24, // 请求超时时间毫秒
 	withCredentials: true, // 异步请求携带cookie,(开启会跨域)
 	headers: {
 		// 设置后端需要的传参类型

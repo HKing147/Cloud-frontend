@@ -5,7 +5,7 @@
 			<el-button type="primary" @click="showCreateUserDialogVisible" round>创建用户</el-button>
 			<el-button type="danger" @click="deleteUsers(...selectedUserList)" round>删除用户</el-button>
 			<el-table style="margin-top: 20px" max-height="542" :data="userList" @selection-change="handleSelectionChange" stripe border>
-				<el-table-column type="selection" width="40" />
+				<el-table-column type="selection" :selectable="checkSelectable" width="40" />
 				<el-table-column fixed prop="userName" label="用户名" width="200" sortable />
 				<el-table-column prop="email" label="邮箱" width="200" />
 				<el-table-column prop="QQ" label="QQ" width="150" />
@@ -33,7 +33,7 @@
 				<el-table-column fixed="right" label="操作" width="100">
 					<template #default="scope">
 						<el-button @click="showUpdateUserDialogVisible(scope.row)" type="primary" :icon="Edit" circle />
-						<el-button @click="deleteUsers(scope.row)" type="danger" :icon="Delete" circle />
+						<el-button v-if="userInfo.ID != scope.row.ID" @click="deleteUsers(scope.row)" type="danger" :icon="Delete" circle />
 					</template>
 				</el-table-column>
 			</el-table>
@@ -116,6 +116,16 @@ import { Delete, Edit } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import service from "../request";
 import router from "../router";
+const userInfo = ref({});
+async function getUserInfo() {
+	const res = await service.get("/getUserInfo");
+	console.log("getUserInfo: ", res);
+	if (res.meta.code == 0) {
+		userInfo.value = res.user;
+	}
+}
+getUserInfo();
+
 const userList = ref([]);
 const pageSize = ref(10);
 const totalPage = ref(0);
@@ -141,6 +151,10 @@ async function getUserList() {
 getUserList();
 
 var selectedUserList = [];
+function checkSelectable(row, idx) {
+	console.log("row:", row.ID);
+	return row.ID != userInfo.value.ID;
+}
 function handleSelectionChange(users) {
 	console.log(users);
 	selectedUserList = users;

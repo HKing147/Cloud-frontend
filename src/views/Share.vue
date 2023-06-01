@@ -11,7 +11,9 @@
 					backgroundSize: 'cover',
 					backgroundRepeat: 'no-repeat',
 					backgroundPosition: 'center center',
+					cursor: 'pointer',
 				}"
+				@click="to('/home')"
 			></div>
 			<el-button v-else @click="to('/')" round>登录</el-button>
 		</div>

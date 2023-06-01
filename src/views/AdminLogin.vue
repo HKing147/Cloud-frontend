@@ -31,10 +31,10 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { inject, reactive } from "vue";
 import service from "../request";
 import router from "../router";
-const loginForm = reactive({ email: "123456@qq.com", password: "123456", rememberMe: false });
+const loginForm = reactive({ email: "1470042308@qq.com", password: "123456", rememberMe: false });
 const loginRules = reactive({
 	email: [
 		{
@@ -56,12 +56,22 @@ const loginRules = reactive({
 		},
 	],
 });
+const vueCookies = inject("vueCookies");
 async function login() {
 	console.log(loginForm);
 	// 登录逻辑
 	// service.defaults.withCredentials = true;
 	var res = await service.post("/login", loginForm);
 	console.log(res);
+	// 从Cookie获取登录信息：admin_token
+	const admin_token = vueCookies.get("admin_token");
+	if (admin_token == null) {
+		ElMessage({
+			message: "登陆失败",
+			type: "error",
+		});
+		return;
+	}
 	//登录成功
 	if (res.meta.code == 0) {
 		ElMessage({

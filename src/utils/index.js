@@ -54,18 +54,14 @@ export async function uploadFile(file, path, uploadList, idx) {
 export async function scan(file, path, uploadList, idx) {
 	// file可能是文件夹
 	if (file.isFile) {
-		// 文件
+		// 是文件
 		file.file(async (f) => {
-			// uploadFile(f, path);
 			console.log("文件：", f.name, f.size, file.fullPath, file);
-			// TODO: 上传文件  f 就是file类型
-			// uploadFile(f, "/upload");
 			// 先检查文件是否已经上传过
 			console.log("文件f：", f);
 			const res = await checkUploaded(f, path);
-			console.log("res+++", res);
 			if (res.meta.code == 0) {
-				// 上传过
+				// 上传过, 不用再次上传
 				uploadList.value[idx].uploadedSize = uploadList.value[idx].size;
 			} else {
 				// 没上传过

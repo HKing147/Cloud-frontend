@@ -31,7 +31,7 @@
 							</el-icon>
 							<span>{{ item.name }}</span>
 						</el-menu-item>
-						<el-divider style="margin-top: 430px" border-style="double" />
+						<el-divider style="margin-top: 480px" border-style="double" />
 						<div class="foot">
 							<div
 								class="avatar"

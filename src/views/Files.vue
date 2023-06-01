@@ -57,7 +57,7 @@
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item @click="download(prop.data)">下载</el-dropdown-item>
+								<el-dropdown-item @click="download(prop.data)" :disabled="prop.data.isFolder">下载</el-dropdown-item>
 								<el-dropdown-item @click="showShareDialog(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
@@ -825,17 +825,13 @@ function downLoadFile(url, name) {
 		} else {
 			var link = document.createElement("a");
 			var body = document.querySelector("body");
-
 			link.href = window.URL.createObjectURL(blob);
 			link.download = filename;
-
 			// fix Firefox
 			link.style.display = "none";
 			body.appendChild(link);
-
 			link.click();
 			body.removeChild(link);
-
 			window.URL.revokeObjectURL(link.href);
 		}
 	}
