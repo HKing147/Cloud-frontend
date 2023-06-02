@@ -79,7 +79,7 @@ import { reactive, ref } from "vue";
 import service from "../request";
 import router from "../router";
 
-const loginForm = reactive({ email: "1470042308@qq.com", password: "123456", rememberMe: false });
+const loginForm = reactive({ email: "", password: "", rememberMe: false });
 async function login() {
 	console.log(loginForm);
 	// 登录逻辑
@@ -129,8 +129,8 @@ const loginRules = reactive({
 });
 
 const registerForm = reactive({
-	email: "1470042308@qq.com",
-	password: "123456",
+	email: "",
+	password: "",
 	checkCode: "",
 });
 const registerRules = reactive({

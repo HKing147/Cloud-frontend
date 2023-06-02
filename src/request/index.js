@@ -4,7 +4,6 @@ import "nprogress/nprogress.css";
 
 export const baseURL = "http://localhost:8080/api"; // 开发
 // export const baseURL = "http://www.lab-0.com:8080/api"; // 发布
-// export const baseURL = "http://47.100.190.87:8080/api";
 // 创建一个 axios 实例
 // axios.defaults.withCredentials = true;
 var service = axios.create({

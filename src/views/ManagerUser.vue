@@ -56,7 +56,7 @@
 					<el-input size="large" v-model="updatedUser.userName" />
 				</el-form-item>
 				<el-form-item label="邮箱">
-					<el-input size="large" v-model="updatedUser.email" />
+					<el-input disabled size="large" v-model="updatedUser.email" />
 				</el-form-item>
 				<el-form-item label="QQ">
 					<el-input size="large" v-model="updatedUser.QQ" />
@@ -80,11 +80,11 @@
 		</el-dialog>
 		<!-- 创建用户对话框 -->
 		<el-dialog class="detail" v-model="createUserDialogVisible" title="创建用户" width="38%" style="border-radius: 10px" draggable>
-			<el-form label-width="100px" :model="createdUser" style="max-width: 460px">
+			<el-form label-width="100px" :model="createdUser" :rules="rules" style="max-width: 460px">
 				<el-form-item label="用户名">
 					<el-input size="large" v-model="createdUser.userName" />
 				</el-form-item>
-				<el-form-item label="邮箱">
+				<el-form-item prop="email" label="邮箱">
 					<el-input size="large" v-model="createdUser.email" />
 				</el-form-item>
 				<el-form-item label="QQ">
@@ -94,7 +94,7 @@
 					<el-input size="large" v-model="createdUser.Wechat" />
 				</el-form-item>
 				<el-form-item label="总空间"> <el-input-number style="margin-right: 10px" v-model="totalSpace" size="large" :precision="0" :min="1" :max="100" />GB </el-form-item>
-				<el-form-item label="密码">
+				<el-form-item prop="password" label="密码">
 					<el-input size="large" type="password" v-model="createdUser.password" show-password />
 				</el-form-item>
 				<el-form-item label="权限">
@@ -125,7 +125,27 @@ async function getUserInfo() {
 	}
 }
 getUserInfo();
-
+const rules = reactive({
+	email: [
+		{
+			required: true,
+			message: "请输入邮箱",
+			trigger: "change",
+		},
+		{
+			type: "email",
+			message: "请输入正确的邮箱",
+			trigger: ["blur", "change"],
+		},
+	],
+	password: [
+		{
+			required: true,
+			message: "请输入密码",
+			trigger: "change",
+		},
+	],
+});
 const userList = ref([]);
 const pageSize = ref(10);
 const totalPage = ref(0);

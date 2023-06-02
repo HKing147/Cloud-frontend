@@ -34,7 +34,7 @@
 import { inject, reactive } from "vue";
 import service from "../request";
 import router from "../router";
-const loginForm = reactive({ email: "1470042308@qq.com", password: "123456", rememberMe: false });
+const loginForm = reactive({ email: "", password: "", rememberMe: false });
 const loginRules = reactive({
 	email: [
 		{
