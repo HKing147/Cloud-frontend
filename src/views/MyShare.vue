@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" :menuItem="'myShare'" :parentDir="'./share/'" ref="draggableTreeRef">
+			<DraggableTree :data="data" :open="open" :menuItem="'myShare'" :parentDir="'./share/'" ref="draggableTreeRef">
 				<template v-slot="prop">
 					<el-dropdown>
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
@@ -99,6 +99,13 @@ async function copyLink(...shareIDList) {
 		message: "复制成功",
 		type: "success",
 	});
+}
+async function open(item) {
+	console.log(item);
+	const res = await service.get("/getShareByID", { params: { shareID: item.id } });
+	var shareUrl = window.location.origin + "/share/share_" + res.shareInfo.userID + "_" + res.shareInfo.ID;
+	console.log(shareUrl);
+	window.open(shareUrl);
 }
 </script>
 

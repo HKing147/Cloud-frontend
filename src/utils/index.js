@@ -212,7 +212,11 @@ export async function uploadToOSS(file, MD5, path, uploadList, idx) {
 /**
  * 下载文件
  */
-export function downLoadFile(url, fileName) {
+export function downloadFile(file) {
+	console.log("fileUrl: ", file.fileUrl);
+	console.log("===========");
+	var url = file.fileUrl,
+		fileName = file.fileName;
 	fetch(url, {
 		method: "GET",
 		cache: "no-cache",
@@ -230,4 +234,16 @@ export function downLoadFile(url, fileName) {
 		const pump = () => reader.read().then((res) => (res.done ? window.writer.close() : window.writer.write(res.value).then(pump)));
 		pump();
 	});
+	// 文件下载次数加1
+	service.post("/downloadFile", { id: file.id });
+}
+// 下载多个文件
+export async function downloadFiles(...userFileIDList) {
+	console.log("userFileIDList:", userFileIDList);
+	const res = await service.get("/getFiles", { params: { userFileIDList } });
+	var fileList = res.fileList,
+		len = fileList.length;
+	for (var i = 0; i < len; i++) {
+		if (fileList[i].fileUrl != "") downloadFile(fileList[i]);
+	}
 }

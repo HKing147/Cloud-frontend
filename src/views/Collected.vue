@@ -18,7 +18,7 @@
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item @click="download(prop.data.fileUrl)" :disabled="prop.data.isFolder">下载</el-dropdown-item>
+								<el-dropdown-item @click="downloadFile(prop.data)" :disabled="prop.data.isFolder">下载</el-dropdown-item>
 								<el-dropdown-item @click="showShareDialog(prop.data.id)">分享</el-dropdown-item>
 								<el-dropdown-item @click="collectedFiles(prop.data.id)">{{ prop.data.isCollect ? "取消收藏" : "收藏" }}</el-dropdown-item>
 								<el-dropdown-item @click="showRenameDialog(prop.data)" divided>重命名</el-dropdown-item>
@@ -34,7 +34,7 @@
 
 		<el-affix position="bottom" target="#filePage" :offset="100" v-if="draggableTreeRef != null && draggableTreeRef.checkedList != null && draggableTreeRef.checkedList.length > 0">
 			<div class="ops">
-				<span class="op">
+				<span class="op" @click="downloadFiles(...draggableTreeRef.checkedList)">
 					<el-tooltip placement="top" :offset="20">
 						<template #content>下载</template>
 						<el-icon :size="18" color="#c6c6c7"><Download /></el-icon>
@@ -221,6 +221,7 @@ import { useRoute } from "vue-router";
 import DraggableTree from "../components/DraggableTree.vue";
 import service from "../request";
 import router from "../router";
+import { downloadFile, downloadFiles } from "../utils";
 
 // const data = reactive([
 // 	{

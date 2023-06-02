@@ -49,7 +49,7 @@
 				</div>
 				<el-button color="#637dff" style="color: white" @click="showSaveDialog(...draggableTreeRef.checkedList)">保存到我的云盘</el-button>
 			</div>
-			<DraggableTree :data="fileList" :getFileList="getFileList" :openFolder="openFolder" ref="draggableTreeRef"></DraggableTree>
+			<DraggableTree :data="fileList" :getFileList="getFileList" :open="open" ref="draggableTreeRef"></DraggableTree>
 		</div>
 		<div v-else style="width: 50%; margin: 0 auto; margin-top: 50px; display: flex; flex-direction: column; text-align: center">
 			<img style="height: 70px; width: 70px; border-radius: 50%; margin: 0 auto" :src="shareUserInfo.avatar" onerror="this.src='/assets/img/tou.jpg';this.onerror=null" />
@@ -165,16 +165,23 @@ async function changePaths(path) {
 	}
 }
 
-async function openFolder(folder) {
-	console.log(folder);
+async function open(file) {
+	console.log(file);
+	if (!file.isFolder) {
+		preview(file.fileUrl, file.type);
+		return;
+	}
 	// 打开该文件夹（获取文件列表）
-	const res = await service.get("/getFileListByFolderID", { params: { folderID: folder.id, sortMethod: "" } });
+	const res = await service.get("/getFileListByFolderID", { params: { folderID: file.id, sortMethod: "" } });
 	if (res.meta.code == 0) {
 		fileList.value = res.fileList;
 		// 更新paths
 		var lastPath = paths.value[paths.value.length - 1];
-		paths.value.push({ id: lastPath.id + "-" + folder.id, name: folder.fileName });
+		paths.value.push({ id: lastPath.id + "-" + file.id, name: file.fileName });
 	}
+}
+function preview(fileUrl, type) {
+	window.open("https://file.kkview.cn/onlinePreview?url=" + encodeURIComponent(Base64.encode(fileUrl)));
 }
 
 const inputPassword = ref("");

@@ -43,11 +43,13 @@
 							</el-col>
 							<!-- <el-col :span="0.2"> <img src="../assets/icon/doc.png" /></el-col> -->
 							<!-- <el-col :span="0.2" @click="props.canOpenFolder ? openFolder(data): preview(data.fileUrl,data.type)"> -->
-							<el-col :span="0.2" @click="data.isFolder ? openFolder(data) : preview(data.fileUrl, data.type)">
+							<!-- <el-col :span="0.2" @click="data.isFolder ? openFolder(data) : preview(data.fileUrl, data.type)"> -->
+							<el-col :span="0.2" @click="open(data)">
 								<img :src="'/assets/icon/' + data.type + '.png'" onerror="this.src='/assets/icon/other.png';this.onerror=null"
 							/></el-col>
 							<!-- <el-col :span="12" @click="props.canOpenFolder ? openFolder(data): preview(data.fileUrl,data.type)"> {{ node.label }}</el-col> -->
-							<el-col :span="12" @click="data.isFolder ? openFolder(data) : preview(data.fileUrl, data.type)"> {{ node.label }}</el-col>
+							<!-- <el-col :span="12" @click="data.isFolder ? openFolder(data) : preview(data.fileUrl, data.type)"> {{ node.label }}</el-col> -->
+							<el-col :span="12" @click="open(data)"> {{ node.label }}</el-col>
 							<el-col class="icon" :span="1">
 								<slot :data="data"></slot>
 								<!-- <el-dropdown>
@@ -120,6 +122,7 @@ const props = defineProps({
 	},
 	getFileList: Function,
 	openFolder: Function,
+	open: Function,
 	// sortMethod: {
 	// 	// 排序方法
 	// 	type: String,
@@ -287,6 +290,23 @@ function openFolder(e) {
 		router.push("/home/" + props.menuItem + e.filePath + e.fileName);
 		// router.push(router.currentRoute.value.fullPath + "/" + props.parentDir + e.fileName);
 		// router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
+	}
+}
+function open(e) {
+	if (props.open != null) {
+		props.open(e);
+		return;
+	}
+	console.log("open: ", e);
+	// if (e.type == "folder") {
+	if (e.isFolder) {
+		// 点击的是文件夹
+		// router.push("/home/files" + e.filePath + e.fileName);
+		router.push("/home/" + props.menuItem + e.filePath + e.fileName);
+		// router.push(router.currentRoute.value.fullPath + "/" + props.parentDir + e.fileName);
+		// router.push(router.currentRoute.value.fullPath + "/" + e.fileName);
+	} else {
+		preview(e.fileUrl, e.type);
 	}
 }
 

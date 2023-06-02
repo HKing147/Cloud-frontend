@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="content">
-			<DraggableTree :data="data" :canOpenFolder="false" :parentDir="'../files/'" ref="draggableTreeRef">
+			<DraggableTree :data="data" :canOpenFolder="false" :open="() => {}" :parentDir="'../files/'" ref="draggableTreeRef">
 				<template v-slot="prop">
 					<el-dropdown>
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>

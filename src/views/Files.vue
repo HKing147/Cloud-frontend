@@ -57,7 +57,7 @@
 						<el-icon :size="17" style="outline: none"><MoreFilled /></el-icon>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item @click="download(prop.data)" :disabled="prop.data.isFolder">下载</el-dropdown-item>
+								<el-dropdown-item @click="downloadFile(prop.data)" :disabled="prop.data.isFolder">下载</el-dropdown-item>
 								<!-- <el-dropdown-item :disabled="prop.data.isFolder"
 									><a :href="prop.data.fileUrl" :download="prop.data.fileName" style="color: inherit; text-decoration: none">
                                         下载
@@ -274,7 +274,7 @@ import { useRoute } from "vue-router";
 import checkUploaded from "../apis";
 import DraggableTree from "../components/DraggableTree.vue";
 import service, { baseURL } from "../request";
-import { upload, uploadFile, scan, parseSize, downLoadFile } from "../utils/index.js";
+import { upload, uploadFile, scan, parseSize, downloadFile, downloadFiles } from "../utils/index.js";
 import UploadProgress from "../components/UploadProgress.vue";
 import router from "../router";
 import { Base64 } from "js-base64";
@@ -739,61 +739,6 @@ async function searchFile() {
 // 	}
 // 	// });
 // }
-
-// 下载
-/**
- * 获取 blob
- * url 目标文件地址
- */
-function getBlob(url) {
-	return new Promise((resolve) => {
-		const xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.responseType = "blob";
-		xhr.onload = () => {
-			if (xhr.status === 200) {
-				resolve(xhr.response);
-			}
-		};
-		xhr.send();
-	});
-}
-/**
- * 保存 blob
- * filename 想要保存的文件名称
- */
-function saveAs(blob, filename) {
-	if (window.navigator.msSaveOrOpenBlob) {
-		navigator.msSaveBlob(blob, filename);
-	} else {
-		const link = document.createElement("a");
-		const body = document.querySelector("body");
-		link.href = window.URL.createObjectURL(blob);
-		link.download = filename;
-		// fix Firefox
-		link.style.display = "none";
-		body.appendChild(link);
-		link.click();
-		body.removeChild(link);
-		window.URL.revokeObjectURL(link.href);
-	}
-}
-function download(data) {
-	console.log("fileUrl: ", data.fileUrl);
-	console.log("===========");
-	downLoadFile(data.fileUrl, data.fileName);
-	// 文件下载次数加1
-	service.post("/downloadFile", { id: data.id });
-}
-async function downloadFiles(...userFileIDList) {
-	console.log("userFileIDList:", userFileIDList);
-	const res = await service.get("/getFiles", { params: { userFileIDList } });
-	var fileList = res.fileList,
-		len = fileList.length;
-	for (var i = 0; i < len; i++) {
-		download(fileList[i]);
-	}
-}
 
 // 分享
 async function shareFiles() {
