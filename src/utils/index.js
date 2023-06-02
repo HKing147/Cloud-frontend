@@ -5,6 +5,14 @@ import { checkUploaded, uploadLargeFile } from "../apis";
 import service from "../request";
 import streamSaver from "./StreamSaver";
 
+const client = new OSS({
+	region: "oss-cn-hangzhou", // 根据那你的Bucket地点来填写
+	accessKeyId: "LTAI5tRnVo7L548yNZ2bRJxv", // 自己账户的accessKeyId或临时秘钥
+	accessKeySecret: "X848KXtK7imYFSAjcCQUK0W6TH4cTR", // 自己账户的accessKeySecret或临时秘钥
+	// stsToken: "securityToken", //  从STS服务获取的安全令牌（SecurityToken）。
+	bucket: "file-bucket001", // bucket名字
+});
+
 export async function calFileSize(file, uploadList, idx) {
 	if (file.isDirectory) {
 		console.log("Dire: ", file);
@@ -153,13 +161,7 @@ export function parseSize(size) {
  */
 export async function uploadToOSS(file, MD5, path, uploadList, idx) {
 	console.log("uploadToOSS file:", file);
-	const client = new OSS({
-		region: "oss-cn-hangzhou", // 根据那你的Bucket地点来填写
-		accessKeyId: "LTAI5tRnVo7L548yNZ2bRJxv", // 自己账户的accessKeyId或临时秘钥
-		accessKeySecret: "X848KXtK7imYFSAjcCQUK0W6TH4cTR", // 自己账户的accessKeySecret或临时秘钥
-		// stsToken: "securityToken", //  从STS服务获取的安全令牌（SecurityToken）。
-		bucket: "file-bucket001", // bucket名字
-	});
+
 	var list = file.name.split(".");
 	var type = list[list.length - 1];
 	var uploadSize = 0;
@@ -186,7 +188,7 @@ export async function uploadToOSS(file, MD5, path, uploadList, idx) {
 					// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + cpt.partSize * cpt.doneParts.length);
 					// uploadList.value[idx].uploadedSize = Math.min(uploadList.value[idx].size, uploadList.value[idx].uploadedSize + cpt.partSize);
 				},
-				parallel: 8, //并发上传的分片数量
+				parallel: 6, //并发上传的分片数量
 				partSize: 1024 * 1024 * 10, //分片大小
 				headers: {
 					//上传请求头设置
